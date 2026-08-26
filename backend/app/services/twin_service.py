@@ -1,0 +1,244 @@
+from __future__ import annotations
+
+from datetime import UTC, datetime
+from typing import Any
+
+from fastapi import HTTPException
+from sqlalchemy import desc, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models.entities import (
+    Asset,
+    AssetModel,
+    DataSource,
+    EnvironmentObservation,
+    Inspection,
+    Maintenance,
+    Prediction,
+    Sensor,
+)
+from app.services.risk_engine import RiskInput, score_risk
+
+
+def _freshness(observed_at: datetime | None) -> str:
+    if observed_at is None:
+        return "NOT_AVAILABLE"
+    if observed_at.tzinfo is None:
+        observed_at = observed_at.replace(tzinfo=UTC)
+    hours = (datetime.now(UTC) - observed_at).total_seconds() / 3600
+    if hours <= 24:
+        return "CURRENT"
+    if hours <= 24 * 7:
+        return f"{int(hours // 24)}_DAYS_OLD"
+    return f"{int(hours // (24 * 7))}_WEEKS_OLD"
+
+
+async def get_asset_row(session: AsyncSession, asset_code: str):
+    statement = (
+        select(
+            Asset,
+            func.ST_X(Asset.representative_geometry).label("longitude"),
+            func.ST_Y(Asset.representative_geometry).label("latitude"),
+        )
+        .where(Asset.asset_code == asset_code)
+        .limit(1)
+    )
+    row = (await session.execute(statement)).first()
+    if row is None:
+        raise HTTPException(status_code=404, detail=f"Asset {asset_code} was not found")
+    return row
+
+
+async def latest_predictions(session: AsyncSession, asset_id: int) -> dict[str, Prediction]:
+    rows = (
+        await session.execute(
+            select(Prediction)
+            .where(Prediction.asset_id == asset_id)
+            .order_by(Prediction.target, desc(Prediction.prediction_time))
+        )
+    ).scalars()
+    latest: dict[str, Prediction] = {}
+    for prediction in rows:
+        latest.setdefault(prediction.target, prediction)
+    return latest
+
+
+async def build_asset_summary(session: AsyncSession, row) -> dict[str, Any]:
+    asset, longitude, latitude = row
+    predictions = await latest_predictions(session, asset.id)
+    risk = predictions.get("risk")
+    return {
+        "asset_code": asset.asset_code,
+        "name": asset.name,
+        "asset_type": asset.asset_type,
+        "subtype": asset.subtype,
+        "district": asset.district,
+        "identity_status": asset.identity_status,
+        "condition": asset.condition,
+        "geometry": {"type": "Point", "coordinates": (longitude, latitude)},
+        "risk_score": risk.value if risk else None,
+        "risk_level": risk.predicted_class if risk else None,
+        "data_confidence": asset.confidence_score,
+    }
+
+
+async def build_twin(session: AsyncSession, asset_code: str) -> dict[str, Any]:
+    row = await get_asset_row(session, asset_code)
+    asset, _, _ = row
+    summary = await build_asset_summary(session, row)
+
+    model = (
+        await session.execute(
+            select(AssetModel)
+            .where(AssetModel.asset_id == asset.id, AssetModel.is_active.is_(True))
+            .order_by(desc(AssetModel.updated_at))
+            .limit(1)
+        )
+    ).scalar_one_or_none()
+
+    inspection = (
+        await session.execute(
+            select(Inspection)
+            .where(Inspection.asset_id == asset.id)
+            .order_by(desc(Inspection.inspection_date))
+            .limit(1)
+        )
+    ).scalar_one_or_none()
+
+    maintenance_rows = (
+        await session.execute(
+            select(Maintenance)
+            .where(Maintenance.asset_id == asset.id)
+            .order_by(desc(Maintenance.maintenance_date))
+            .limit(10)
+        )
+    ).scalars().all()
+
+    env_rows = (
+        await session.execute(
+            select(EnvironmentObservation, DataSource)
+            .join(DataSource, DataSource.id == EnvironmentObservation.source_id)
+            .where(EnvironmentObservation.asset_id == asset.id)
+            .order_by(EnvironmentObservation.variable, desc(EnvironmentObservation.observed_at))
+        )
+    ).all()
+    environment: dict[str, dict[str, Any]] = {}
+    latest_env_time: datetime | None = None
+    for observation, source in env_rows:
+        if observation.variable in environment:
+            continue
+        environment[observation.variable] = {
+            "value": observation.value,
+            "unit": observation.unit,
+            "source": source.name,
+            "source_type": observation.source_type,
+            "observed_at": observation.observed_at,
+            "ingested_at": observation.ingested_at,
+            "quality_flag": observation.quality_flag,
+            "confidence": observation.confidence_score,
+            "is_estimated": observation.is_estimated,
+        }
+        if latest_env_time is None or observation.observed_at > latest_env_time:
+            latest_env_time = observation.observed_at
+
+    predictions = await latest_predictions(session, asset.id)
+    health_prediction = predictions.get("health")
+    risk_prediction = predictions.get("risk")
+
+    if health_prediction and risk_prediction:
+        ai = {
+            "health_score": health_prediction.value,
+            "risk_score": risk_prediction.value,
+            "risk_level": risk_prediction.predicted_class,
+            "remaining_life_years": None,
+            "confidence": min(
+                health_prediction.confidence_score or 0,
+                risk_prediction.confidence_score or 0,
+            ),
+            "model_version": risk_prediction.model_version,
+            "feature_version": risk_prediction.feature_version,
+            "prediction_time": max(
+                health_prediction.prediction_time, risk_prediction.prediction_time
+            ),
+            "status": risk_prediction.status,
+            "factors": risk_prediction.factors,
+        }
+    else:
+        rainfall_24h = environment.get("rainfall_24h", {}).get("value")
+        rainfall_7d = environment.get("rainfall_7d", {}).get("value")
+        water_anomaly = environment.get("water_level_anomaly", {}).get("value")
+        baseline = score_risk(
+            RiskInput(
+                built_year=asset.built_year,
+                design_life_years=asset.design_life_years,
+                condition=inspection.condition if inspection else asset.condition,
+                inspection_score=inspection.score if inspection else None,
+                rainfall_mm_24h=rainfall_24h,
+                rainfall_mm_7d=rainfall_7d,
+                water_level_anomaly_m=water_anomaly,
+                source_confidence=asset.confidence_score,
+            )
+        )
+        ai = {
+            **baseline.to_dict(),
+            "prediction_time": datetime.now(UTC),
+        }
+
+    sensor_count = await session.scalar(
+        select(func.count()).select_from(Sensor).where(Sensor.asset_id == asset.id)
+    )
+
+    return {
+        "asset": summary,
+        "static": {
+            "owner": asset.owner,
+            "built_year": asset.built_year,
+            "design_life_years": asset.design_life_years,
+            "material": asset.material,
+            "status": asset.status,
+            "is_estimated": asset.is_estimated,
+        },
+        "twin": {
+            "format": model.format if model else "procedural",
+            "uri": model.model_uri if model else None,
+            "version": model.version if model else "1",
+            "fidelity_level": model.fidelity_level if model else "L0",
+            "model_source": model.model_source if model else "procedural illustration",
+            "is_asset_specific": model.is_asset_specific if model else False,
+            "heading_deg": model.heading_deg if model else None,
+            "elevation_m": model.elevation_m if model else None,
+            "horizontal_accuracy_m": model.horizontal_accuracy_m if model else None,
+        },
+        "environment": environment,
+        "inspection": {
+            "inspection_date": inspection.inspection_date if inspection else None,
+            "condition": inspection.condition if inspection else asset.condition,
+            "score": inspection.score if inspection else None,
+            "quality_flag": inspection.quality_flag if inspection else "NOT_AVAILABLE",
+            "is_synthetic": inspection.is_synthetic if inspection else False,
+        },
+        "maintenance": [
+            {
+                "date": item.maintenance_date,
+                "action": item.action,
+                "status": item.status,
+                "next_due": item.next_due,
+                "is_synthetic": item.is_synthetic,
+            }
+            for item in maintenance_rows
+        ],
+        "sensors_status": "CONNECTED" if sensor_count else "NOT_INSTRUMENTED",
+        "ai": ai,
+        "freshness": {
+            "asset_metadata": _freshness(asset.updated_at),
+            "environment": _freshness(latest_env_time),
+            "inspection": _freshness(
+                datetime.combine(inspection.inspection_date, datetime.min.time(), tzinfo=UTC)
+                if inspection
+                else None
+            ),
+            "sensors": "CURRENT" if sensor_count else "NOT_AVAILABLE",
+        },
+        "generated_at": datetime.now(UTC),
+    }
+
