@@ -20,10 +20,10 @@ class RiskInput:
 
 @dataclass(slots=True)
 class RiskResult:
-    health_score: float
-    risk_score: float
-    risk_level: str
-    confidence: float
+    health_score: float | None
+    risk_score: float | None
+    risk_level: str | None
+    confidence: float | None
     remaining_life_years: None
     model_version: str
     feature_version: str
@@ -125,15 +125,32 @@ def score_risk(data: RiskInput, *, current_year: int | None = None) -> RiskResul
         if ratio > 1:
             factors.append("Estimated traffic/load exceeds reference capacity")
 
-    health = round(clamp(100 - penalty), 1)
-    risk = round(clamp((100 - health) * 0.72 + hazard), 1)
-    risk_level = "HIGH" if risk >= 70 else "MEDIUM" if risk >= 40 else "LOW"
+    # Age, identity and location do not establish structural condition. A
+    # health/risk score is only defensible once a condition assessment or an
+    # inspection score exists. This prevents missing data from appearing as
+    # perfect health (100) and zero risk.
+    has_structural_evidence = bool(data.condition) or data.inspection_score is not None
+    if has_structural_evidence:
+        health = round(clamp(100 - penalty), 1)
+        risk = round(clamp((100 - health) * 0.72 + hazard), 1)
+        risk_level = "HIGH" if risk >= 70 else "MEDIUM" if risk >= 40 else "LOW"
+    else:
+        health = None
+        risk = None
+        risk_level = None
 
     completeness = known / expected
     source_confidence = 0.5 if data.source_confidence is None else data.source_confidence
-    confidence = round(max(0.1, min(1.0, completeness * 0.7 + source_confidence * 0.3)), 2)
+    confidence = (
+        round(max(0.1, min(1.0, completeness * 0.7 + source_confidence * 0.3)), 2)
+        if has_structural_evidence
+        else None
+    )
 
-    if not factors:
+    if not has_structural_evidence:
+        factors.insert(0, "Health and risk unavailable until a condition assessment or inspection is recorded")
+        factors.append("Verified identity and location do not verify structural condition")
+    elif not factors:
         factors.append("No major threshold exceedance in available features")
     if completeness < 0.6:
         factors.append("Result confidence reduced by missing input data")
@@ -145,9 +162,8 @@ def score_risk(data: RiskInput, *, current_year: int | None = None) -> RiskResul
         risk_level=risk_level,
         confidence=confidence,
         remaining_life_years=None,
-        model_version="transparent_rules_v1",
+        model_version="transparent_rules_v2",
         feature_version="asset_state_v1",
-        status="DECISION_SUPPORT",
+        status="DECISION_SUPPORT" if has_structural_evidence else "INSUFFICIENT_DATA",
         factors=factors,
     )
-

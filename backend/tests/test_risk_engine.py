@@ -47,3 +47,15 @@ def test_missing_data_lowers_confidence_without_inventing_rul() -> None:
     assert result.remaining_life_years is None
     assert any("missing" in factor.lower() for factor in result.factors)
 
+
+def test_missing_structural_evidence_returns_no_health_or_risk_score() -> None:
+    result = score_risk(
+        RiskInput(built_year=2020, source_confidence=0.85),
+        current_year=2026,
+    )
+    assert result.health_score is None
+    assert result.risk_score is None
+    assert result.risk_level is None
+    assert result.confidence is None
+    assert result.status == "INSUFFICIENT_DATA"
+    assert any("condition assessment" in factor.lower() for factor in result.factors)

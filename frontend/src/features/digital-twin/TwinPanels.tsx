@@ -8,17 +8,19 @@ export function TwinPanels({ twin }: { twin: TwinResponse }) {
       <section className="panel score-panel">
         <div>
           <span>Health</span>
-          <strong>{twin.ai.health_score?.toFixed(0) ?? "—"}<small>/100</small></strong>
+          <strong>
+            {twin.ai.health_score != null ? <>{twin.ai.health_score.toFixed(0)}<small>/100</small></> : "—"}
+          </strong>
         </div>
         <div>
           <span>Risk</span>
           <strong style={{ color: riskColor(twin.ai.risk_level) }}>
-            {twin.ai.risk_score?.toFixed(0) ?? "—"}<small>/100</small>
+            {twin.ai.risk_score != null ? <>{twin.ai.risk_score.toFixed(0)}<small>/100</small></> : "—"}
           </strong>
         </div>
         <div>
           <span>Confidence</span>
-          <strong>{twin.ai.confidence ? `${Math.round(twin.ai.confidence * 100)}%` : "—"}</strong>
+          <strong>{twin.ai.confidence != null ? `${Math.round(twin.ai.confidence * 100)}%` : "—"}</strong>
         </div>
       </section>
 
@@ -55,4 +57,3 @@ export function TwinPanels({ twin }: { twin: TwinResponse }) {
     </div>
   );
 }
-

@@ -12,6 +12,7 @@ dist/
 coverage/
 htmlcov/
 *.log
+*.tsbuildinfo
 *.sqlite3
 .DS_Store
 data/raw/
