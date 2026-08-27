@@ -14,6 +14,7 @@ from simras_etl.nasa_power import (
     fetch_daily_weather,
     write_observations_csv,
 )
+from simras_etl.nwdp_download import refresh_nwdp_sources
 from simras_etl.nwdp_reservoir import build_reservoir_observations
 from simras_etl.osm_bridges import fetch_ap_bridges
 
@@ -59,6 +60,10 @@ async def refresh_nwdp_reservoir(
     storage_path: str,
     output_path: str,
 ) -> dict:
+    downloaded = await refresh_nwdp_sources(
+        level_path=level_path,
+        storage_path=storage_path,
+    )
     transformed = build_reservoir_observations(
         level_path,
         storage_path,
@@ -68,7 +73,7 @@ async def refresh_nwdp_reservoir(
     loaded = await load_environment_observations(
         rows, source_code="NWDP_AP_RESERVOIR_DAILY"
     )
-    return {**transformed, "loaded": loaded}
+    return {**transformed, "downloaded": downloaded, "loaded": loaded}
 
 
 @flow(name="simras-asset-registry-refresh", log_prints=True)
