@@ -122,7 +122,7 @@ def build_ap_dam_registry(
     nwdp = nwdp[
         nwdp["state"].astype(str).str.strip().str.casefold().eq("andhra pradesh")
     ].copy()
-    cwc = cwc[cwc["state"].astype(str).str.strip().str.upper().eq("AP")].copy()
+    cwc = cwc[cwc["state"].astype(str).str.strip().str.upper().eq("AP") | cwc["nrld_no"].fillna("").astype(str).str.strip().str.upper().str.startswith("AP")].copy()
 
     cwc_by_id = _exact_cwc_index(cwc)
     verified: list[dict[str, Any]] = []
