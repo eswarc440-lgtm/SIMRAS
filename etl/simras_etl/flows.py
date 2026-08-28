@@ -15,7 +15,8 @@ from simras_etl.nasa_power import (
     write_observations_csv,
 )
 from simras_etl.nwdp_download import refresh_nwdp_sources
-from simras_etl.nwdp_reservoir import build_reservoir_observations
+from simras_etl.nwdp_reservoir_multi import build_matched_reservoir_observations
+from simras_etl.nwdp_station_match import build_station_match_report
 from simras_etl.osm_bridges import fetch_ap_bridges
 
 
@@ -58,22 +59,36 @@ async def refresh_nwdp_reservoir(
     *,
     level_path: str,
     storage_path: str,
+    registry_path: str,
+    matches_path: str,
     output_path: str,
 ) -> dict:
     downloaded = await refresh_nwdp_sources(
         level_path=level_path,
         storage_path=storage_path,
     )
-    transformed = build_reservoir_observations(
+    matches = build_station_match_report(
         level_path,
         storage_path,
+        registry_path,
+        matches_path,
+    )
+    transformed = build_matched_reservoir_observations(
+        level_path,
+        storage_path,
+        matches_path,
         output_path,
     )
     rows = read_observations_csv(output_path)
     loaded = await load_environment_observations(
         rows, source_code="NWDP_AP_RESERVOIR_DAILY"
     )
-    return {**transformed, "downloaded": downloaded, "loaded": loaded}
+    return {
+        **transformed,
+        "downloaded": downloaded,
+        "matches": matches,
+        "loaded": loaded,
+    }
 
 
 @flow(name="simras-asset-registry-refresh", log_prints=True)
@@ -94,7 +109,7 @@ async def environment_refresh(
     nasa_start: str | None = None,
     nasa_end: str | None = None,
 ) -> dict:
-    """Refresh the two validated Stage 4 pilot feeds and load them idempotently."""
+    """Refresh validated Stage 4 feeds and load approved matches idempotently."""
     end_date = datetime.now(UTC).date() - timedelta(days=1)
     start_date = end_date - timedelta(days=60)
     nasa_start = nasa_start or start_date.strftime("%Y%m%d")
@@ -111,7 +126,9 @@ async def environment_refresh(
     reservoir = await refresh_nwdp_reservoir(
         level_path="/data/raw/nwdp-ap-reservoir-level-2026-2030.csv",
         storage_path="/data/raw/nwdp-ap-reservoir-storage-2026-2030.csv",
-        output_path="/data/processed/nwdp-reservoir-AP_DAM_NWDP_AP01VH0059.csv",
+        registry_path="/data/processed/ap-dam-registry-verified.csv",
+        matches_path="/data/processed/nwdp-reservoir-station-matches.csv",
+        output_path="/data/processed/nwdp-reservoir-auto-matched.csv",
     )
     return {
         "status": "LOADED",
