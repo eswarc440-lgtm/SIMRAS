@@ -7,53 +7,149 @@ import { CesiumTwinViewer } from "./features/digital-twin/CesiumTwinViewer";
 import { TwinPanels } from "./features/digital-twin/TwinPanels";
 import { TwinViewer3D } from "./features/digital-twin/TwinViewer3D";
 import { api } from "./services/api";
-import type { AssetSummary, TwinResponse } from "./types/twin";
+import type {
+  AssetSummary,
+  MapFeatureCollection,
+  MapFeatureSummaryItem,
+  TwinResponse,
+} from "./types/twin";
 
 type Workspace = "GIS" | "TWIN";
 type ViewerMode = "CLOSE_UP" | "GEOSPATIAL";
+
+const emptyMapFeatures: MapFeatureCollection = {
+  type: "FeatureCollection",
+  features: [],
+  total: 0,
+  limit: 5000,
+  offset: 0,
+};
 
 export default function App() {
   const [assets, setAssets] = useState<AssetSummary[]>([]);
   const [selected, setSelected] = useState<AssetSummary>();
   const [twin, setTwin] = useState<TwinResponse>();
   const [workspace, setWorkspace] = useState<Workspace>("GIS");
-  const [viewerMode, setViewerMode] = useState<ViewerMode>("CLOSE_UP");
+  const [viewerMode, setViewerMode] =
+    useState<ViewerMode>("CLOSE_UP");
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [mapFeatureType, setMapFeatureType] = useState("airport");
+  const [mapFeatures, setMapFeatures] =
+    useState<MapFeatureCollection>(emptyMapFeatures);
+  const [mapSummary, setMapSummary] =
+    useState<MapFeatureSummaryItem[]>([]);
+  const [mapLoading, setMapLoading] = useState(false);
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     api.assets()
       .then((response) => {
-        const ranked = [...response.items].sort((a, b) => (b.risk_score ?? -1) - (a.risk_score ?? -1));
+        const ranked = [...response.items].sort(
+          (a, b) =>
+            (b.risk_score ?? -1) - (a.risk_score ?? -1),
+        );
         setAssets(ranked);
-        const defaultCode = import.meta.env.VITE_DEFAULT_ASSET_ID;
-        setSelected(ranked.find((asset) => asset.asset_code === defaultCode) ?? ranked[0]);
+        const defaultCode =
+          import.meta.env.VITE_DEFAULT_ASSET_ID;
+        setSelected(
+          ranked.find(
+            (asset) => asset.asset_code === defaultCode,
+          ) ?? ranked[0],
+        );
       })
-      .catch((cause: unknown) => setError(cause instanceof Error ? cause.message : String(cause)))
+      .catch((cause: unknown) =>
+        setError(
+          cause instanceof Error ? cause.message : String(cause),
+        ),
+      )
       .finally(() => setLoading(false));
+
+    api.mapSummary()
+      .then((response) => setMapSummary(response.items))
+      .catch((cause: unknown) =>
+        setError(
+          cause instanceof Error ? cause.message : String(cause),
+        ),
+      );
   }, []);
 
   useEffect(() => {
+    setMapLoading(true);
+
+    api.mapFeatures(
+      mapFeatureType === "all" ? undefined : mapFeatureType,
+    )
+      .then(setMapFeatures)
+      .catch((cause: unknown) =>
+        setError(
+          cause instanceof Error ? cause.message : String(cause),
+        ),
+      )
+      .finally(() => setMapLoading(false));
+  }, [mapFeatureType]);
+
+  useEffect(() => {
     if (!selected) return;
+
     setTwin(undefined);
     api.twin(selected.asset_code)
       .then(setTwin)
-      .catch((cause: unknown) => setError(cause instanceof Error ? cause.message : String(cause)));
+      .catch((cause: unknown) =>
+        setError(
+          cause instanceof Error ? cause.message : String(cause),
+        ),
+      );
   }, [selected]);
 
   const filteredAssets = useMemo(() => {
     const normalized = query.trim().toLowerCase();
+
     return assets.filter((asset) => {
-      const matchesType = typeFilter === "all" || asset.asset_type === typeFilter;
-      const matchesText = !normalized || `${asset.name} ${asset.district ?? ""}`.toLowerCase().includes(normalized);
+      const matchesType =
+        typeFilter === "all" ||
+        asset.asset_type === typeFilter;
+      const matchesText =
+        !normalized ||
+        `${asset.name} ${asset.district ?? ""}`
+          .toLowerCase()
+          .includes(normalized);
+
       return matchesType && matchesText;
     });
   }, [assets, query, typeFilter]);
 
-  const highRisk = assets.filter((asset) => asset.risk_level === "HIGH").length;
-  const verified = assets.filter((asset) => asset.identity_status === "VERIFIED").length;
+  const mapLayers = useMemo(() => {
+    const totals = new Map<string, number>();
+
+    for (const item of mapSummary) {
+      totals.set(
+        item.feature_type,
+        (totals.get(item.feature_type) ?? 0) + item.records,
+      );
+    }
+
+    return [...totals.entries()]
+      .map(([featureType, records]) => ({
+        featureType,
+        records,
+      }))
+      .sort((a, b) =>
+        a.featureType.localeCompare(b.featureType),
+      );
+  }, [mapSummary]);
+
+  const mapFeatureTotal = mapLayers.reduce(
+    (total, layer) => total + layer.records,
+    0,
+  );
+  const highRisk = assets.filter(
+    (asset) => asset.risk_level === "HIGH",
+  ).length;
+  const verified = assets.filter(
+    (asset) => asset.identity_status === "VERIFIED",
+  ).length;
 
   return (
     <div className="app-shell">
@@ -61,11 +157,23 @@ export default function App() {
         <div className="brand-mark">S</div>
         <div className="brand-copy">
           <strong>SIMRAS</strong>
-          <span>Infrastructure intelligence · Andhra Pradesh</span>
+          <span>
+            Infrastructure intelligence · Andhra Pradesh
+          </span>
         </div>
         <nav>
-          <button className={workspace === "GIS" ? "active" : ""} onClick={() => setWorkspace("GIS")}>GIS command</button>
-          <button className={workspace === "TWIN" ? "active" : ""} onClick={() => setWorkspace("TWIN")}>Digital twin</button>
+          <button
+            className={workspace === "GIS" ? "active" : ""}
+            onClick={() => setWorkspace("GIS")}
+          >
+            GIS command
+          </button>
+          <button
+            className={workspace === "TWIN" ? "active" : ""}
+            onClick={() => setWorkspace("TWIN")}
+          >
+            Digital twin
+          </button>
         </nav>
         <StatusPill label="Decision support" tone="warn" />
       </header>
@@ -73,46 +181,138 @@ export default function App() {
       <main>
         <section className="hero-row">
           <div>
-            <span className="eyebrow">AP BRIDGES · DAMS · BARRAGES</span>
-            <h1>{workspace === "GIS" ? "Infrastructure risk command" : selected?.name ?? "Digital twin"}</h1>
+            <span className="eyebrow">
+              AP BRIDGES · DAMS · BARRAGES
+            </span>
+            <h1>
+              {workspace === "GIS"
+                ? "Infrastructure risk command"
+                : selected?.name ?? "Digital twin"}
+            </h1>
             <p>
-              Every value carries its source, timestamp, quality and confidence. Unverified seed data is never presented as engineering truth.
+              Every value carries its source, timestamp, quality
+              and confidence. Unverified data is never presented
+              as engineering truth.
             </p>
           </div>
           {selected && (
-            <button className="primary-action" onClick={() => setWorkspace("TWIN")}>Open selected twin →</button>
+            <button
+              className="primary-action"
+              onClick={() => setWorkspace("TWIN")}
+            >
+              Open selected twin →
+            </button>
           )}
         </section>
 
-        {error && <div className="error-banner"><strong>Connection problem</strong><span>{error}</span></div>}
+        {error && (
+          <div className="error-banner">
+            <strong>Connection problem</strong>
+            <span>{error}</span>
+          </div>
+        )}
 
         <section className="kpi-grid">
-          <KpiCard label="Registry" value={assets.length} detail="Bootstrapped assets" />
-          <KpiCard label="High risk" value={highRisk} detail="Decision-support classification" accent="#ff5b62" />
-          <KpiCard label="Verified identity" value={verified} detail="Requires authoritative cross-check" accent="#37d3a2" />
-          <KpiCard label="Sensors" value="0" detail="No physical feeds connected" accent="#f3b647" />
+          <KpiCard
+            label="Registry"
+            value={assets.length}
+            detail="Canonical monitored assets"
+          />
+          <KpiCard
+            label="Map features"
+            value={mapFeatureTotal}
+            detail="Source-reported GIS context"
+            accent="#38bdf8"
+          />
+          <KpiCard
+            label="High risk"
+            value={highRisk}
+            detail="Decision-support classification"
+            accent="#ff5b62"
+          />
+          <KpiCard
+            label="Verified identity"
+            value={verified}
+            detail="Authoritatively cross-checked"
+            accent="#37d3a2"
+          />
         </section>
 
         {workspace === "GIS" ? (
           <section className="workspace-grid">
             <aside className="asset-sidebar">
               <div className="filters">
-                <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search asset or district" />
-                <select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>
-                  <option value="all">All types</option>
+                <input
+                  value={query}
+                  onChange={(event) =>
+                    setQuery(event.target.value)
+                  }
+                  placeholder="Search asset or district"
+                />
+                <select
+                  value={typeFilter}
+                  onChange={(event) =>
+                    setTypeFilter(event.target.value)
+                  }
+                >
+                  <option value="all">All assets</option>
                   <option value="bridge">Bridges</option>
                   <option value="dam">Dams</option>
                   <option value="barrage">Barrages</option>
                 </select>
               </div>
-              {loading ? <p className="loading">Loading registry…</p> : (
-                <AssetList assets={filteredAssets} selectedCode={selected?.asset_code} onSelect={setSelected} />
+              {loading ? (
+                <p className="loading">Loading registry…</p>
+              ) : (
+                <AssetList
+                  assets={filteredAssets}
+                  selectedCode={selected?.asset_code}
+                  onSelect={setSelected}
+                />
               )}
             </aside>
+
             <div className="map-stage">
-              <GISMap assets={filteredAssets} selected={selected} onSelect={setSelected} />
+              <GISMap
+                assets={filteredAssets}
+                mapFeatures={mapFeatures}
+                selected={selected}
+                onSelect={setSelected}
+              />
+
+              <div className="map-layer-control">
+                <label htmlFor="map-layer">Context layer</label>
+                <select
+                  id="map-layer"
+                  value={mapFeatureType}
+                  onChange={(event) =>
+                    setMapFeatureType(event.target.value)
+                  }
+                >
+                  <option value="all">
+                    All layers ({mapFeatureTotal})
+                  </option>
+                  {mapLayers.map((layer) => (
+                    <option
+                      key={layer.featureType}
+                      value={layer.featureType}
+                    >
+                      {layer.featureType} ({layer.records})
+                    </option>
+                  ))}
+                </select>
+                <small>
+                  {mapLoading
+                    ? "Loading layer…"
+                    : `Showing ${mapFeatures.features.length} of ${mapFeatures.total}`}
+                </small>
+              </div>
+
               <div className="map-legend">
-                <span><i className="low" />Low</span><span><i className="medium" />Medium</span><span><i className="high" />High</span>
+                <span><i className="low" />Low</span>
+                <span><i className="medium" />Medium</span>
+                <span><i className="high" />High</span>
+                <span><i className="context" />Context</span>
               </div>
             </div>
           </section>
@@ -120,26 +320,65 @@ export default function App() {
           <section className="twin-workspace">
             <div className="twin-header">
               <div>
-                <span className="asset-code">{selected?.asset_code}</span>
-                <StatusPill label={selected?.identity_status ?? "UNKNOWN"} tone={selected?.identity_status === "VERIFIED" ? "good" : "warn"} />
+                <span className="asset-code">
+                  {selected?.asset_code}
+                </span>
+                <StatusPill
+                  label={
+                    selected?.identity_status ?? "UNKNOWN"
+                  }
+                  tone={
+                    selected?.identity_status === "VERIFIED"
+                      ? "good"
+                      : "warn"
+                  }
+                />
               </div>
               <div className="segmented-control">
-                <button className={viewerMode === "CLOSE_UP" ? "active" : ""} onClick={() => setViewerMode("CLOSE_UP")}>Close-up 3D</button>
-                <button className={viewerMode === "GEOSPATIAL" ? "active" : ""} onClick={() => setViewerMode("GEOSPATIAL")}>Geospatial 3D</button>
+                <button
+                  className={
+                    viewerMode === "CLOSE_UP" ? "active" : ""
+                  }
+                  onClick={() =>
+                    setViewerMode("CLOSE_UP")
+                  }
+                >
+                  Close-up 3D
+                </button>
+                <button
+                  className={
+                    viewerMode === "GEOSPATIAL"
+                      ? "active"
+                      : ""
+                  }
+                  onClick={() =>
+                    setViewerMode("GEOSPATIAL")
+                  }
+                >
+                  Geospatial 3D
+                </button>
               </div>
             </div>
+
             {twin ? (
               <>
                 <div className="twin-stage">
-                  {viewerMode === "CLOSE_UP" ? <TwinViewer3D twin={twin} /> : <CesiumTwinViewer twin={twin} />}
+                  {viewerMode === "CLOSE_UP" ? (
+                    <TwinViewer3D twin={twin} />
+                  ) : (
+                    <CesiumTwinViewer twin={twin} />
+                  )}
                 </div>
                 <TwinPanels twin={twin} />
               </>
-            ) : <p className="loading">Building canonical twin state…</p>}
+            ) : (
+              <p className="loading">
+                Building canonical twin state…
+              </p>
+            )}
           </section>
         )}
       </main>
     </div>
   );
 }
-

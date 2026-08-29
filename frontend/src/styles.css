@@ -112,4 +112,48 @@ main { width: min(1540px, calc(100% - 48px)); margin: 0 auto; padding: 36px 0 60
   .topbar .status-pill { display: none; }.hero-row { align-items: flex-start; flex-direction: column; }.kpi-grid { grid-template-columns: 1fr 1fr; }.kpi-card { min-height: 108px; }.kpi-card strong { font-size: 28px; }
   .twin-stage { height: 430px; }.score-panel strong { font-size: 28px; }.score-panel > div { padding: 4px 8px; }.metric-grid { grid-template-columns: 1fr; }
 }
+.map-stage {
+  position: relative;
+}
 
+.map-layer-control {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 900;
+  display: grid;
+  min-width: 190px;
+  gap: 7px;
+  padding: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 12px;
+  background: rgba(7, 20, 38, 0.92);
+  color: #e2e8f0;
+  box-shadow: 0 12px 32px rgba(2, 8, 23, 0.32);
+  backdrop-filter: blur(10px);
+}
+
+.map-layer-control label {
+  color: #94a3b8;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.map-layer-control select {
+  width: 100%;
+  padding: 8px 9px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 8px;
+  background: #0f223b;
+  color: #f8fafc;
+}
+
+.map-layer-control small {
+  color: #94a3b8;
+}
+
+.map-legend i.context {
+  background: #38bdf8;
+}

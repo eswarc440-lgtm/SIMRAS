@@ -77,4 +77,45 @@ export interface TwinResponse {
   freshness: Record<string, string>;
   generated_at: string;
 }
+export interface MapFeatureProperties {
+  external_id: string;
+  name?: string | null;
+  feature_type: string;
+  subtype?: string | null;
+  attributes: Record<string, unknown>;
+  identity_status: string;
+  confidence_score?: number | null;
+  retrieved_at: string;
+  source_code: string;
+  source_name: string;
+  source_url?: string | null;
+  licence?: string | null;
+}
 
+export interface MapFeature {
+  type: "Feature";
+  id: number;
+  geometry: {
+    type: string;
+    coordinates: unknown;
+  };
+  properties: MapFeatureProperties;
+}
+
+export interface MapFeatureCollection {
+  type: "FeatureCollection";
+  features: MapFeature[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface MapFeatureSummaryItem {
+  feature_type: string;
+  subtype?: string | null;
+  records: number;
+}
+
+export interface MapFeatureSummaryResponse {
+  items: MapFeatureSummaryItem[];
+}
