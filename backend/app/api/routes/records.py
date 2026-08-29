@@ -8,6 +8,7 @@ from app.core.security import require_admin_key
 from app.db.session import get_db
 from app.models.entities import Alert, Asset, DataSource, Inspection, Maintenance, Prediction
 from app.schemas.records import AlertAction, AlertCreate, InspectionCreate, MaintenanceCreate
+from app.services.twin_service import refresh_ml_prediction
 
 router = APIRouter(tags=["operations"])
 
@@ -137,7 +138,23 @@ async def create_maintenance(
     await session.commit()
     await session.refresh(record)
     return {"id": record.id, "status": "created"}
+@router.post(
+    "/assets/{asset_code}/predictions/refresh",
+    dependencies=[Depends(require_admin_key)],
+)
+async def refresh_asset_prediction(
+    asset_code: str,
+    session: AsyncSession = Depends(get_db),
+) -> dict:
+    """
+    Run the accepted ML model for an asset and persist
+    the resulting health, risk and RUL predictions.
+    """
 
+    return await refresh_ml_prediction(
+        session=session,
+        asset_code=asset_code,
+    )
 
 @router.get("/assets/{asset_code}/predictions/history")
 async def prediction_history(

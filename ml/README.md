@@ -1,19 +1,24 @@
-# SIMRAS ML pipeline
+# SIMRAS Stage 5 ML
 
-The web application uses `transparent_rules_v1` until a trained model passes the
-dataset and evaluation gates. The training unit is one asset at one state time.
-Repeated observations of an asset are never randomly split across train/test.
+This package contains two deliberately separate training paths:
 
-Required features are defined in `simras_ml/features.py`. Create a verified CSV
-with real labels, then run:
+- `simras_ml.train` preserves the existing experimental SIMRAS asset-state
+  health/risk trainer and its feature contract.
+- `simras_ml.cli` runs the governed **research-transfer bridge deterioration
+  pipeline** from annual U.S. FHWA National Bridge Inventory downloads.
+
+The NBI pipeline never marks its resulting model as locally validated for Andhra
+Pradesh. Keeping the training paths separate prevents the U.S. bridge model from
+silently replacing the project-specific experimental pipeline.
+
+The training job enforces bridge-level holdout splits, probability calibration,
+metrics, data-volume gates, model manifests and checksums. Failed gates produce a
+`REJECTED` manifest. Dams and barrages are intentionally outside this model's scope.
+
+Example commands are documented in `STAGE5_ML_RUNBOOK.md` at the repository root.
+
+The original asset-state trainer remains available with:
 
 ```bash
-python -m simras_ml.train --task health --data /data/training/asset_states.csv
-python -m simras_ml.train --task risk --data /data/training/asset_states.csv
+python -m simras_ml.train --task health --data training.csv --output artifacts/models
 ```
-
-The trainer refuses datasets with fewer than 10 distinct assets, holds out
-complete assets, writes an immutable model card/checksum and logs the run to
-MLflow. A successful training run remains experimental until engineering and
-calibration review changes its registry stage.
-

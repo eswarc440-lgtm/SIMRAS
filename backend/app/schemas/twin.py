@@ -48,6 +48,8 @@ class ModelMetadata(BaseModel):
     version: str
     fidelity_level: str
     model_source: str
+    source_url: str | None = None
+    dimensions: dict[str, Any] = Field(default_factory=dict)
     is_asset_specific: bool
     heading_deg: float | None = None
     elevation_m: float | None = None
@@ -64,15 +66,26 @@ class InspectionState(BaseModel):
 
 class PredictionState(BaseModel):
     health_score: float | None = None
+    health_lower_bound: float | None = None
+    health_upper_bound: float | None = None
     risk_score: float | None = None
     risk_level: str | None = None
+    hazard_score: float | None = None
+    hazard_level: str | None = None
     remaining_life_years: float | None = None
+    rul_lower_bound: float | None = None
+    rul_upper_bound: float | None = None
     confidence: float | None = None
     model_version: str
     feature_version: str
     prediction_time: datetime
     status: str
+    prediction_method: str = "unknown"
+    model_validated: bool = False
+    training_scope: str = "UNKNOWN"
+    forecast_horizon_years: int | None = None
     factors: list[str] = Field(default_factory=list)
+    recommendations: list[str] = Field(default_factory=list)
 
 
 class TwinResponse(BaseModel):
@@ -100,4 +113,3 @@ class HealthResponse(BaseModel):
     service: str
     database: str
     checked_at: datetime
-

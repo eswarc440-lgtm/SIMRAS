@@ -8,8 +8,12 @@ dependencies = [
   "asyncpg>=0.29,<1",
   "fastapi>=0.115,<1",
   "geoalchemy2>=0.15,<1",
+  "joblib>=1.4,<2",
+  "numpy>=2.0,<3",
   "orjson>=3.10,<4",
+  "pandas>=2.2,<3",
   "pydantic-settings>=2.5,<3",
+  "scikit-learn>=1.6,<2",
   "sqlalchemy[asyncio]>=2.0,<3",
   "uvicorn[standard]>=0.30,<1",
 ]

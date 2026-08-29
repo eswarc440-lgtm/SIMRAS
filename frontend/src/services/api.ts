@@ -4,6 +4,7 @@ import type {
   MapFeatureSummaryResponse,
   TwinResponse,
 } from "../types/twin";
+import type { EvidenceStateResponse } from "../types/evidence";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -30,6 +31,8 @@ export const api = {
     request<AssetListResponse["items"]>("/assets/high-risk?limit=10"),
   twin: (assetCode: string) =>
     request<TwinResponse>(`/assets/${assetCode}/twin`),
+  state: (assetCode: string) =>
+    request<EvidenceStateResponse>(`/assets/${assetCode}/state`),
   summary: () => request<Record<string, number>>("/analytics/summary"),
   mapSummary: () => request<MapFeatureSummaryResponse>("/map/summary"),
   mapFeatures: (featureType?: string) => {

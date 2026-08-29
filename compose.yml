@@ -24,11 +24,13 @@ services:
     environment:
       POSTGRES_HOST: db
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-simras}:${POSTGRES_PASSWORD:-simras-change-me}@db:5432/${POSTGRES_DB:-simras}
+      SIMRAS_ML_ARTIFACT_DIR: /artifacts/bridge_nbi
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
       - ./data:/data
+      - ./artifacts:/artifacts:ro
     depends_on:
       db:
         condition: service_healthy
@@ -52,7 +54,7 @@ services:
       - ./ml:/app
       - ./data:/data
       - ./artifacts:/artifacts
-    command: ["python", "-c", "print('Supply --task and --data to run a gated training job')"]
+    command: ["--help"]
 
   frontend:
     build:

@@ -1,0 +1,1638 @@
+diff --git a/STAGE5_ML_RUNBOOK.md b/STAGE5_ML_RUNBOOK.md
+new file mode 100644
+index 0000000..50a636b
+--- /dev/null
++++ b/STAGE5_ML_RUNBOOK.md
+@@ -0,0 +1,86 @@
++# SIMRAS Stage 5 — Gated ML Runbook
++
++This stage adds a real training pipeline without fabricating Andhra Pradesh labels.
++It trains bridge deterioration models on official annual FHWA NBI histories and
++publishes them only as `RESEARCH_TRANSFER`. A future local validation job is required
++before `model_validated=true` is permitted. Dams and barrages continue using the
++inspection-based engineering fallback.
++
++Official source: <https://www.fhwa.dot.gov/bridge/nbi/ascii.cfm>
++
++## 1. Build and test the ML image
++
++```powershell
++docker compose --profile ml build ml
++docker compose --profile ml run --rm ml --help
++docker compose --profile ml run --rm --entrypoint pytest ml -q
++```
++
++## 2. Download six annual official archives
++
++Review the FHWA disclaimer presented from its download page before running this.
++The command records acceptance explicitly.
++
++```powershell
++docker compose --profile ml run --rm ml download `
++  --years 2020 2021 2022 2023 2024 2025 `
++  --output-dir /data/ml/nbi `
++  --accept-fhwa-disclaimer
++```
++
++## 3. Build a deterministic bridge-year panel
++
++The same hash-selected bridges are retained across years. The default below limits
++memory while retaining up to 75,000 bridges per year.
++
++```powershell
++docker compose --profile ml run --rm ml prepare `
++  --years 2020 2021 2022 2023 2024 2025 `
++  --input-dir /data/ml/nbi `
++  --output /data/ml/nbi_panel.csv.gz `
++  --max-records-per-year 75000
++```
++
++## 4. Train and enforce the gates
++
++```powershell
++docker compose --profile ml run --rm ml train `
++  --panel /data/ml/nbi_panel.csv.gz `
++  --artifact-dir /artifacts/bridge_nbi `
++  --min-rows 100000 `
++  --min-bridges 20000 `
++  --min-years 5 `
++  --horizon-years 3
++```
++
++Exit code `2` or manifest stage `REJECTED` means the backend will refuse the model.
++Do not change thresholds merely to force acceptance.
++
++## 5. Inspect, register, rebuild and verify
++
++```powershell
++Get-Content .\artifacts\bridge_nbi\manifest.json
++
++docker compose build backend frontend
++docker compose run --rm backend python -m scripts.register_model
++docker compose run --rm backend pytest -q
++docker compose run --rm frontend npm run build
++docker compose run --rm frontend npm run lint
++docker compose run --rm frontend npm test
++docker compose up -d --force-recreate backend frontend
++
++curl.exe "http://127.0.0.1:8000/api/v1/analytics/models/status"
++curl.exe "http://127.0.0.1:8000/api/v1/assets/AP_BR_00001/twin"
++```
++
++Expected bridge status is `RESEARCH_TRANSFER`, never `VALIDATED_LOCAL`. The UI must
++show uncertainty, training scope, recommendations and the human-review warning.
++Prakasam Barrage must continue to show `INSUFFICIENT_DATA` until a verified dam
++inspection is entered.
++
++## Data and Git safety
++
++- Do not commit `data/ml/`, `artifacts/`, `.env`, tokens or the source-review ZIP.
++- Preserve model manifests and metrics for the project report.
++- An AP model may be promoted to `VALIDATED_LOCAL` only after asset/time-separated
++  evaluation on approved AP inspection history and documented domain review.
+diff --git a/backend/app/api/routes/analytics.py b/backend/app/api/routes/analytics.py
+index ab8d0cc..8233017 100644
+--- a/backend/app/api/routes/analytics.py
++++ b/backend/app/api/routes/analytics.py
+@@ -3,7 +3,7 @@ from sqlalchemy import func, select
+ from sqlalchemy.ext.asyncio import AsyncSession
+ 
+ from app.db.session import get_db
+-from app.models.entities import Alert, Asset, EnvironmentObservation, Prediction
++from app.models.entities import Alert, Asset, EnvironmentObservation, ModelRegistry, Prediction
+ 
+ router = APIRouter(prefix="/analytics", tags=["analytics"])
+ 
+@@ -41,3 +41,28 @@ async def freshness(session: AsyncSession = Depends(get_db)) -> dict:
+         "prediction_latest": latest_prediction,
+     }
+ 
++
++@router.get("/models/status")
++async def model_status(session: AsyncSession = Depends(get_db)) -> dict:
++    rows = (
++        await session.execute(
++            select(ModelRegistry).order_by(ModelRegistry.model_name, ModelRegistry.created_at.desc())
++        )
++    ).scalars().all()
++    latest: dict[str, ModelRegistry] = {}
++    for row in rows:
++        latest.setdefault(row.model_name, row)
++    return {
++        "items": [
++            {
++                "model_name": row.model_name,
++                "version": row.version,
++                "stage": row.stage,
++                "feature_version": row.feature_version,
++                "metrics": row.metrics,
++                "artifact_uri": row.artifact_uri,
++                "created_at": row.created_at,
++            }
++            for row in latest.values()
++        ]
++    }
+diff --git a/backend/app/schemas/twin.py b/backend/app/schemas/twin.py
+index 325b078..6b0ca3a 100644
+--- a/backend/app/schemas/twin.py
++++ b/backend/app/schemas/twin.py
+@@ -66,11 +66,15 @@ class InspectionState(BaseModel):
+ 
+ class PredictionState(BaseModel):
+     health_score: float | None = None
++    health_lower_bound: float | None = None
++    health_upper_bound: float | None = None
+     risk_score: float | None = None
+     risk_level: str | None = None
+     hazard_score: float | None = None
+     hazard_level: str | None = None
+     remaining_life_years: float | None = None
++    rul_lower_bound: float | None = None
++    rul_upper_bound: float | None = None
+     confidence: float | None = None
+     model_version: str
+     feature_version: str
+@@ -78,7 +82,10 @@ class PredictionState(BaseModel):
+     status: str
+     prediction_method: str = "unknown"
+     model_validated: bool = False
++    training_scope: str = "UNKNOWN"
++    forecast_horizon_years: int | None = None
+     factors: list[str] = Field(default_factory=list)
++    recommendations: list[str] = Field(default_factory=list)
+ 
+ 
+ class TwinResponse(BaseModel):
+@@ -106,4 +113,3 @@ class HealthResponse(BaseModel):
+     service: str
+     database: str
+     checked_at: datetime
+-
+diff --git a/backend/app/services/ml_predictor.py b/backend/app/services/ml_predictor.py
+new file mode 100644
+index 0000000..fa48edb
+--- /dev/null
++++ b/backend/app/services/ml_predictor.py
+@@ -0,0 +1,230 @@
++from __future__ import annotations
++
++import hashlib
++import json
++import math
++import os
++from dataclasses import asdict, dataclass
++from pathlib import Path
++from typing import Any
++
++import joblib
++import numpy as np
++import pandas as pd
++
++from app.services.recommendation_engine import build_recommendations
++
++FEATURE_COLUMNS = [
++    "age_years",
++    "condition_rating",
++    "material_code",
++    "design_type_code",
++    "average_daily_traffic",
++    "truck_traffic_percent",
++    "skew_deg",
++    "span_count",
++    "max_span_m",
++    "structure_length_m",
++    "inventory_rating",
++    "scour_rating",
++    "waterway_rating",
++]
++
++MATERIAL_CODES = {
++    "concrete": 1,
++    "concrete_continuous": 2,
++    "steel": 3,
++    "steel_continuous": 4,
++    "prestressed_concrete": 5,
++    "prestressed_concrete_continuous": 6,
++    "wood": 7,
++    "masonry": 8,
++    "aluminum": 9,
++    "other": 0,
++    "steel_and_concrete": 3,
++}
++
++
++@dataclass(slots=True)
++class MLInput:
++    asset_type: str
++    age_years: float | None
++    condition_rating: float | None
++    material: str | None = None
++    span_count: float | None = None
++    max_span_m: float | None = None
++    structure_length_m: float | None = None
++    average_daily_traffic: float | None = None
++    truck_traffic_percent: float | None = None
++    skew_deg: float | None = None
++    inventory_rating: float | None = None
++    scour_rating: float | None = None
++    waterway_rating: float | None = None
++    design_type_code: float | None = None
++
++
++@dataclass(slots=True)
++class MLResult:
++    health_score: float
++    health_lower_bound: float
++    health_upper_bound: float
++    risk_score: float
++    risk_level: str
++    remaining_life_years: float
++    rul_lower_bound: float
++    rul_upper_bound: float
++    confidence: float
++    model_version: str
++    feature_version: str
++    status: str
++    prediction_method: str
++    model_validated: bool
++    training_scope: str
++    forecast_horizon_years: int
++    factors: list[str]
++    recommendations: list[str]
++
++    def to_dict(self) -> dict[str, Any]:
++        return asdict(self)
++
++
++def condition_to_rating(condition: str | None, score: float | None) -> float | None:
++    if score is not None:
++        return max(0.0, min(9.0, float(score) * 9.0 / 100.0))
++    return {
++        "GOOD": 7.5,
++        "FAIR": 5.5,
++        "POOR": 3.5,
++        "CRITICAL": 1.5,
++    }.get((condition or "").upper())
++
++
++def _checksum(path: Path) -> str:
++    digest = hashlib.sha256()
++    with path.open("rb") as fh:
++        for block in iter(lambda: fh.read(1024 * 1024), b""):
++            digest.update(block)
++    return digest.hexdigest()
++
++
++def _load_artifacts(artifact_dir: Path) -> tuple[dict, dict[str, Any]] | None:
++    manifest_path = artifact_dir / "manifest.json"
++    if not manifest_path.exists():
++        return None
++    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
++    if manifest.get("stage") not in {"RESEARCH_TRANSFER", "VALIDATED_LOCAL"}:
++        return None
++    models: dict[str, Any] = {}
++    for filename in [
++        "health.joblib",
++        "risk.joblib",
++        "risk_calibrator.joblib",
++        "rul_lower.joblib",
++        "rul_median.joblib",
++        "rul_upper.joblib",
++    ]:
++        path = artifact_dir / filename
++        expected = manifest.get("artifact_checksums", {}).get(filename)
++        if not path.exists() or (expected and _checksum(path) != expected):
++            return None
++        models[filename] = joblib.load(path)
++    return manifest, models
++
++
++def _logit(value: float) -> np.ndarray:
++    value = min(1 - 1e-6, max(1e-6, value))
++    return np.array([[math.log(value / (1 - value))]])
++
++
++def predict_bridge(
++    data: MLInput,
++    *,
++    artifact_dir: str | Path | None = None,
++) -> MLResult | None:
++    """Serve only an accepted bridge artifact with enough structural evidence."""
++
++    if data.asset_type.lower() != "bridge" or data.condition_rating is None:
++        return None
++    if data.age_years is None or not 0 <= data.age_years <= 200:
++        return None
++    if not 0 <= data.condition_rating <= 9:
++        return None
++
++    root = Path(artifact_dir or os.getenv("SIMRAS_ML_ARTIFACT_DIR", "/artifacts/bridge_nbi"))
++    loaded = _load_artifacts(root)
++    if loaded is None:
++        return None
++    manifest, models = loaded
++    material_key = (data.material or "other").lower().replace(" ", "_")
++    row = {
++        "age_years": data.age_years,
++        "condition_rating": data.condition_rating,
++        "material_code": MATERIAL_CODES.get(material_key, 0),
++        "design_type_code": data.design_type_code,
++        "average_daily_traffic": data.average_daily_traffic,
++        "truck_traffic_percent": data.truck_traffic_percent,
++        "skew_deg": data.skew_deg,
++        "span_count": data.span_count,
++        "max_span_m": data.max_span_m,
++        "structure_length_m": data.structure_length_m,
++        "inventory_rating": data.inventory_rating,
++        "scour_rating": data.scour_rating,
++        "waterway_rating": data.waterway_rating,
++    }
++    frame = pd.DataFrame([row], columns=FEATURE_COLUMNS)
++    health_rating = float(np.clip(models["health.joblib"].predict(frame)[0], 0, 9))
++    health_score = health_rating * 100 / 9
++    errors = manifest.get("health_error_quantiles_rating", {})
++    health_lower = np.clip(health_rating + float(errors.get("lower", -1)), 0, 9) * 100 / 9
++    health_upper = np.clip(health_rating + float(errors.get("upper", 1)), 0, 9) * 100 / 9
++
++    raw_risk = float(models["risk.joblib"].predict_proba(frame)[0, 1])
++    risk_probability = float(
++        models["risk_calibrator.joblib"].predict_proba(_logit(raw_risk))[0, 1]
++    )
++    risk_score = risk_probability * 100
++    risk_level = "HIGH" if risk_score >= 70 else "MEDIUM" if risk_score >= 40 else "LOW"
++
++    rul_lower = float(np.clip(models["rul_lower.joblib"].predict(frame)[0], 0, 30))
++    rul_median = float(np.clip(models["rul_median.joblib"].predict(frame)[0], 0, 30))
++    rul_upper = float(np.clip(models["rul_upper.joblib"].predict(frame)[0], 0, 30))
++    lower, upper = sorted((rul_lower, rul_upper))
++    completeness = sum(value is not None for value in row.values()) / len(row)
++    locally_validated = manifest.get("stage") == "VALIDATED_LOCAL"
++    base_confidence = 0.85 if locally_validated else 0.58
++    confidence = max(0.1, min(0.95, base_confidence * (0.65 + completeness * 0.35)))
++
++    factors = [
++        f"Latest structural condition maps to NBI-equivalent rating {data.condition_rating:.1f}/9",
++        f"Model estimates {risk_probability:.1%} probability of poor condition within {manifest.get('prediction_horizon_years', 3)} years",
++    ]
++    if not locally_validated:
++        factors.append("Model is trained on FHWA bridge histories and is not validated for Andhra Pradesh")
++    factors.extend(manifest.get("limitations", []))
++    recommendations = build_recommendations(
++        condition_rating=data.condition_rating,
++        risk_score=risk_score,
++        rul_years=rul_median,
++        confidence=confidence,
++        model_validated=locally_validated,
++    )
++    return MLResult(
++        health_score=round(health_score, 1),
++        health_lower_bound=round(float(min(health_lower, health_upper)), 1),
++        health_upper_bound=round(float(max(health_lower, health_upper)), 1),
++        risk_score=round(risk_score, 1),
++        risk_level=risk_level,
++        remaining_life_years=round(rul_median, 1),
++        rul_lower_bound=round(lower, 1),
++        rul_upper_bound=round(upper, 1),
++        confidence=round(confidence, 2),
++        model_version=manifest["version"],
++        feature_version=manifest["feature_version"],
++        status="VALIDATED_LOCAL" if locally_validated else "RESEARCH_TRANSFER",
++        prediction_method="calibrated_nbi_bridge_ml",
++        model_validated=locally_validated,
++        training_scope=manifest["training_scope"],
++        forecast_horizon_years=int(manifest.get("prediction_horizon_years", 3)),
++        factors=list(dict.fromkeys(factors)),
++        recommendations=recommendations,
++    )
+diff --git a/backend/app/services/recommendation_engine.py b/backend/app/services/recommendation_engine.py
+new file mode 100644
+index 0000000..8dbc2ba
+--- /dev/null
++++ b/backend/app/services/recommendation_engine.py
+@@ -0,0 +1,35 @@
++from __future__ import annotations
++
++
++def build_recommendations(
++    *,
++    condition_rating: float | None,
++    risk_score: float | None,
++    rul_years: float | None,
++    confidence: float | None,
++    model_validated: bool,
++) -> list[str]:
++    """Return controlled, reviewable actions rather than generated safety advice."""
++
++    recommendations: list[str] = []
++    if condition_rating is None:
++        recommendations.append("Record an approved structural inspection before assessing health")
++    elif condition_rating <= 4:
++        recommendations.append("Prioritise a qualified engineering inspection and load review")
++    elif condition_rating <= 6:
++        recommendations.append("Plan a detailed condition inspection and review identified components")
++    else:
++        recommendations.append("Continue the documented inspection and preventive-maintenance cycle")
++
++    if risk_score is not None and risk_score >= 70:
++        recommendations.append("Escalate for engineering review; do not rely on the model alone")
++    elif risk_score is not None and risk_score >= 40:
++        recommendations.append("Increase monitoring frequency and verify the main risk factors")
++
++    if rul_years is not None and rul_years <= 5:
++        recommendations.append("Prepare a rehabilitation options assessment within the planning cycle")
++    if confidence is not None and confidence < 0.7:
++        recommendations.append("Collect missing local evidence before making a maintenance decision")
++    if not model_validated:
++        recommendations.append("Treat this as research decision support pending Andhra Pradesh validation")
++    return list(dict.fromkeys(recommendations))
+diff --git a/backend/app/services/twin_service.py b/backend/app/services/twin_service.py
+index ba7c9a3..9924be9 100644
+--- a/backend/app/services/twin_service.py
++++ b/backend/app/services/twin_service.py
+@@ -1,6 +1,6 @@
+ from __future__ import annotations
+ 
+-from datetime import UTC, datetime
++from datetime import UTC, date, datetime
+ from typing import Any
+ 
+ from fastapi import HTTPException
+@@ -17,6 +17,8 @@ from app.models.entities import (
+     Prediction,
+     Sensor,
+ )
++from app.services.ml_predictor import MLInput, condition_to_rating, predict_bridge
++from app.services.recommendation_engine import build_recommendations
+ from app.services.risk_engine import RiskInput, score_risk
+ 
+ 
+@@ -141,46 +143,64 @@ async def build_twin(session: AsyncSession, asset_code: str) -> dict[str, Any]:
+         if latest_env_time is None or observation.observed_at > latest_env_time:
+             latest_env_time = observation.observed_at
+ 
+-    predictions = await latest_predictions(session, asset.id)
+-    health_prediction = predictions.get("health")
+-    risk_prediction = predictions.get("risk")
+-
+-    if health_prediction and risk_prediction:
++    rainfall_24h = environment.get("rainfall_24h", {}).get("value")
++    rainfall_7d = environment.get("rainfall_7d", {}).get("value")
++    water_anomaly = environment.get("water_level_anomaly", {}).get("value")
++    condition = inspection.condition if inspection else asset.condition
++    inspection_score = inspection.score if inspection else None
++    baseline = score_risk(
++        RiskInput(
++            built_year=asset.built_year,
++            design_life_years=asset.design_life_years,
++            condition=condition,
++            inspection_score=inspection_score,
++            days_since_inspection=(date.today() - inspection.inspection_date).days
++            if inspection
++            else None,
++            rainfall_mm_24h=rainfall_24h,
++            rainfall_mm_7d=rainfall_7d,
++            water_level_anomaly_m=water_anomaly,
++            source_confidence=asset.confidence_score,
++        )
++    )
++    dimensions = model.dimensions if model and model.dimensions else {}
++    condition_rating = condition_to_rating(condition, inspection_score)
++    age_years = datetime.now(UTC).year - asset.built_year if asset.built_year else None
++    ml_prediction = predict_bridge(
++        MLInput(
++            asset_type=asset.asset_type,
++            age_years=age_years,
++            condition_rating=condition_rating,
++            material=asset.material,
++            span_count=dimensions.get("span_count"),
++            max_span_m=dimensions.get("main_span_m") or dimensions.get("max_span_m"),
++            structure_length_m=dimensions.get("length_m"),
++        )
++    )
++    if ml_prediction:
+         ai = {
+-            "health_score": health_prediction.value,
+-            "risk_score": risk_prediction.value,
+-            "risk_level": risk_prediction.predicted_class,
+-            "remaining_life_years": None,
+-            "confidence": min(
+-                health_prediction.confidence_score or 0,
+-                risk_prediction.confidence_score or 0,
+-            ),
+-            "model_version": risk_prediction.model_version,
+-            "feature_version": risk_prediction.feature_version,
+-            "prediction_time": max(
+-                health_prediction.prediction_time, risk_prediction.prediction_time
+-            ),
+-            "status": risk_prediction.status,
+-            "factors": risk_prediction.factors,
++            **ml_prediction.to_dict(),
++            "hazard_score": baseline.hazard_score,
++            "hazard_level": baseline.hazard_level,
++            "prediction_time": datetime.now(UTC),
+         }
+     else:
+-        rainfall_24h = environment.get("rainfall_24h", {}).get("value")
+-        rainfall_7d = environment.get("rainfall_7d", {}).get("value")
+-        water_anomaly = environment.get("water_level_anomaly", {}).get("value")
+-        baseline = score_risk(
+-            RiskInput(
+-                built_year=asset.built_year,
+-                design_life_years=asset.design_life_years,
+-                condition=inspection.condition if inspection else asset.condition,
+-                inspection_score=inspection.score if inspection else None,
+-                rainfall_mm_24h=rainfall_24h,
+-                rainfall_mm_7d=rainfall_7d,
+-                water_level_anomaly_m=water_anomaly,
+-                source_confidence=asset.confidence_score,
+-            )
++        recommendations = build_recommendations(
++            condition_rating=condition_rating,
++            risk_score=baseline.risk_score,
++            rul_years=None,
++            confidence=baseline.confidence,
++            model_validated=False,
+         )
+         ai = {
+             **baseline.to_dict(),
++            "health_lower_bound": None,
++            "health_upper_bound": None,
++            "rul_lower_bound": None,
++            "rul_upper_bound": None,
++            "training_scope": "ASSET_SPECIFIC_ENGINEERING_RULES",
++            "forecast_horizon_years": None,
++            "recommendations": recommendations,
+             "prediction_time": datetime.now(UTC),
+         }
+ 
+@@ -243,4 +263,3 @@ async def build_twin(session: AsyncSession, asset_code: str) -> dict[str, Any]:
+         },
+         "generated_at": datetime.now(UTC),
+     }
+-
+diff --git a/backend/pyproject.toml b/backend/pyproject.toml
+index 2645508..bb5d2e7 100644
+--- a/backend/pyproject.toml
++++ b/backend/pyproject.toml
+@@ -8,8 +8,12 @@ dependencies = [
+   "asyncpg>=0.29,<1",
+   "fastapi>=0.115,<1",
+   "geoalchemy2>=0.15,<1",
++  "joblib>=1.4,<2",
++  "numpy>=2.0,<3",
+   "orjson>=3.10,<4",
++  "pandas>=2.2,<3",
+   "pydantic-settings>=2.5,<3",
++  "scikit-learn>=1.6,<2",
+   "sqlalchemy[asyncio]>=2.0,<3",
+   "uvicorn[standard]>=0.30,<1",
+ ]
+diff --git a/backend/scripts/register_model.py b/backend/scripts/register_model.py
+new file mode 100644
+index 0000000..459e6e4
+--- /dev/null
++++ b/backend/scripts/register_model.py
+@@ -0,0 +1,53 @@
++from __future__ import annotations
++
++import asyncio
++import json
++import os
++from pathlib import Path
++
++from sqlalchemy import select
++
++from app.db.session import SessionLocal
++from app.models.entities import ModelRegistry
++
++
++async def register() -> None:
++    artifact_dir = Path(os.getenv("SIMRAS_ML_ARTIFACT_DIR", "/artifacts/bridge_nbi"))
++    manifest_path = artifact_dir / "manifest.json"
++    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
++    if manifest["stage"] not in {"RESEARCH_TRANSFER", "VALIDATED_LOCAL"}:
++        raise RuntimeError(f"Refusing to register model stage {manifest['stage']}")
++    async with SessionLocal() as session:
++        existing = await session.scalar(
++            select(ModelRegistry).where(
++                ModelRegistry.model_name == manifest["model_name"],
++                ModelRegistry.version == manifest["version"],
++            )
++        )
++        if existing:
++            print(f"Model already registered: {manifest['version']}")
++            return
++        session.add(
++            ModelRegistry(
++                model_name=manifest["model_name"],
++                version=manifest["version"],
++                training_dataset=manifest["data_source"],
++                feature_version=manifest["feature_version"],
++                metrics={
++                    **manifest["metrics"],
++                    "gates": manifest["gates"],
++                    "training_scope": manifest["training_scope"],
++                    "model_validated": manifest["model_validated"],
++                    "limitations": manifest["limitations"],
++                },
++                stage=manifest["stage"],
++                artifact_uri=str(artifact_dir),
++                checksum=manifest["artifact_checksums"].get("health.joblib"),
++            )
++        )
++        await session.commit()
++        print(f"Registered {manifest['version']} as {manifest['stage']}")
++
++
++if __name__ == "__main__":
++    asyncio.run(register())
+diff --git a/backend/tests/test_ml_predictor.py b/backend/tests/test_ml_predictor.py
+new file mode 100644
+index 0000000..3eb2b34
+--- /dev/null
++++ b/backend/tests/test_ml_predictor.py
+@@ -0,0 +1,106 @@
++from __future__ import annotations
++
++import hashlib
++import json
++from pathlib import Path
++
++import joblib
++import numpy as np
++
++from app.services.ml_predictor import MLInput, predict_bridge
++
++
++class ConstantRegressor:
++    def __init__(self, value: float):
++        self.value = value
++
++    def predict(self, frame):
++        return np.full(len(frame), self.value)
++
++
++class ConstantClassifier:
++    def __init__(self, probability: float):
++        self.probability = probability
++
++    def predict_proba(self, frame):
++        return np.tile([1 - self.probability, self.probability], (len(frame), 1))
++
++
++class LogisticIdentity:
++    def predict_proba(self, values):
++        probability = 1 / (1 + np.exp(-values[:, 0]))
++        return np.column_stack([1 - probability, probability])
++
++
++def _checksum(path: Path) -> str:
++    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def _artifacts(root: Path, stage: str = "RESEARCH_TRANSFER") -> None:
++    models = {
++        "health.joblib": ConstantRegressor(6.3),
++        "risk.joblib": ConstantClassifier(0.42),
++        "risk_calibrator.joblib": LogisticIdentity(),
++        "rul_lower.joblib": ConstantRegressor(4),
++        "rul_median.joblib": ConstantRegressor(7),
++        "rul_upper.joblib": ConstantRegressor(11),
++    }
++    checksums = {}
++    for name, model in models.items():
++        joblib.dump(model, root / name)
++        checksums[name] = _checksum(root / name)
++    (root / "manifest.json").write_text(
++        json.dumps(
++            {
++                "version": "test_v1",
++                "feature_version": "test_features",
++                "stage": stage,
++                "training_scope": "FHWA_NBI_US_BRIDGES_RESEARCH_TRANSFER",
++                "prediction_horizon_years": 3,
++                "health_error_quantiles_rating": {"lower": -0.8, "upper": 0.9},
++                "artifact_checksums": checksums,
++                "limitations": ["Not locally validated"],
++            }
++        ),
++        encoding="utf-8",
++    )
++
++
++def test_research_transfer_prediction_is_disclosed(tmp_path: Path) -> None:
++    _artifacts(tmp_path)
++    result = predict_bridge(
++        MLInput(
++            asset_type="bridge",
++            age_years=29,
++            condition_rating=7.4,
++            material="steel_and_concrete",
++            span_count=28,
++            max_span_m=97.55,
++            structure_length_m=2745,
++        ),
++        artifact_dir=tmp_path,
++    )
++    assert result is not None
++    assert result.status == "RESEARCH_TRANSFER"
++    assert result.model_validated is False
++    assert result.health_lower_bound <= result.health_score <= result.health_upper_bound
++    assert result.rul_lower_bound <= result.remaining_life_years <= result.rul_upper_bound
++    assert any("not validated" in item.lower() for item in result.factors)
++
++
++def test_rejected_or_out_of_scope_model_abstains(tmp_path: Path) -> None:
++    _artifacts(tmp_path, stage="REJECTED")
++    assert (
++        predict_bridge(
++            MLInput(asset_type="bridge", age_years=30, condition_rating=6),
++            artifact_dir=tmp_path,
++        )
++        is None
++    )
++    assert (
++        predict_bridge(
++            MLInput(asset_type="dam", age_years=50, condition_rating=6),
++            artifact_dir=tmp_path,
++        )
++        is None
++    )
+diff --git a/compose.production.yml b/compose.production.yml
+index 5214a44..f891975 100644
+--- a/compose.production.yml
++++ b/compose.production.yml
+@@ -19,6 +19,10 @@ services:
+       context: ./backend
+     restart: always
+     env_file: .env
++    environment:
++      SIMRAS_ML_ARTIFACT_DIR: /artifacts/bridge_nbi
++    volumes:
++      - ./artifacts:/artifacts:ro
+     depends_on:
+       db:
+         condition: service_healthy
+diff --git a/compose.yml b/compose.yml
+index d69ee04..c5ca016 100644
+--- a/compose.yml
++++ b/compose.yml
+@@ -24,11 +24,13 @@ services:
+     environment:
+       POSTGRES_HOST: db
+       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-simras}:${POSTGRES_PASSWORD:-simras-change-me}@db:5432/${POSTGRES_DB:-simras}
++      SIMRAS_ML_ARTIFACT_DIR: /artifacts/bridge_nbi
+     ports:
+       - "8000:8000"
+     volumes:
+       - ./backend:/app
+       - ./data:/data
++      - ./artifacts:/artifacts:ro
+     depends_on:
+       db:
+         condition: service_healthy
+@@ -52,7 +54,7 @@ services:
+       - ./ml:/app
+       - ./data:/data
+       - ./artifacts:/artifacts
+-    command: ["python", "-c", "print('Supply --task and --data to run a gated training job')"]
++    command: ["--help"]
+ 
+   frontend:
+     build:
+diff --git a/frontend/src/features/digital-twin/TwinPanels.tsx b/frontend/src/features/digital-twin/TwinPanels.tsx
+index a1d203b..516661a 100644
+--- a/frontend/src/features/digital-twin/TwinPanels.tsx
++++ b/frontend/src/features/digital-twin/TwinPanels.tsx
+@@ -32,9 +32,16 @@ export function TwinPanels({ twin }: { twin: TwinResponse }) {
+   );
+   const methodLabel = twin.ai.model_validated
+     ? "Validated ML model"
++    : twin.ai.status === "RESEARCH_TRANSFER"
++      ? "Research transfer model - local validation pending"
+     : twin.ai.status === "DECISION_SUPPORT"
+       ? "Engineering estimate - ML validation pending"
+       : "ML prediction unavailable";
++  const rul = twin.ai.remaining_life_years;
++  const rulInterval =
++    twin.ai.rul_lower_bound != null && twin.ai.rul_upper_bound != null
++      ? `${twin.ai.rul_lower_bound.toFixed(1)}-${twin.ai.rul_upper_bound.toFixed(1)} years`
++      : null;
+ 
+   return (
+     <div className="twin-panels">
+@@ -42,9 +49,20 @@ export function TwinPanels({ twin }: { twin: TwinResponse }) {
+         <div>
+           <span>Health</span>
+           <strong>{scoreValue(twin.ai.health_score)}</strong>
++          {twin.ai.health_lower_bound != null &&
++            twin.ai.health_upper_bound != null && (
++              <small>
++                80% interval {twin.ai.health_lower_bound.toFixed(0)}-
++                {twin.ai.health_upper_bound.toFixed(0)}
++              </small>
++            )}
+         </div>
+         <div>
+-          <span>Structural risk</span>
++          <span>
++            {twin.ai.status === "RESEARCH_TRANSFER"
++              ? `Poor-condition probability (${twin.ai.forecast_horizon_years ?? 3}y)`
++              : "Structural risk"}
++          </span>
+           <strong style={{ color: riskColor(twin.ai.risk_level) }}>
+             {scoreValue(twin.ai.risk_score)}
+           </strong>
+@@ -84,6 +102,26 @@ export function TwinPanels({ twin }: { twin: TwinResponse }) {
+         />
+       </section>
+ 
++      <section className="panel prediction-disclosure">
++        <div>
++          <span>Years to poor-condition threshold</span>
++          <strong>{rul != null ? `${rul.toFixed(1)} years` : unavailable}</strong>
++          {rulInterval && <small>80% interval {rulInterval}</small>}
++        </div>
++        <div>
++          <span>Forecast horizon</span>
++          <strong>
++            {twin.ai.forecast_horizon_years != null
++              ? `${twin.ai.forecast_horizon_years} years`
++              : "Not available"}
++          </strong>
++        </div>
++        <div>
++          <span>Training scope</span>
++          <strong>{twin.ai.training_scope?.replaceAll("_", " ") ?? "Not available"}</strong>
++        </div>
++      </section>
++
+       <section className="panel">
+         <header>
+           <h3>Current environment</h3>
+@@ -107,6 +145,21 @@ export function TwinPanels({ twin }: { twin: TwinResponse }) {
+         </div>
+       </section>
+ 
++      <section className="panel">
++        <header>
++          <h3>Future recommendations</h3>
++          <StatusPill
++            label={twin.ai.model_validated ? "VALIDATED" : "HUMAN REVIEW REQUIRED"}
++            tone={twin.ai.model_validated ? "good" : "warn"}
++          />
++        </header>
++        <ul className="factor-list">
++          {(twin.ai.recommendations ?? []).map((recommendation) => (
++            <li key={recommendation}>{recommendation}</li>
++          ))}
++        </ul>
++      </section>
++
+       <section className="panel">
+         <header>
+           <h3>Decision-support factors</h3>
+@@ -162,10 +215,11 @@ export function TwinPanels({ twin }: { twin: TwinResponse }) {
+             <dd>{twin.inspection.quality_flag.replaceAll("_", " ")}</dd>
+           </div>
+           <div>
+-            <dt>RUL</dt>
++            <dt>RUL proxy</dt>
+             <dd>
+-              {twin.ai.remaining_life_years ??
+-                "Disabled until longitudinal validation"}
++              {rul != null
++                ? `${rul.toFixed(1)} years${rulInterval ? ` (${rulInterval})` : ""}`
++                : "Disabled until longitudinal validation"}
+             </dd>
+           </div>
+         </dl>
+@@ -186,4 +240,4 @@ export function TwinPanels({ twin }: { twin: TwinResponse }) {
+       </section>
+     </div>
+   );
+-}
+\ No newline at end of file
++}
+diff --git a/frontend/src/types/twin.ts b/frontend/src/types/twin.ts
+index b39f056..099d9e9 100644
+--- a/frontend/src/types/twin.ts
++++ b/frontend/src/types/twin.ts
+@@ -66,11 +66,15 @@ export interface TwinResponse {
+   sensors_status: string;
+   ai: {
+     health_score?: number | null;
++    health_lower_bound?: number | null;
++    health_upper_bound?: number | null;
+     risk_score?: number | null;
+     risk_level?: RiskLevel | null;
+     hazard_score?: number | null;
+     hazard_level?: RiskLevel | null;
+     remaining_life_years?: number | null;
++    rul_lower_bound?: number | null;
++    rul_upper_bound?: number | null;
+     confidence?: number | null;
+     model_version: string;
+     feature_version: string;
+@@ -78,7 +82,10 @@ export interface TwinResponse {
+     status: string;
+     prediction_method?: string;
+     model_validated?: boolean;
++    training_scope?: string;
++    forecast_horizon_years?: number | null;
+     factors: string[];
++    recommendations?: string[];
+   };
+   freshness: Record<string, string>;
+   generated_at: string;
+diff --git a/ml/Dockerfile b/ml/Dockerfile
+new file mode 100644
+index 0000000..fd81d0d
+--- /dev/null
++++ b/ml/Dockerfile
+@@ -0,0 +1,8 @@
++FROM python:3.12-slim
++
++WORKDIR /app
++COPY pyproject.toml ./
++RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir ".[dev]"
++COPY . .
++
++ENTRYPOINT ["python", "-m", "simras_ml.cli"]
+diff --git a/ml/README.md b/ml/README.md
+new file mode 100644
+index 0000000..b330ce5
+--- /dev/null
++++ b/ml/README.md
+@@ -0,0 +1,11 @@
++# SIMRAS Stage 5 ML
++
++This package trains a **research-transfer bridge deterioration model** from annual
++U.S. FHWA National Bridge Inventory downloads. It never marks the resulting model
++as locally validated for Andhra Pradesh.
++
++The training job enforces bridge-level holdout splits, probability calibration,
++metrics, data-volume gates, model manifests and checksums. Failed gates produce a
++`REJECTED` manifest. Dams and barrages are intentionally outside this model's scope.
++
++Example commands are documented in `STAGE5_ML_RUNBOOK.md` at the repository root.
+diff --git a/ml/pyproject.toml b/ml/pyproject.toml
+new file mode 100644
+index 0000000..79747a5
+--- /dev/null
++++ b/ml/pyproject.toml
+@@ -0,0 +1,26 @@
++[project]
++name = "simras-ml"
++version = "0.1.0"
++description = "Gated bridge deterioration training pipeline for SIMRAS"
++requires-python = ">=3.12"
++dependencies = [
++  "joblib>=1.4,<2",
++  "numpy>=2.0,<3",
++  "pandas>=2.2,<3",
++  "scikit-learn>=1.6,<2",
++]
++
++[project.optional-dependencies]
++dev = ["pytest>=8,<9", "ruff>=0.8,<1"]
++
++[tool.pytest.ini_options]
++pythonpath = ["."]
++testpaths = ["tests"]
++
++[tool.ruff]
++line-length = 100
++target-version = "py312"
++
++[tool.ruff.lint]
++select = ["E", "F", "I", "B", "UP"]
++ignore = ["E501"]
+diff --git a/ml/simras_ml/__init__.py b/ml/simras_ml/__init__.py
+new file mode 100644
+index 0000000..e162a69
+--- /dev/null
++++ b/ml/simras_ml/__init__.py
+@@ -0,0 +1,5 @@
++"""SIMRAS model training package."""
++
++__all__ = ["FEATURE_COLUMNS"]
++
++from simras_ml.nbi import FEATURE_COLUMNS
+diff --git a/ml/simras_ml/cli.py b/ml/simras_ml/cli.py
+new file mode 100644
+index 0000000..e079c5d
+--- /dev/null
++++ b/ml/simras_ml/cli.py
+@@ -0,0 +1,73 @@
++from __future__ import annotations
++
++import argparse
++import json
++from pathlib import Path
++
++import pandas as pd
++
++from simras_ml.nbi import build_panel, download_year
++from simras_ml.train import train_models
++
++
++def parser() -> argparse.ArgumentParser:
++    root = argparse.ArgumentParser(description="SIMRAS gated NBI bridge-model pipeline")
++    sub = root.add_subparsers(dest="command", required=True)
++
++    download = sub.add_parser("download", help="Download official FHWA NBI archives")
++    download.add_argument("--years", nargs="+", type=int, required=True)
++    download.add_argument("--output-dir", type=Path, default=Path("/data/ml/nbi"))
++    download.add_argument("--accept-fhwa-disclaimer", action="store_true")
++
++    prepare = sub.add_parser("prepare", help="Build a deterministic bridge-year panel")
++    prepare.add_argument("--years", nargs="+", type=int, required=True)
++    prepare.add_argument("--input-dir", type=Path, default=Path("/data/ml/nbi"))
++    prepare.add_argument("--output", type=Path, default=Path("/data/ml/nbi_panel.csv.gz"))
++    prepare.add_argument("--max-records-per-year", type=int, default=75_000)
++
++    train = sub.add_parser("train", help="Train and evaluate gated research-transfer models")
++    train.add_argument("--panel", type=Path, default=Path("/data/ml/nbi_panel.csv.gz"))
++    train.add_argument("--artifact-dir", type=Path, default=Path("/artifacts/bridge_nbi"))
++    train.add_argument("--min-rows", type=int, default=100_000)
++    train.add_argument("--min-bridges", type=int, default=20_000)
++    train.add_argument("--min-years", type=int, default=5)
++    train.add_argument("--horizon-years", type=int, default=3)
++    return root
++
++
++def main() -> int:
++    args = parser().parse_args()
++    if args.command == "download":
++        for year in args.years:
++            path = download_year(
++                year,
++                args.output_dir,
++                accept_disclaimer=args.accept_fhwa_disclaimer,
++            )
++            print(path)
++        return 0
++    if args.command == "prepare":
++        archives = [(year, args.input_dir / f"nbi_{year}.zip") for year in args.years]
++        missing = [str(path) for _, path in archives if not path.exists()]
++        if missing:
++            raise FileNotFoundError(f"Missing NBI archives: {', '.join(missing)}")
++        panel = build_panel(archives, max_records_per_year=args.max_records_per_year)
++        args.output.parent.mkdir(parents=True, exist_ok=True)
++        panel.to_csv(args.output, index=False, compression="gzip")
++        print(json.dumps({"rows": len(panel), "bridges": panel.bridge_key.nunique(), "output": str(args.output)}))
++        return 0
++    panel = pd.read_csv(args.panel)
++    manifest = train_models(
++        panel,
++        args.artifact_dir,
++        min_rows=args.min_rows,
++        min_bridges=args.min_bridges,
++        min_years=args.min_years,
++        horizon_years=args.horizon_years,
++    )
++    print(json.dumps(manifest, indent=2))
++    return 0 if manifest["stage"] != "REJECTED" else 2
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/ml/simras_ml/nbi.py b/ml/simras_ml/nbi.py
+new file mode 100644
+index 0000000..a993166
+--- /dev/null
++++ b/ml/simras_ml/nbi.py
+@@ -0,0 +1,185 @@
++from __future__ import annotations
++
++import hashlib
++import heapq
++import math
++import urllib.request
++import zipfile
++from pathlib import Path
++
++import pandas as pd
++
++FHWA_URL = "https://www.fhwa.dot.gov/bridge/nbi/{year}hwybronefilenodel.zip"
++
++FEATURE_COLUMNS = [
++    "age_years",
++    "condition_rating",
++    "material_code",
++    "design_type_code",
++    "average_daily_traffic",
++    "truck_traffic_percent",
++    "skew_deg",
++    "span_count",
++    "max_span_m",
++    "structure_length_m",
++    "inventory_rating",
++    "scour_rating",
++    "waterway_rating",
++]
++
++
++def _text(line: str, start: int, end: int) -> str:
++    return line[start:end].strip()
++
++
++def _number(line: str, start: int, end: int, *, scale: float = 1.0) -> float:
++    value = _text(line, start, end)
++    if not value or not value.replace(".", "", 1).isdigit():
++        return math.nan
++    return float(value) * scale
++
++
++def _rating(line: str, index: int) -> float:
++    value = _text(line, index, index + 1)
++    return float(value) if value.isdigit() and 0 <= int(value) <= 9 else math.nan
++
++
++def parse_fixed_width_record(line: str, report_year: int) -> dict | None:
++    """Parse the stable legacy NBI download fields used by SIMRAS.
++
++    Field positions follow FHWA's published 445-character NBI download format.
++    Only traceable inspection/inventory fields are retained.
++    """
++
++    line = line.rstrip("\r\n")
++    if len(line) < 375:
++        return None
++    state_code = _text(line, 0, 3)
++    structure_number = _text(line, 3, 18)
++    if not state_code or not structure_number:
++        return None
++
++    built_year_raw = _number(line, 156, 160)
++    built_year = int(built_year_raw) if not math.isnan(built_year_raw) else None
++    ratings = [_rating(line, 258), _rating(line, 259), _rating(line, 260)]
++    culvert = _rating(line, 262)
++    valid_ratings = [value for value in ratings if not math.isnan(value)]
++    if not math.isnan(culvert):
++        valid_ratings.append(culvert)
++    if not valid_ratings:
++        return None
++
++    return {
++        "bridge_key": f"{state_code}:{structure_number}",
++        "report_year": report_year,
++        "age_years": max(0, report_year - built_year) if built_year else math.nan,
++        "condition_rating": min(valid_ratings),
++        "material_code": _number(line, 201, 202),
++        "design_type_code": _number(line, 202, 204),
++        "average_daily_traffic": _number(line, 164, 170),
++        "truck_traffic_percent": _number(line, 369, 371),
++        "skew_deg": _number(line, 180, 182),
++        "span_count": _number(line, 207, 210),
++        "max_span_m": _number(line, 217, 222, scale=0.1),
++        "structure_length_m": _number(line, 222, 228, scale=0.1),
++        "inventory_rating": _number(line, 268, 271, scale=0.1),
++        "scour_rating": _rating(line, 374),
++        "waterway_rating": _rating(line, 275),
++    }
++
++
++def stable_partition(key: str) -> int:
++    return int(hashlib.sha256(key.encode()).hexdigest()[:8], 16) % 100
++
++
++def download_year(year: int, output_dir: Path, *, accept_disclaimer: bool) -> Path:
++    if not accept_disclaimer:
++        raise ValueError("FHWA disclaimer acceptance is required before downloading NBI data")
++    output_dir.mkdir(parents=True, exist_ok=True)
++    destination = output_dir / f"nbi_{year}.zip"
++    if destination.exists() and destination.stat().st_size > 1_000_000:
++        return destination
++    request = urllib.request.Request(
++        FHWA_URL.format(year=year),
++        headers={"User-Agent": "SIMRAS-Academic-Research/0.1"},
++    )
++    with urllib.request.urlopen(request, timeout=180) as response, destination.open("wb") as fh:
++        while block := response.read(1024 * 1024):
++            fh.write(block)
++    return destination
++
++
++def load_year_archive(path: Path, year: int, max_records: int | None = None) -> pd.DataFrame:
++    """Read one FHWA archive with deterministic bridge-level sampling."""
++
++    heap: list[tuple[int, int, dict]] = []
++    sequence = 0
++    with zipfile.ZipFile(path) as archive:
++        members = [m for m in archive.infolist() if not m.is_dir()]
++        if not members:
++            raise ValueError(f"No records found in {path}")
++        member = max(members, key=lambda item: item.file_size)
++        with archive.open(member) as raw:
++            for raw_line in raw:
++                record = parse_fixed_width_record(raw_line.decode("latin-1"), year)
++                if record is None:
++                    continue
++                priority = int(
++                    hashlib.sha256(record["bridge_key"].encode()).hexdigest()[:12], 16
++                )
++                sequence += 1
++                if max_records is None:
++                    heap.append((0, sequence, record))
++                elif len(heap) < max_records:
++                    heapq.heappush(heap, (-priority, sequence, record))
++                elif priority < -heap[0][0]:
++                    heapq.heapreplace(heap, (-priority, sequence, record))
++    return pd.DataFrame(item[2] for item in heap)
++
++
++def build_panel(
++    archives: list[tuple[int, Path]],
++    *,
++    max_records_per_year: int | None = 75_000,
++) -> pd.DataFrame:
++    frames = [
++        load_year_archive(path, year, max_records=max_records_per_year)
++        for year, path in archives
++    ]
++    if not frames:
++        raise ValueError("At least one NBI archive is required")
++    panel = pd.concat(frames, ignore_index=True)
++    panel = panel.drop_duplicates(["bridge_key", "report_year"], keep="last")
++    return panel.sort_values(["bridge_key", "report_year"]).reset_index(drop=True)
++
++
++def add_targets(panel: pd.DataFrame, horizon_years: int = 3) -> pd.DataFrame:
++    """Create leakage-safe future condition, risk, and observed-event RUL labels."""
++
++    labelled: list[dict] = []
++    for _, group in panel.groupby("bridge_key", sort=False):
++        rows = group.sort_values("report_year").to_dict("records")
++        last_year = int(rows[-1]["report_year"])
++        for index, current in enumerate(rows[:-1]):
++            year = int(current["report_year"])
++            future = rows[index + 1 :]
++            next_row = future[0]
++            poor_events = [
++                row
++                for row in future
++                if row["condition_rating"] <= 4 and int(row["report_year"]) > year
++            ]
++            event = poor_events[0] if poor_events else None
++            record = dict(current)
++            record["next_condition_rating"] = float(next_row["condition_rating"])
++            if event and int(event["report_year"]) - year <= horizon_years:
++                record["poor_within_horizon"] = 1.0
++            elif last_year - year >= horizon_years:
++                record["poor_within_horizon"] = 0.0
++            else:
++                record["poor_within_horizon"] = math.nan
++            record["rul_years"] = (
++                float(int(event["report_year"]) - year) if event is not None else math.nan
++            )
++            labelled.append(record)
++    return pd.DataFrame(labelled)
+diff --git a/ml/simras_ml/train.py b/ml/simras_ml/train.py
+new file mode 100644
+index 0000000..92f80f7
+--- /dev/null
++++ b/ml/simras_ml/train.py
+@@ -0,0 +1,211 @@
++from __future__ import annotations
++
++import hashlib
++import json
++from datetime import UTC, datetime
++from pathlib import Path
++
++import joblib
++import numpy as np
++import pandas as pd
++from sklearn.ensemble import HistGradientBoostingClassifier, HistGradientBoostingRegressor
++from sklearn.impute import SimpleImputer
++from sklearn.linear_model import LogisticRegression
++from sklearn.metrics import (
++    brier_score_loss,
++    f1_score,
++    mean_absolute_error,
++    mean_squared_error,
++    roc_auc_score,
++)
++from sklearn.pipeline import Pipeline
++
++from simras_ml.nbi import FEATURE_COLUMNS, add_targets, stable_partition
++
++
++def _split(frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
++    partitions = frame["bridge_key"].map(stable_partition)
++    return frame[partitions < 70], frame[(partitions >= 70) & (partitions < 85)], frame[partitions >= 85]
++
++
++def _pipeline(estimator) -> Pipeline:
++    return Pipeline(
++        [
++            ("imputer", SimpleImputer(strategy="median", add_indicator=True)),
++            ("model", estimator),
++        ]
++    )
++
++
++def _logit(values: np.ndarray) -> np.ndarray:
++    values = np.clip(values, 1e-6, 1 - 1e-6)
++    return np.log(values / (1 - values)).reshape(-1, 1)
++
++
++def _ece(labels: np.ndarray, probabilities: np.ndarray, bins: int = 10) -> float:
++    edges = np.linspace(0, 1, bins + 1)
++    score = 0.0
++    for lower, upper in zip(edges[:-1], edges[1:], strict=True):
++        mask = (probabilities >= lower) & (probabilities < upper)
++        if mask.any():
++            score += mask.mean() * abs(labels[mask].mean() - probabilities[mask].mean())
++    return float(score)
++
++
++def _checksum(path: Path) -> str:
++    digest = hashlib.sha256()
++    with path.open("rb") as fh:
++        for block in iter(lambda: fh.read(1024 * 1024), b""):
++            digest.update(block)
++    return digest.hexdigest()
++
++
++def train_models(
++    panel: pd.DataFrame,
++    artifact_dir: Path,
++    *,
++    min_rows: int = 100_000,
++    min_bridges: int = 20_000,
++    min_years: int = 5,
++    horizon_years: int = 3,
++) -> dict:
++    labelled = add_targets(panel, horizon_years=horizon_years)
++    if len(labelled) < min_rows:
++        raise ValueError(f"Training gate failed: {len(labelled):,} rows < {min_rows:,}")
++    bridges = labelled["bridge_key"].nunique()
++    years = labelled["report_year"].nunique()
++    if bridges < min_bridges:
++        raise ValueError(f"Training gate failed: {bridges:,} bridges < {min_bridges:,}")
++    if years < min_years:
++        raise ValueError(f"Training gate failed: {years} years < {min_years}")
++
++    artifact_dir.mkdir(parents=True, exist_ok=True)
++    train, calibration, test = _split(labelled)
++    if min(len(train), len(calibration), len(test)) == 0:
++        raise ValueError("Stable bridge-level split produced an empty partition")
++
++    health = _pipeline(
++        HistGradientBoostingRegressor(
++            max_iter=160,
++            learning_rate=0.06,
++            max_leaf_nodes=31,
++            l2_regularization=1.0,
++            random_state=440,
++        )
++    )
++    health.fit(train[FEATURE_COLUMNS], train["next_condition_rating"])
++    health_predictions = np.clip(health.predict(test[FEATURE_COLUMNS]), 0, 9)
++    health_errors = test["next_condition_rating"].to_numpy() - health_predictions
++
++    risk_data = labelled.dropna(subset=["poor_within_horizon"])
++    risk_train, risk_calibration, risk_test = _split(risk_data)
++    if risk_train["poor_within_horizon"].nunique() < 2:
++        raise ValueError("Risk training data must contain both poor and non-poor outcomes")
++    risk = _pipeline(
++        HistGradientBoostingClassifier(
++            max_iter=160,
++            learning_rate=0.06,
++            max_leaf_nodes=31,
++            l2_regularization=1.0,
++            random_state=440,
++        )
++    )
++    risk.fit(risk_train[FEATURE_COLUMNS], risk_train["poor_within_horizon"].astype(int))
++    raw_calibration = risk.predict_proba(risk_calibration[FEATURE_COLUMNS])[:, 1]
++    calibrator = LogisticRegression(random_state=440)
++    calibrator.fit(_logit(raw_calibration), risk_calibration["poor_within_horizon"].astype(int))
++    raw_test = risk.predict_proba(risk_test[FEATURE_COLUMNS])[:, 1]
++    risk_probabilities = calibrator.predict_proba(_logit(raw_test))[:, 1]
++    risk_labels = risk_test["poor_within_horizon"].astype(int).to_numpy()
++
++    rul_data = labelled.dropna(subset=["rul_years"]).copy()
++    rul_data = rul_data[(rul_data["rul_years"] > 0) & (rul_data["rul_years"] <= 30)]
++    rul_train, _, rul_test = _split(rul_data)
++    if len(rul_train) < max(100, min_rows // 100):
++        raise ValueError("RUL gate failed: insufficient observed deterioration events")
++    rul_models = {
++        "rul_lower.joblib": HistGradientBoostingRegressor(
++            loss="quantile", quantile=0.1, max_iter=120, random_state=440
++        ),
++        "rul_median.joblib": HistGradientBoostingRegressor(
++            loss="absolute_error", max_iter=140, random_state=440
++        ),
++        "rul_upper.joblib": HistGradientBoostingRegressor(
++            loss="quantile", quantile=0.9, max_iter=120, random_state=440
++        ),
++    }
++    fitted_rul: dict[str, Pipeline] = {}
++    for filename, estimator in rul_models.items():
++        model = _pipeline(estimator)
++        model.fit(rul_train[FEATURE_COLUMNS], rul_train["rul_years"])
++        fitted_rul[filename] = model
++
++    rul_median = np.clip(fitted_rul["rul_median.joblib"].predict(rul_test[FEATURE_COLUMNS]), 0, 30)
++    rul_lower = np.clip(fitted_rul["rul_lower.joblib"].predict(rul_test[FEATURE_COLUMNS]), 0, 30)
++    rul_upper = np.clip(fitted_rul["rul_upper.joblib"].predict(rul_test[FEATURE_COLUMNS]), 0, 30)
++    observed_rul = rul_test["rul_years"].to_numpy()
++
++    metrics = {
++        "health_mae_rating": float(mean_absolute_error(test["next_condition_rating"], health_predictions)),
++        "health_rmse_rating": float(mean_squared_error(test["next_condition_rating"], health_predictions) ** 0.5),
++        "risk_roc_auc": float(roc_auc_score(risk_labels, risk_probabilities)),
++        "risk_brier": float(brier_score_loss(risk_labels, risk_probabilities)),
++        "risk_f1_at_0_5": float(f1_score(risk_labels, risk_probabilities >= 0.5)),
++        "risk_ece": _ece(risk_labels, risk_probabilities),
++        "rul_mae_years_observed_events": float(mean_absolute_error(observed_rul, rul_median)),
++        "rul_interval_80_coverage_observed_events": float(
++            np.mean((observed_rul >= np.minimum(rul_lower, rul_upper)) & (observed_rul <= np.maximum(rul_lower, rul_upper)))
++        ),
++    }
++    gates = {
++        "health_mae_le_1_0": metrics["health_mae_rating"] <= 1.0,
++        "risk_auc_ge_0_70": metrics["risk_roc_auc"] >= 0.70,
++        "risk_brier_le_0_20": metrics["risk_brier"] <= 0.20,
++        "risk_ece_le_0_10": metrics["risk_ece"] <= 0.10,
++        "rul_mae_le_5_years": metrics["rul_mae_years_observed_events"] <= 5.0,
++    }
++    stage = "RESEARCH_TRANSFER" if all(gates.values()) else "REJECTED"
++
++    artifacts = {
++        "health.joblib": health,
++        "risk.joblib": risk,
++        "risk_calibrator.joblib": calibrator,
++        **fitted_rul,
++    }
++    checksums: dict[str, str] = {}
++    for filename, model in artifacts.items():
++        path = artifact_dir / filename
++        joblib.dump(model, path)
++        checksums[filename] = _checksum(path)
++
++    manifest = {
++        "model_name": "simras_nbi_bridge_deterioration",
++        "version": datetime.now(UTC).strftime("nbi_transfer_%Y%m%d_%H%M%S"),
++        "stage": stage,
++        "model_validated": False,
++        "training_scope": "FHWA_NBI_US_BRIDGES_RESEARCH_TRANSFER",
++        "prediction_horizon_years": horizon_years,
++        "feature_version": "nbi_bridge_state_v1",
++        "features": FEATURE_COLUMNS,
++        "training_rows": len(labelled),
++        "unique_bridges": bridges,
++        "training_years": sorted(int(value) for value in labelled["report_year"].unique()),
++        "metrics": metrics,
++        "gates": gates,
++        "health_error_quantiles_rating": {
++            "lower": float(np.quantile(health_errors, 0.1)),
++            "upper": float(np.quantile(health_errors, 0.9)),
++        },
++        "artifact_checksums": checksums,
++        "data_source": "U.S. FHWA National Bridge Inventory annual downloads",
++        "source_url": "https://www.fhwa.dot.gov/bridge/nbi/ascii.cfm",
++        "limitations": [
++            "Not locally validated for Andhra Pradesh",
++            "RUL evaluation includes observed deterioration events and is subject to censoring bias",
++            "Must not be the sole basis for structural or maintenance decisions",
++            "Dam and barrage predictions are outside this model's scope",
++        ],
++        "created_at": datetime.now(UTC).isoformat(),
++    }
++    (artifact_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
++    return manifest
+diff --git a/ml/tests/test_nbi.py b/ml/tests/test_nbi.py
+new file mode 100644
+index 0000000..916c253
+--- /dev/null
++++ b/ml/tests/test_nbi.py
+@@ -0,0 +1,64 @@
++from __future__ import annotations
++
++import math
++
++import pandas as pd
++
++from simras_ml.nbi import add_targets, parse_fixed_width_record
++
++
++def _record() -> str:
++    chars = [" "] * 445
++
++    def put(start: int, end: int, value: str) -> None:
++        chars[start:end] = list(value.ljust(end - start)[: end - start])
++
++    put(0, 3, "001")
++    put(3, 18, "BRIDGE-0001")
++    put(156, 160, "1990")
++    put(164, 170, "012500")
++    put(201, 202, "3")
++    put(202, 204, "10")
++    put(207, 210, "004")
++    put(217, 222, "00975")
++    put(222, 228, "027450")
++    put(258, 259, "7")
++    put(259, 260, "6")
++    put(260, 261, "8")
++    put(268, 271, "450")
++    put(369, 371, "12")
++    put(374, 375, "6")
++    put(275, 276, "7")
++    return "".join(chars)
++
++
++def test_parse_official_fixed_width_positions() -> None:
++    result = parse_fixed_width_record(_record(), 2025)
++    assert result is not None
++    assert result["bridge_key"] == "001:BRIDGE-0001"
++    assert result["age_years"] == 35
++    assert result["condition_rating"] == 6
++    assert result["span_count"] == 4
++    assert result["max_span_m"] == 97.5
++    assert result["structure_length_m"] == 2745
++
++
++def test_targets_respect_horizon_and_censoring() -> None:
++    rows = []
++    for bridge, conditions in {"A": [8, 7, 6, 4, 4], "B": [8, 8, 7, 7, 7]}.items():
++        for year, condition in zip(range(2021, 2026), conditions, strict=True):
++            rows.append(
++                {
++                    "bridge_key": bridge,
++                    "report_year": year,
++                    "condition_rating": condition,
++                }
++            )
++    labelled = add_targets(pd.DataFrame(rows), horizon_years=3)
++    a2021 = labelled[(labelled.bridge_key == "A") & (labelled.report_year == 2021)].iloc[0]
++    b2021 = labelled[(labelled.bridge_key == "B") & (labelled.report_year == 2021)].iloc[0]
++    b2024 = labelled[(labelled.bridge_key == "B") & (labelled.report_year == 2024)].iloc[0]
++    assert a2021.poor_within_horizon == 1
++    assert a2021.rul_years == 3
++    assert b2021.poor_within_horizon == 0
++    assert math.isnan(b2024.poor_within_horizon)
+diff --git a/ml/tests/test_train.py b/ml/tests/test_train.py
+new file mode 100644
+index 0000000..c27667a
+--- /dev/null
++++ b/ml/tests/test_train.py
+@@ -0,0 +1,54 @@
++from __future__ import annotations
++
++from pathlib import Path
++
++import pandas as pd
++
++from simras_ml.nbi import FEATURE_COLUMNS
++from simras_ml.train import train_models
++
++
++def _panel() -> pd.DataFrame:
++    rows = []
++    for bridge in range(240):
++        starting = 8 - (bridge % 3)
++        for offset, year in enumerate(range(2018, 2026)):
++            deterioration = offset // (2 + bridge % 2)
++            condition = max(3, starting - deterioration)
++            row = {
++                "bridge_key": f"B{bridge:04d}",
++                "report_year": year,
++                "age_years": 20 + bridge % 70 + offset,
++                "condition_rating": condition,
++                "material_code": 1 + bridge % 4,
++                "design_type_code": 1 + bridge % 15,
++                "average_daily_traffic": 1000 + bridge * 20,
++                "truck_traffic_percent": 5 + bridge % 25,
++                "skew_deg": bridge % 45,
++                "span_count": 1 + bridge % 10,
++                "max_span_m": 10 + bridge % 90,
++                "structure_length_m": 30 + bridge % 500,
++                "inventory_rating": 20 + bridge % 40,
++                "scour_rating": 4 + bridge % 5,
++                "waterway_rating": 4 + bridge % 5,
++            }
++            rows.append(row)
++    frame = pd.DataFrame(rows)
++    assert set(FEATURE_COLUMNS).issubset(frame.columns)
++    return frame
++
++
++def test_training_writes_a_governed_manifest(tmp_path: Path) -> None:
++    manifest = train_models(
++        _panel(),
++        tmp_path,
++        min_rows=500,
++        min_bridges=100,
++        min_years=5,
++    )
++    assert manifest["model_validated"] is False
++    assert manifest["stage"] in {"RESEARCH_TRANSFER", "REJECTED"}
++    assert manifest["training_scope"] == "FHWA_NBI_US_BRIDGES_RESEARCH_TRANSFER"
++    assert (tmp_path / "manifest.json").exists()
++    assert (tmp_path / "health.joblib").exists()
++    assert (tmp_path / "risk.joblib").exists()

@@ -6,8 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 COPY pyproject.toml ./
-RUN pip install --upgrade pip && pip install ".[dev]"
+RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir ".[dev]"
 COPY . .
 
-CMD ["python", "-c", "print('SIMRAS ML image ready')"]
-
+ENTRYPOINT ["python", "-m", "simras_ml.cli"]
