@@ -50,94 +50,43 @@ export default function App() {
   useEffect(() => {
     let cancelled = false;
 
-    Promise.all([
-      api.assets(),
-      api.twinCatalog(),
-      api.mapSummary(),
-    ])
-      .then(([response, catalog, mapResponse]) => {
+    api.assets()
+      .then((response) => {
         if (cancelled) return;
 
-        const qualityByCode = new Map(
-          catalog.items.map((item) => [
-            item.asset_code,
-            item,
-          ]),
+        const ranked = [...response.items].sort(
+          (a, b) => (b.risk_score ?? -1) - (a.risk_score ?? -1),
         );
-
-        const ranked = response.items
-          .map((asset) => {
-            const quality = qualityByCode.get(
-              asset.asset_code,
-            );
-
-            return {
-              ...asset,
-              twin_quality_score:
-                quality?.twin_quality_score ?? 0,
-              twin_quality:
-                quality?.twin_quality ?? "BASIC",
-              twin_group:
-                quality?.twin_group ?? "BASIC",
-              twin_quality_label:
-                quality?.twin_quality_label ??
-                "Source-backed geometry incomplete",
-              twin_fidelity:
-                quality?.fidelity_level ?? "L0",
-              twin_source_backed:
-                quality?.source_backed ?? false,
-              twin_dimension_count:
-                quality?.dimension_count ?? 0,
-              twin_template:
-                quality?.template ?? "generic",
-            };
-          })
-          .sort((a, b) => {
-            const qualityDifference =
-              (b.twin_quality_score ?? 0) -
-              (a.twin_quality_score ?? 0);
-
-            if (qualityDifference !== 0) {
-              return qualityDifference;
-            }
-
-            return (
-              (b.risk_score ?? -1) -
-              (a.risk_score ?? -1)
-            );
-          });
 
         setAssets(ranked);
-        setMapSummary(mapResponse.items);
 
-        const configuredCode =
-          import.meta.env.VITE_DEFAULT_ASSET_ID;
+        const defaultCode = import.meta.env.VITE_DEFAULT_ASSET_ID;
 
-        const configured = ranked.find(
-          (asset) =>
-            asset.asset_code === configuredCode &&
-            (asset.twin_quality_score ?? 0) >= 70,
+        setSelected(
+          ranked.find((asset) => asset.asset_code === defaultCode) ??
+            ranked[0],
         );
-
-        const best =
-          ranked.find(
-            (asset) => asset.twin_group === "BEST",
-          ) ?? ranked[0];
-
-        setSelected(configured ?? best);
       })
       .catch((cause: unknown) => {
-        if (cancelled) return;
-
-        setError(
-          cause instanceof Error
-            ? cause.message
-            : String(cause),
-        );
+        if (!cancelled) {
+          setError(
+            cause instanceof Error ? cause.message : String(cause),
+          );
+        }
       })
       .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    api.mapSummary()
+      .then((response) => {
+        if (!cancelled) setMapSummary(response.items);
+      })
+      .catch((cause: unknown) => {
         if (!cancelled) {
-          setLoading(false);
+          setError(
+            cause instanceof Error ? cause.message : String(cause),
+          );
         }
       });
 
@@ -145,6 +94,7 @@ export default function App() {
       cancelled = true;
     };
   }, []);
+
   useEffect(() => {
     let cancelled = false;
     setMapLoading(true);
@@ -271,7 +221,7 @@ export default function App() {
         <div className="brand-mark">S</div>
         <div className="brand-copy">
           <strong>SIMRAS</strong>
-          <span>Infrastructure intelligence Â· Andhra Pradesh</span>
+          <span>Infrastructure intelligence · Andhra Pradesh</span>
         </div>
 
         <nav>
@@ -297,7 +247,7 @@ export default function App() {
         <section className="hero-row">
           <div>
             <span className="eyebrow">
-              AP BRIDGES Â· DAMS Â· BARRAGES
+              AP BRIDGES · DAMS · BARRAGES
             </span>
 
             <h1>
@@ -318,7 +268,7 @@ export default function App() {
               className="primary-action"
               onClick={() => setWorkspace("TWIN")}
             >
-              Open selected twin â†’
+              Open selected twin →
             </button>
           )}
         </section>
@@ -381,7 +331,7 @@ export default function App() {
               </div>
 
               {loading ? (
-                <p className="loading">Loading registryâ€¦</p>
+                <p className="loading">Loading registry…</p>
               ) : (
                 <AssetList
                   assets={filteredAssets}
@@ -425,7 +375,7 @@ export default function App() {
 
                 <small>
                   {mapLoading
-                    ? "Loading layerâ€¦"
+                    ? "Loading layer…"
                     : `Showing ${mapFeatures.features.length} of ${mapFeatures.total}`}
                 </small>
               </div>
@@ -498,13 +448,13 @@ export default function App() {
                   <EvidenceStatePanel state={evidenceState} />
                 ) : (
                   <p className="loading">
-                    Loading government evidence stateâ€¦
+                    Loading government evidence state…
                   </p>
                 )}
               </>
             ) : (
               <p className="loading">
-                Building canonical twin stateâ€¦
+                Building canonical twin state…
               </p>
             )}
           </section>

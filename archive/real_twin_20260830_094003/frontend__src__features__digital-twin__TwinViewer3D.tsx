@@ -4,11 +4,11 @@ import { Suspense, useMemo, useState } from "react";
 import type { TwinResponse } from "../../types/twin";
 import { riskColor } from "../../utils";
 import { AssetSpecificModel } from "./AssetSpecificModels";
-import { DimensionAnnotations } from "./DimensionAnnotations";
 
 function GlbModel({ uri }: { uri: string }) {
   const { scene } = useGLTF(uri);
   const instance = useMemo(() => scene.clone(true), [scene]);
+
   return <primitive object={instance} scale={1} />;
 }
 
@@ -17,40 +17,37 @@ function sourceBacked(twin: TwinResponse): boolean {
     twin.twin.dimensions["representation"] ?? "",
   ).toLowerCase();
 
-  return (
-    twin.twin.fidelity_level !== "L0" &&
+  return Boolean(
     twin.twin.is_asset_specific &&
-    (
-      Boolean(twin.twin.source_url) ||
-      representation.includes("source_backed") ||
-      representation.includes("source_extracted")
-    )
+      twin.twin.source_url &&
+      twin.twin.fidelity_level !== "L0" &&
+      representation.includes("source_backed"),
   );
 }
 
 export function TwinViewer3D({ twin }: { twin: TwinResponse }) {
   const [showDimensions, setShowDimensions] = useState(true);
   const backed = sourceBacked(twin);
+  const hasGlb = Boolean(twin.twin.uri);
 
   return (
     <div className="twin-canvas">
       <Canvas
         key={`${twin.asset.asset_code}-${twin.twin.version}`}
-        camera={{ position: [13, 8, 17], fov: 42 }}
+        camera={{ position: [12, 7, 15], fov: 42 }}
         shadows
       >
         <color attach="background" args={["#07111c"]} />
-        <ambientLight intensity={0.82} />
-
+        <ambientLight intensity={0.8} />
         <directionalLight
-          position={[10, 14, 8]}
-          intensity={2.35}
+          position={[8, 12, 7]}
+          intensity={2.4}
           castShadow
         />
 
         <gridHelper
-          args={[34, 34, "#1c516b", "#122a3a"]}
-          position={[0, -2.01, 0]}
+          args={[30, 30, "#1c516b", "#122a3a"]}
+          position={[0, -1.95, 0]}
         />
 
         <Suspense fallback={null}>
@@ -60,39 +57,37 @@ export function TwinViewer3D({ twin }: { twin: TwinResponse }) {
             <AssetSpecificModel
               twin={twin}
               colour={riskColor(twin.ai.risk_level)}
-              showDimensions={false}
+              showDimensions={showDimensions}
             />
           )}
-
-          <DimensionAnnotations
-            twin={twin}
-            visible={showDimensions}
-          />
         </Suspense>
 
         <OrbitControls
           makeDefault
-          enableDamping
           minDistance={4}
-          maxDistance={52}
+          maxDistance={45}
+          enableDamping
         />
       </Canvas>
 
       <div className="viewer-label">
         <strong>{twin.twin.fidelity_level}</strong>
+
         <span>
-          {backed
-            ? "Source-driven asset-specific parametric twin"
-            : "Illustrative type twin - geometry is not measured"}
+          {hasGlb
+            ? "Asset-specific 3D model · check source and accuracy below"
+            : backed
+              ? "Source-backed dimensional twin · not survey/BIM/LiDAR geometry"
+              : "Illustrative type model · geometry is not measured or verified"}
         </span>
       </div>
 
-      {backed && (
+      {backed && !hasGlb && (
         <button
           className="dimension-toggle"
           type="button"
           aria-pressed={showDimensions}
-          onClick={() => setShowDimensions((value) => !value)}
+          onClick={() => setShowDimensions((current) => !current)}
         >
           {showDimensions ? "Hide dimensions" : "Show dimensions"}
         </button>

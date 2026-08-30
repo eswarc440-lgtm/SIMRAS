@@ -3,7 +3,6 @@ import type {
   MapFeatureCollection,
   MapFeatureSummaryResponse,
   TwinResponse,
-  TwinCatalogResponse,
 } from "../types/twin";
 import type { EvidenceStateResponse } from "../types/evidence";
 
@@ -31,7 +30,6 @@ async function request<T>(path: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 export const api = {
-  twinCatalog: () => request<TwinCatalogResponse>("/twin-catalog"),
   assets: () => request<AssetListResponse>("/assets?limit=1000"),
   highRisk: () =>
     request<AssetListResponse["items"]>("/assets/high-risk?limit=10"),

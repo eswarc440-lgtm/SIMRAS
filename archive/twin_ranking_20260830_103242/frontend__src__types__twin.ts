@@ -17,14 +17,6 @@ export interface AssetSummary {
   risk_score?: number | null;
   risk_level?: RiskLevel | null;
   data_confidence?: number | null;
-  twin_quality_score?: number;
-  twin_quality?: "EXCELLENT" | "READY" | "PARTIAL" | "BASIC";
-  twin_group?: "BEST" | "IMPROVING" | "BASIC";
-  twin_quality_label?: string;
-  twin_fidelity?: string;
-  twin_source_backed?: boolean;
-  twin_dimension_count?: number;
-  twin_template?: string;
 }
 
 export interface AssetListResponse {
@@ -139,37 +131,4 @@ export interface MapFeatureSummaryItem {
 
 export interface MapFeatureSummaryResponse {
   items: MapFeatureSummaryItem[];
-}
-
-export interface TwinCatalogItem {
-  asset_code: string;
-  name: string;
-  asset_type: string;
-  subtype?: string | null;
-  district?: string | null;
-  identity_status: string;
-  fidelity_level: string;
-  is_asset_specific: boolean;
-  has_model_uri: boolean;
-  has_source: boolean;
-  dimension_count: number;
-  representation: string;
-  template: string;
-  model_source: string;
-  source_url?: string | null;
-  source_backed: boolean;
-  twin_quality_score: number;
-  twin_quality: "EXCELLENT" | "READY" | "PARTIAL" | "BASIC";
-  twin_group: "BEST" | "IMPROVING" | "BASIC";
-  twin_quality_label: string;
-}
-
-export interface TwinCatalogResponse {
-  items: TwinCatalogItem[];
-  counts: {
-    best: number;
-    improving: number;
-    basic: number;
-    total: number;
-  };
 }

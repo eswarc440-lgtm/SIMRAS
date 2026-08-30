@@ -10,15 +10,18 @@ function label(value: string | null | undefined) {
   return value ? value.replaceAll("_", " ") : unavailable;
 }
 
-function toneFor(value: string): "good" | "warn" | "danger" {
-  if (value === "HEALTHY" || value === "LOW" || value === "HIGH") {
-    return value === "HIGH" ? "warn" : "good";
+function toneFor(
+  value: string,
+): "good" | "warn" | "danger" | "neutral" {
+  if (value === "HEALTHY" || value === "LOW") {
+    return "good";
   }
 
   if (
     value === "MONITOR" ||
     value === "MEDIUM" ||
-    value === "HIGH_PRIORITY"
+    value === "HIGH_PRIORITY" ||
+    value === "HIGH"
   ) {
     return "warn";
   }
@@ -27,7 +30,7 @@ function toneFor(value: string): "good" | "warn" | "danger" {
     return "danger";
   }
 
-  return "warn";
+  return "neutral";
 }
 
 function bandColour(value: EvidenceBand) {
@@ -45,8 +48,13 @@ function bandColour(value: EvidenceBand) {
   }
 }
 
-function displayValue(value: number | string | null, unit?: string | null) {
-  if (value == null) return unavailable;
+function displayValue(
+  value: number | string | null,
+  unit?: string | null,
+) {
+  if (value == null) {
+    return unavailable;
+  }
 
   const rendered =
     typeof value === "number"
@@ -64,6 +72,7 @@ export function EvidenceStatePanel({
   state: EvidenceStateResponse;
 }) {
   const environment = Object.entries(state.environment);
+
   const importantEvidence = state.evidence.filter(
     (item) =>
       item.authority_level === "A1" ||
@@ -110,37 +119,14 @@ export function EvidenceStatePanel({
         <div>
           <span>Evidence strength</span>
           <strong>{label(state.evidence_strength)}</strong>
-          <small>No fabricated health percentage</small>
+          <small>Official evidence layer; SIMRAS prediction shown separately</small>
         </div>
-      </section>
-
-      <section className="panel prediction-disclosure">
-        <div>
-          <span>Overall risk</span>
-          <strong style={{ color: bandColour(state.risk.value) }}>
-            {label(state.risk.value)}
-          </strong>
-        </div>
-
-        <div>
-          <span>Health score</span>
-          <strong>{unavailable}</strong>
-        </div>
-
-        <div>
-          <span>Remaining life</span>
-          <strong>{unavailable}</strong>
-        </div>
-
-        <StatusPill
-          label={label(state.risk.origin)}
-          tone={toneFor(state.risk.value)}
-        />
       </section>
 
       <section className="panel">
         <header>
           <h3>Government environmental observations</h3>
+
           <StatusPill
             label={
               environment.length > 0
@@ -155,31 +141,43 @@ export function EvidenceStatePanel({
           {environment.map(([key, item]) => (
             <article key={key}>
               <span>{label(key)}</span>
-              <strong>{displayValue(item.value, item.unit)}</strong>
+
+              <strong>
+                {displayValue(item.value, item.unit)}
+              </strong>
+
               <small>
                 {item.source ?? "Unknown source"}
                 {item.observed_at
-                  ? ` · ${new Date(item.observed_at).toLocaleString()}`
+                  ? ` · ${new Date(
+                      item.observed_at,
+                    ).toLocaleString()}`
                   : ""}
               </small>
+
               <small>
                 {label(item.quality_flag)}
                 {item.confidence != null
-                  ? ` · ${Math.round(item.confidence * 100)}% confidence`
+                  ? ` · ${Math.round(
+                      item.confidence * 100,
+                    )}% confidence`
                   : ""}
               </small>
             </article>
           ))}
 
           {environment.length === 0 && (
-            <p>No government environmental observation is matched.</p>
+            <p>
+              No government environmental observation is matched.
+            </p>
           )}
         </div>
       </section>
 
       <section className="panel provenance-panel">
         <header>
-          <h3>Official structural evidence</h3>
+          <h3>Official safety &amp; structural evidence</h3>
+
           <StatusPill
             label={
               state.condition.condition === "UNKNOWN"
@@ -189,7 +187,7 @@ export function EvidenceStatePanel({
             tone={
               state.condition.condition === "UNKNOWN"
                 ? "warn"
-                : "good"
+                : toneFor(state.condition.condition)
             }
           />
         </header>
@@ -199,10 +197,12 @@ export function EvidenceStatePanel({
             <dt>Condition</dt>
             <dd>{label(state.condition.condition)}</dd>
           </div>
+
           <div>
             <dt>Source</dt>
             <dd>{state.condition.source ?? unavailable}</dd>
           </div>
+
           <div>
             <dt>Document</dt>
             <dd>
@@ -213,37 +213,49 @@ export function EvidenceStatePanel({
                   target="_blank"
                   rel="noreferrer"
                 >
-                  {state.condition.document ?? "Official document"} ↗
+                  {state.condition.document ??
+                    "Official document"}{" "}
+                  ↗
                 </a>
               ) : (
                 state.condition.document ?? unavailable
               )}
             </dd>
           </div>
+
           <div>
             <dt>Rating system</dt>
             <dd>{label(state.condition.rating_system)}</dd>
           </div>
+
           <div>
             <dt>Origin</dt>
             <dd>{label(state.condition.origin)}</dd>
           </div>
+
           <div>
             <dt>RUL</dt>
-            <dd>Disabled until longitudinal AP validation</dd>
+            <dd>
+              Disabled until longitudinal AP validation
+            </dd>
           </div>
         </dl>
 
         {importantEvidence.length > 0 && (
           <div className="dimension-list">
             <h4>A1/A2 evidence linked to this asset</h4>
+
             <dl>
               {importantEvidence.map((item) => (
                 <div key={item.id}>
                   <dt>{label(item.field_name)}</dt>
+
                   <dd>
                     {item.text_value ??
-                      displayValue(item.numeric_value ?? null, item.unit)}
+                      displayValue(
+                        item.numeric_value ?? null,
+                        item.unit,
+                      )}
                     {" · "}
                     {label(item.origin)}
                   </dd>
@@ -253,12 +265,15 @@ export function EvidenceStatePanel({
           </div>
         )}
 
-        <p style={{ marginTop: "1rem", opacity: 0.8 }}>
+        <p
+          style={{
+            marginTop: "1rem",
+            opacity: 0.8,
+          }}
+        >
           {state.condition.message}
         </p>
       </section>
     </div>
   );
 }
-
-

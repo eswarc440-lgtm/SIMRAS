@@ -4,11 +4,11 @@ import { Suspense, useMemo, useState } from "react";
 import type { TwinResponse } from "../../types/twin";
 import { riskColor } from "../../utils";
 import { AssetSpecificModel } from "./AssetSpecificModels";
-import { DimensionAnnotations } from "./DimensionAnnotations";
 
 function GlbModel({ uri }: { uri: string }) {
   const { scene } = useGLTF(uri);
   const instance = useMemo(() => scene.clone(true), [scene]);
+
   return <primitive object={instance} scale={1} />;
 }
 
@@ -60,14 +60,9 @@ export function TwinViewer3D({ twin }: { twin: TwinResponse }) {
             <AssetSpecificModel
               twin={twin}
               colour={riskColor(twin.ai.risk_level)}
-              showDimensions={false}
+              showDimensions={showDimensions}
             />
           )}
-
-          <DimensionAnnotations
-            twin={twin}
-            visible={showDimensions}
-          />
         </Suspense>
 
         <OrbitControls
@@ -80,10 +75,13 @@ export function TwinViewer3D({ twin }: { twin: TwinResponse }) {
 
       <div className="viewer-label">
         <strong>{twin.twin.fidelity_level}</strong>
+
         <span>
-          {backed
-            ? "Source-driven asset-specific parametric twin"
-            : "Illustrative type twin - geometry is not measured"}
+          {twin.twin.uri
+            ? "Measured/published model Â· check provenance"
+            : backed
+              ? "Source-driven asset-specific parametric twin Â· dimensions shown from linked records"
+              : "Illustrative type twin Â· dimensions are not claimed as measured"}
         </span>
       </div>
 

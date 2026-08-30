@@ -2,16 +2,15 @@ import { StatusPill } from "../../components/StatusPill";
 import type { TwinResponse } from "../../types/twin";
 import { riskColor } from "../../utils";
 
-const empty = "â€”";
+const unavailable = "—";
 
-const ignoredDimensionKeys = new Set([
-  "template",
+const metadataKeys = new Set([
   "representation",
   "source_basis",
   "source_references",
-  "alignment_status",
   "structural_form",
   "dam_type",
+  "height_basis",
 ]);
 
 function score(value?: number | null) {
@@ -21,11 +20,11 @@ function score(value?: number | null) {
       <small>/100</small>
     </>
   ) : (
-    empty
+    unavailable
   );
 }
 
-function healthLabel(value?: number | null) {
+function healthClass(value?: number | null) {
   if (value == null) return "UNAVAILABLE";
   if (value >= 85) return "EXCELLENT";
   if (value >= 70) return "GOOD";
@@ -34,27 +33,34 @@ function healthLabel(value?: number | null) {
   return "CRITICAL";
 }
 
-function sourceBacked(twin: TwinResponse) {
+function sourceBacked(twin: TwinResponse): boolean {
   const representation = String(
     twin.twin.dimensions["representation"] ?? "",
   ).toLowerCase();
 
-  return (
-    twin.twin.fidelity_level !== "L0" &&
+  return Boolean(
     twin.twin.is_asset_specific &&
-    (
-      Boolean(twin.twin.source_url) ||
-      representation.includes("source_backed") ||
-      representation.includes("source_extracted")
-    )
+      twin.twin.source_url &&
+      twin.twin.fidelity_level !== "L0" &&
+      representation.includes("source_backed"),
   );
 }
 
-function dimName(key: string) {
+function label(key: string) {
   return key
-    .replace(/_m3s$/, " (mÂ³/s)")
+    .replace(/_m3s$/, " (m³/s)")
     .replace(/_m$/, " (m)")
     .replaceAll("_", " ");
+}
+
+function valueText(value: unknown) {
+  if (typeof value === "number") {
+    return value.toLocaleString(undefined, {
+      maximumFractionDigits: 3,
+    });
+  }
+
+  return String(value).replaceAll("_", " ");
 }
 
 export function TwinPanels({ twin }: { twin: TwinResponse }) {
@@ -62,12 +68,9 @@ export function TwinPanels({ twin }: { twin: TwinResponse }) {
 
   const dimensions = Object.entries(twin.twin.dimensions).filter(
     ([key, value]) =>
-      !ignoredDimensionKeys.has(key) &&
+      !metadataKeys.has(key) &&
       value != null &&
-      (
-        typeof value === "number" ||
-        typeof value === "string"
-      ),
+      (typeof value === "number" || typeof value === "string"),
   );
 
   return (
@@ -76,7 +79,7 @@ export function TwinPanels({ twin }: { twin: TwinResponse }) {
         <div>
           <span>SIMRAS predicted health</span>
           <strong>{score(twin.ai.health_score)}</strong>
-          <small>{healthLabel(twin.ai.health_score)}</small>
+          <small>{healthClass(twin.ai.health_score)}</small>
         </div>
 
         <div>
@@ -102,79 +105,10 @@ export function TwinPanels({ twin }: { twin: TwinResponse }) {
           <strong>
             {twin.ai.confidence != null
               ? `${Math.round(twin.ai.confidence * 100)}%`
-              : empty}
+              : unavailable}
           </strong>
-          <small>Prediction confidence Â· not official condition</small>
+          <small>Model/data confidence, not official condition</small>
         </div>
-      </section>
-
-      <section className="panel">
-        <header>
-          <h3>Digital twin geometry & provenance</h3>
-          <StatusPill
-            label={twin.twin.fidelity_level}
-            tone={backed ? "good" : "warn"}
-          />
-        </header>
-
-        <dl>
-          <div>
-            <dt>Geometry status</dt>
-            <dd>
-              {backed
-                ? "Source-driven asset-specific parametric representation"
-                : "Illustrative only; no source-backed dimensions linked"}
-            </dd>
-          </div>
-
-          <div>
-            <dt>Model source</dt>
-            <dd>
-              {twin.twin.source_url ? (
-                <a
-                  href={twin.twin.source_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="model-source-link"
-                >
-                  {twin.twin.model_source} â†—
-                </a>
-              ) : (
-                twin.twin.model_source
-              )}
-            </dd>
-          </div>
-
-          <div>
-            <dt>Identity</dt>
-            <dd>{twin.asset.identity_status}</dd>
-          </div>
-
-          <div>
-            <dt>Accuracy statement</dt>
-            <dd>
-              {twin.twin.uri
-                ? "Use source/model metadata for survey/BIM accuracy."
-                : backed
-                  ? "Dimensions follow linked records; unprovided geometry remains parametric/approximate."
-                  : "Do not use visual proportions as engineering measurements."}
-            </dd>
-          </div>
-        </dl>
-
-        {backed && dimensions.length > 0 && (
-          <div className="dimension-list">
-            <h4>Source-backed dimensions / characteristics</h4>
-            <dl>
-              {dimensions.map(([key, value]) => (
-                <div key={key}>
-                  <dt>{dimName(key)}</dt>
-                  <dd>{String(value).replaceAll("_", " ")}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        )}
       </section>
 
       <section className="panel prediction-disclosure">
@@ -198,11 +132,7 @@ export function TwinPanels({ twin }: { twin: TwinResponse }) {
         </div>
 
         <StatusPill
-          label={
-            twin.ai.model_validated
-              ? "VALIDATED"
-              : twin.ai.status
-          }
+          label={twin.ai.model_validated ? "VALIDATED" : twin.ai.status}
           tone={twin.ai.model_validated ? "good" : "warn"}
         />
       </section>
@@ -231,6 +161,86 @@ export function TwinPanels({ twin }: { twin: TwinResponse }) {
             <li key={item}>{item}</li>
           ))}
         </ul>
+      </section>
+
+      <section className="panel provenance-panel">
+        <header>
+          <h3>Digital twin & provenance</h3>
+          <StatusPill
+            label={twin.asset.identity_status}
+            tone={twin.asset.identity_status === "VERIFIED" ? "good" : "warn"}
+          />
+        </header>
+
+        <dl>
+          <div>
+            <dt>3D fidelity</dt>
+            <dd>
+              {twin.twin.fidelity_level}
+              {" · "}
+              {backed
+                ? "source-backed dimensional representation"
+                : "illustrative type representation"}
+            </dd>
+          </div>
+
+          <div>
+            <dt>Model source</dt>
+            <dd>
+              {twin.twin.source_url ? (
+                <a
+                  className="model-source-link"
+                  href={twin.twin.source_url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {twin.twin.model_source} ↗
+                </a>
+              ) : (
+                "No source-backed geometry linked"
+              )}
+            </dd>
+          </div>
+
+          <div>
+            <dt>Geometry truth status</dt>
+            <dd>
+              {backed
+                ? "L1 dimension-derived approximation; not survey/BIM/LiDAR accuracy"
+                : "L0 illustrative; visual proportions must not be read as engineering measurements"}
+            </dd>
+          </div>
+
+          <div>
+            <dt>Structural sensors</dt>
+            <dd>{twin.sensors_status.replaceAll("_", " ")}</dd>
+          </div>
+
+          <div>
+            <dt>Inspection</dt>
+            <dd>{twin.inspection.quality_flag.replaceAll("_", " ")}</dd>
+          </div>
+
+          <div>
+            <dt>RUL</dt>
+            <dd>Disabled until longitudinal Andhra Pradesh validation</dd>
+          </div>
+        </dl>
+
+        {backed && dimensions.length > 0 && (
+          <div className="dimension-list">
+            <h4>Source-backed model dimensions</h4>
+
+            <dl>
+              {dimensions.map(([key, value]) => (
+                <div key={key}>
+                  <dt>{label(key)}</dt>
+                  <dd>{valueText(value)}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )}
       </section>
     </div>
   );
