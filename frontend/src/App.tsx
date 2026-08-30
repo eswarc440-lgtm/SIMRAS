@@ -4,10 +4,16 @@ import { GISMap } from "./components/GISMap";
 import { KpiCard } from "./components/KpiCard";
 import { StatusPill } from "./components/StatusPill";
 import { CesiumTwinViewer } from "./features/digital-twin/CesiumTwinViewer";
+import { GoogleMapStreetView } from "./features/digital-twin/GoogleMapStreetView";
 import { EvidenceStatePanel } from "./features/digital-twin/EvidenceStatePanel";
 import { TwinPanels } from "./features/digital-twin/TwinPanels";
 import { TwinViewer3D } from "./features/digital-twin/TwinViewer3D";
 import { api } from "./services/api";
+import {
+  getPredictionStatus,
+  type PredictionStatus,
+} from "./services/predictionStatus";
+
 import type { EvidenceStateResponse } from "./types/evidence";
 import type {
   AssetSummary,
@@ -17,7 +23,7 @@ import type {
 } from "./types/twin";
 
 type Workspace = "GIS" | "TWIN";
-type ViewerMode = "ASSET_MODEL" | "GEOSPATIAL";
+type ViewerMode = "ASSET_MODEL" | "MAP_2D" | "GEOSPATIAL";
 
 const emptyMapFeatures: MapFeatureCollection = {
   type: "FeatureCollection",
@@ -33,12 +39,15 @@ export default function App() {
   const [twin, setTwin] = useState<TwinResponse>();
   const [evidenceState, setEvidenceState] =
     useState<EvidenceStateResponse>();
+  const [predictionStatus, setPredictionStatus] =
+    useState<PredictionStatus>();
   const [workspace, setWorkspace] = useState<Workspace>("GIS");
   const [viewerMode, setViewerMode] =
     useState<ViewerMode>("ASSET_MODEL");
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
-  const [mapFeatureType, setMapFeatureType] = useState("airport");
+  const [districtFilter, setDistrictFilter] = useState("all");
+  const [mapFeatureType] = useState("all");
   const [mapFeatures, setMapFeatures] =
     useState<MapFeatureCollection>(emptyMapFeatures);
   const [mapSummary, setMapSummary] =
@@ -179,41 +188,72 @@ export default function App() {
 
     setTwin(undefined);
     setEvidenceState(undefined);
+    setPredictionStatus(undefined);
     setError(undefined);
 
     Promise.allSettled([
       api.twin(assetCode),
       api.state(assetCode),
-    ]).then(([twinResult, stateResult]) => {
-      if (cancelled) return;
+      getPredictionStatus(assetCode),
+    ]).then(
+      ([
+        twinResult,
+        stateResult,
+        predictionResult,
+      ]) => {
+        if (cancelled) return;
 
-      if (twinResult.status === "fulfilled") {
-        if (twinResult.value.asset.asset_code === assetCode) {
-          setTwin(twinResult.value);
+        if (twinResult.status === "fulfilled") {
+          if (
+            twinResult.value.asset.asset_code ===
+            assetCode
+          ) {
+            setTwin(twinResult.value);
+          }
+        } else {
+          setError(
+            twinResult.reason instanceof Error
+              ? twinResult.reason.message
+              : String(twinResult.reason),
+          );
         }
-      } else {
-        setError(
-          twinResult.reason instanceof Error
-            ? twinResult.reason.message
-            : String(twinResult.reason),
-        );
-      }
 
-      if (stateResult.status === "fulfilled") {
-        setEvidenceState(stateResult.value);
-      } else {
-        setError(
-          stateResult.reason instanceof Error
-            ? stateResult.reason.message
-            : String(stateResult.reason),
-        );
-      }
-    });
+        if (stateResult.status === "fulfilled") {
+          setEvidenceState(stateResult.value);
+        }
+
+        if (
+          predictionResult.status ===
+          "fulfilled"
+        ) {
+          if (
+            predictionResult.value.asset
+              .asset_code === assetCode
+          ) {
+            setPredictionStatus(
+              predictionResult.value,
+            );
+          }
+        }
+      },
+    );
 
     return () => {
       cancelled = true;
     };
   }, [selected]);
+
+  const districts = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          assets
+            .map((asset) => asset.district)
+            .filter((value): value is string => Boolean(value)),
+        ),
+      ).sort((a, b) => a.localeCompare(b)),
+    [assets],
+  );
 
   const filteredAssets = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -222,15 +262,19 @@ export default function App() {
       const matchesType =
         typeFilter === "all" || asset.asset_type === typeFilter;
 
+      const matchesDistrict =
+        districtFilter === "all" ||
+        asset.district === districtFilter;
+
       const matchesText =
         !normalized ||
         `${asset.name} ${asset.district ?? ""}`
           .toLowerCase()
           .includes(normalized);
 
-      return matchesType && matchesText;
+      return matchesType && matchesDistrict && matchesText;
     });
-  }, [assets, query, typeFilter]);
+  }, [assets, query, typeFilter, districtFilter]);
 
   const mapLayers = useMemo(() => {
     const totals = new Map<string, number>();
@@ -297,7 +341,7 @@ export default function App() {
         <section className="hero-row">
           <div>
             <span className="eyebrow">
-              AP BRIDGES Â· DAMS Â· BARRAGES
+              AP BRIDGES Â· DAMS Â· BARRAGES Â· AIRPORTS Â· TEMPLES
             </span>
 
             <h1>
@@ -377,6 +421,24 @@ export default function App() {
                   <option value="bridge">Bridges</option>
                   <option value="dam">Dams</option>
                   <option value="barrage">Barrages</option>
+                  <option value="airport">Airports</option>
+                  <option value="temple">Temples</option>
+                </select>
+
+                <select
+                  value={districtFilter}
+                  onChange={(event) =>
+                    setDistrictFilter(event.target.value)
+                  }
+                  aria-label="Filter assets by district"
+                >
+                  <option value="all">All districts</option>
+
+                  {districts.map((district) => (
+                    <option key={district} value={district}>
+                      {district}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -398,37 +460,6 @@ export default function App() {
                 selected={selected}
                 onSelect={setSelected}
               />
-
-              <div className="map-layer-control">
-                <label htmlFor="map-layer">Context layer</label>
-
-                <select
-                  id="map-layer"
-                  value={mapFeatureType}
-                  onChange={(event) =>
-                    setMapFeatureType(event.target.value)
-                  }
-                >
-                  <option value="all">
-                    All layers ({mapFeatureTotal})
-                  </option>
-
-                  {mapLayers.map((layer) => (
-                    <option
-                      key={layer.featureType}
-                      value={layer.featureType}
-                    >
-                      {layer.featureType} ({layer.records})
-                    </option>
-                  ))}
-                </select>
-
-                <small>
-                  {mapLoading
-                    ? "Loading layerâ€¦"
-                    : `Showing ${mapFeatures.features.length} of ${mapFeatures.total}`}
-                </small>
-              </div>
 
               <div className="map-legend">
                 <span><i className="low" />Low</span>
@@ -463,9 +494,24 @@ export default function App() {
                       ? "active"
                       : ""
                   }
-                  onClick={() => setViewerMode("ASSET_MODEL")}
+                  onClick={() =>
+                    setViewerMode("ASSET_MODEL")
+                  }
                 >
                   Asset model
+                </button>
+
+                <button
+                  className={
+                    viewerMode === "MAP_2D"
+                      ? "active"
+                      : ""
+                  }
+                  onClick={() =>
+                    setViewerMode("MAP_2D")
+                  }
+                >
+                  2D map
                 </button>
 
                 <button
@@ -474,7 +520,9 @@ export default function App() {
                       ? "active"
                       : ""
                   }
-                  onClick={() => setViewerMode("GEOSPATIAL")}
+                  onClick={() =>
+                    setViewerMode("GEOSPATIAL")
+                  }
                 >
                   Terrain & buildings 3D
                 </button>
@@ -485,14 +533,24 @@ export default function App() {
               <>
                 <div className="twin-stage">
                   {viewerMode === "ASSET_MODEL" ? (
-                    <TwinViewer3D twin={twin} />
+                    <TwinViewer3D
+                      twin={twin}
+                      predictionStatus={predictionStatus}
+                    />
+                  ) : viewerMode === "MAP_2D" ? (
+                    <GoogleMapStreetView
+                      twin={twin}
+                    />
                   ) : (
-                    <CesiumTwinViewer twin={twin} />
+                    <CesiumTwinViewer
+                      twin={twin}
+                      predictionStatus={predictionStatus}
+                    />
                   )}
                 </div>
 
 
-                <TwinPanels twin={twin} />
+                <TwinPanels twin={twin} predictionStatus={predictionStatus} />
 
                 {evidenceState ? (
                   <EvidenceStatePanel state={evidenceState} />

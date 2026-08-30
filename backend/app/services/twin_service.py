@@ -18,6 +18,7 @@ from app.models.entities import (
     Sensor,
 )
 from app.services.recommendation_engine import build_recommendations
+from app.services.rul_engine import estimate_rul_proxy
 from app.services.risk_engine import RiskInput, RiskResult, score_risk
 
 
@@ -358,6 +359,46 @@ async def refresh_ml_prediction(
     row = await get_asset_row(session, asset_code)
     asset, _, _ = row
 
+
+    # --------------------------------------------------------
+    # Governed bridge ML inference gate
+    # --------------------------------------------------------
+    if str(asset.asset_type or "").lower() == "bridge":
+        from app.services.model_governance import (
+            bridge_prediction_gate,
+        )
+
+        gate = await bridge_prediction_gate(
+            session=session,
+            asset=asset,
+        )
+
+        if not gate["allowed"]:
+            return {
+                "status": "WITHHELD",
+                "prediction_available": False,
+                "reason_code": gate["reason_code"],
+                "asset": {
+                    "id": asset.id,
+                    "asset_code": asset.asset_code,
+                    "name": asset.name,
+                    "asset_type": asset.asset_type,
+                    "identity_status": asset.identity_status,
+                },
+                "model": gate.get("model"),
+                "governance": gate.get(
+                    "governance",
+                    {},
+                ),
+                "prediction": None,
+                "database_rows": [],
+                "warning": (
+                    "Bridge AI prediction withheld because "
+                    "the governed AP/NBI production "
+                    "requirements are not satisfied."
+                ),
+            }
+
     inspection = await _latest_inspection(session, asset.id)
     maintenance = await _latest_maintenance(session, asset.id)
     environment, _ = await _trusted_environment(session, asset.id)
@@ -569,6 +610,65 @@ async def build_twin(
         "prediction_time": datetime.now(UTC),
     }
 
+    # SIMRAS_ALL_ASSET_EXPERIMENTAL_RUL
+    rul_dimensions = (
+        model.dimensions
+        if model is not None and model.dimensions
+        else {}
+    )
+
+    rul_built_year = asset.built_year
+
+    if rul_built_year is None:
+        for year_key in (
+            "constructed_year",
+            "construction_year",
+            "completion_year",
+            "built_year",
+            "year_completed",
+        ):
+            candidate = rul_dimensions.get(year_key)
+
+            try:
+                if candidate is not None:
+                    parsed_year = int(float(candidate))
+                    if 1000 <= parsed_year <= datetime.now(UTC).year:
+                        rul_built_year = parsed_year
+                        break
+            except (TypeError, ValueError):
+                pass
+
+    rul_proxy = estimate_rul_proxy(
+        asset_type=asset.asset_type,
+        subtype=asset.subtype,
+        built_year=rul_built_year,
+        design_life_years=asset.design_life_years,
+        current_year=datetime.now(UTC).year,
+        health_score=ai.get("health_score"),
+        hazard_score=ai.get("hazard_score"),
+    )
+
+    ai["remaining_life_years"] = rul_proxy.estimate_years
+    ai["rul_lower_bound"] = rul_proxy.lower_bound
+    ai["rul_upper_bound"] = rul_proxy.upper_bound
+    ai["rul_confidence"] = rul_proxy.confidence
+    ai["rul_status"] = rul_proxy.status
+    ai["rul_basis"] = rul_proxy.basis
+    ai["rul_basis_url"] = rul_proxy.basis_url
+    ai["rul_method"] = rul_proxy.method
+
+    if rul_proxy.estimate_years is not None:
+        ai.setdefault("factors", []).append(
+            "Experimental RUL/planning-life proxy is available; "
+            "do not interpret it as an official structural-life rating"
+        )
+
+        if rul_proxy.estimate_years <= 5:
+            ai.setdefault("recommendations", []).append(
+                "Experimental RUL proxy is <=5 years; prioritise "
+                "qualified engineering review"
+            )
+
     return {
         "asset": summary,
         "static": {
@@ -656,3 +756,4 @@ async def build_twin(
         },
         "generated_at": datetime.now(UTC),
     }
+

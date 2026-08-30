@@ -75,6 +75,12 @@ class PredictionState(BaseModel):
     remaining_life_years: float | None = None
     rul_lower_bound: float | None = None
     rul_upper_bound: float | None = None
+    rul_confidence: float | None = None
+    rul_status: str | None = None
+    rul_basis: str | None = None
+    rul_basis_url: str | None = None
+    rul_lower_bound: float | None = None
+    rul_upper_bound: float | None = None
     confidence: float | None = None
     model_version: str
     feature_version: str

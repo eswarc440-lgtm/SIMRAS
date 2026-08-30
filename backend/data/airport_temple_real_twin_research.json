@@ -1,0 +1,154 @@
+{
+  "research_date": "2026-08-30",
+  "policy": "Only source-backed measurements are exposed as engineering dimensions. Area-only sources create area-scaled schematic massing, not survey footprints. Descriptive temple forms without measured envelopes remain contextual/L0.",
+  "airports": {
+    "Vijayawada": {
+      "runway_m": [
+        3360,
+        45
+      ],
+      "strip_m": [
+        3480,
+        280
+      ],
+      "bearing_deg_true": 77.75,
+      "source": "AAI India eAIP VOBZ + AAI aerodrome chart"
+    },
+    "Tirupati": {
+      "runway_m": [
+        3810,
+        45
+      ],
+      "strip_m": [
+        3930,
+        280
+      ],
+      "terminal_area_sqm": 16500,
+      "apron_stands": 3,
+      "source": "AAI India eAIP VOTP + AAI terminal release"
+    },
+    "Rajahmundry": {
+      "runway_m": [
+        3165,
+        45
+      ],
+      "strip_m": [
+        3285,
+        280
+      ],
+      "taxiway_c_m": [
+        257.5,
+        23
+      ],
+      "isolation_bay_m": [
+        91,
+        76
+      ],
+      "source": "AAI India eAIP VORY"
+    },
+    "Kadapa": {
+      "runway_m": [
+        1719,
+        30
+      ],
+      "strip_m": [
+        1839,
+        150
+      ],
+      "source": "AAI India eAIP VOCP"
+    },
+    "Kurnool": {
+      "runway_m": [
+        2000,
+        30
+      ],
+      "strip_m": [
+        2120,
+        150
+      ],
+      "terminal_area_sqm": 1350,
+      "land_area_acres": 1008.75,
+      "aero_zone_acres": 135,
+      "apron_stands": 4,
+      "source": "AAI India eAIP VOKU + APADCL"
+    },
+    "Visakhapatnam": {
+      "primary_runway_m": [
+        3048,
+        45
+      ],
+      "secondary_runway_m": [
+        1829,
+        45
+      ],
+      "terminal_area_sqm": 20400,
+      "land_area_acres": 350.31,
+      "apron_m": [
+        350,
+        135
+      ],
+      "old_apron_m": [
+        90,
+        75
+      ],
+      "source": "AAI Visakhapatnam Airport fact sheet/status"
+    }
+  },
+  "temples": {
+    "Tirumala": {
+      "complex_acres": 16.2,
+      "main_platform_ft": [
+        415,
+        263
+      ],
+      "ananda_nilaya_total_height_ft": 65.1667,
+      "outer_gopuram_ft": {
+        "base_ns": 38,
+        "base_ew": 32,
+        "height": 50,
+        "storeys": 5
+      },
+      "source": "Tirumala Tirupati Devasthanams"
+    },
+    "Srikalahasti": {
+      "main_gopuram_height_m": 36.5,
+      "source": "Sri Kalahasti Temple official site"
+    },
+    "Kanaka Durga": {
+      "rajagopuram_storeys": 9,
+      "rajagopuram_height_ft": 82.6,
+      "source": "AP district government + New Indian Express dimensional report"
+    },
+    "Srisailam Mallikarjuna": {
+      "historical_enclosure_ft": [
+        660,
+        510
+      ],
+      "historical_wall_height_ft": [
+        20,
+        26
+      ],
+      "source": "Census of India historical official description",
+      "warning": "Historical reference; not a current survey"
+    },
+    "Simhachalam": {
+      "site_elevation_m": 244,
+      "mandapam_pillars": 16,
+      "official_form": "square shrine, high tower, front portico, 16-pillared mandapam, enclosed verandah, dark granite",
+      "source": "Visakhapatnam District Government",
+      "warning": "No official measured building envelope found"
+    },
+    "Annavaram": {
+      "storeys": 2,
+      "deity_height_m": 4,
+      "source": "East Godavari/Kakinada District Government",
+      "warning": "No official measured building envelope found"
+    },
+    "Dwaraka Tirumala": {
+      "main_gopuram_storeys": 5,
+      "temple_site_height_ft": 120,
+      "source": "Census of India + Ministry of Tourism",
+      "warning": "No measured building envelope found"
+    }
+  }
+}

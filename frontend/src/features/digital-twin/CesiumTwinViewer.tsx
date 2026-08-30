@@ -1,4 +1,4 @@
-﻿import "cesium/Build/Cesium/Widgets/widgets.css";
+import "cesium/Build/Cesium/Widgets/widgets.css";
 
 import {
   Cartesian2,
@@ -24,6 +24,7 @@ import {
 import { useEffect, useRef } from "react";
 
 import type { TwinResponse } from "../../types/twin";
+import type { PredictionStatus } from "../../services/predictionStatus";
 import { riskColor } from "../../utils";
 
 function numericDimension(
@@ -40,8 +41,10 @@ function numericDimension(
 
 export function CesiumTwinViewer({
   twin,
+  predictionStatus,
 }: {
   twin: TwinResponse;
+  predictionStatus?: PredictionStatus;
 }) {
   const container =
     useRef<HTMLDivElement>(null);
@@ -141,11 +144,17 @@ export function CesiumTwinViewer({
           elevation,
         );
 
+      const aiWithheld =
+        twin.asset.asset_type === "bridge" &&
+        predictionStatus?.prediction_available === false;
+
       const colour =
         Color.fromCssColorString(
-          riskColor(
-            twin.ai.risk_level,
-          ),
+          aiWithheld
+            ? "#64748b"
+            : riskColor(
+                twin.ai.risk_level,
+              ),
         );
 
       const orientation =
@@ -288,7 +297,7 @@ export function CesiumTwinViewer({
         viewer.destroy();
       }
     };
-  }, [twin]);
+  }, [twin, predictionStatus]);
 
   return (
     <div className="geospatial-viewer-shell">

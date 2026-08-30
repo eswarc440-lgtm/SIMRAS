@@ -6,19 +6,6 @@ type Props = {
   onSelect: (asset: AssetSummary) => void;
 };
 
-function qualityColour(asset: AssetSummary): string {
-  switch (asset.twin_quality) {
-    case "EXCELLENT":
-      return "#37d3a2";
-    case "READY":
-      return "#38bdf8";
-    case "PARTIAL":
-      return "#f7c948";
-    default:
-      return "#94a3b8";
-  }
-}
-
 function AssetRow({
   asset,
   selectedCode,
@@ -28,80 +15,33 @@ function AssetRow({
   selectedCode?: string;
   onSelect: (asset: AssetSummary) => void;
 }) {
-  const colour = qualityColour(asset);
-
   return (
     <button
       type="button"
-      className={`ranked-asset-row ${
+      className={`simple-asset-row ${
         selectedCode === asset.asset_code ? "selected" : ""
       }`}
       onClick={() => onSelect(asset)}
     >
-      <div className="ranked-asset-topline">
-        <strong>{asset.name}</strong>
+      <strong className="simple-asset-name">
+        {asset.name}
+      </strong>
 
-        <span
-          className="twin-quality-badge"
-          style={{
-            color: colour,
-            borderColor: `${colour}66`,
-          }}
-        >
-          {asset.twin_quality ?? "BASIC"}
-        </span>
-      </div>
-
-      <div className="ranked-asset-meta">
+      <div className="simple-asset-meta">
         <span>{asset.asset_type}</span>
         <span>{asset.district ?? "District unavailable"}</span>
       </div>
-
-      <div className="ranked-twin-meta">
-        <span>
-          <b>{asset.twin_fidelity ?? "L0"}</b>
-          {" Â· "}
-          {asset.twin_source_backed ? "source-backed" : "illustrative"}
-        </span>
-
-        <span>
-          {asset.twin_dimension_count ?? 0} geometry fields
-        </span>
-      </div>
-
-      <div className="ranked-score-row">
-        <span>
-          Twin quality
-          <b>{asset.twin_quality_score ?? 0}/100</b>
-        </span>
-
-        <span>
-          Risk
-          <b>
-            {asset.risk_score != null
-              ? asset.risk_score.toFixed(0)
-              : "â€”"}
-          </b>
-        </span>
-      </div>
-
-      <small className="ranked-quality-description">
-        {asset.twin_quality_label ??
-          "Source-backed geometry is incomplete"}
-      </small>
     </button>
   );
 }
 
 function Section({
   title,
-  subtitle,
   items,
   selectedCode,
   onSelect,
 }: {
   title: string;
-  subtitle: string;
   items: AssetSummary[];
   selectedCode?: string;
   onSelect: (asset: AssetSummary) => void;
@@ -109,16 +49,12 @@ function Section({
   if (items.length === 0) return null;
 
   return (
-    <section className="ranked-asset-section">
-      <header className="ranked-section-header">
-        <div>
-          <strong>{title}</strong>
-          <small>{subtitle}</small>
-        </div>
-        <span>{items.length}</span>
-      </header>
+    <section className="simple-asset-section">
+      <div className="simple-section-title">
+        {title}
+      </div>
 
-      <div className="ranked-asset-items">
+      <div className="simple-asset-items">
         {items.map((asset) => (
           <AssetRow
             key={asset.asset_code}
@@ -137,6 +73,7 @@ export function AssetList({
   selectedCode,
   onSelect,
 }: Props) {
+  // Keep the existing best-twin-first ordering.
   const ranked = [...assets].sort((a, b) => {
     const quality =
       (b.twin_quality_score ?? 0) -
@@ -165,10 +102,9 @@ export function AssetList({
   );
 
   return (
-    <div className="ranked-asset-list">
+    <div className="simple-asset-list">
       <Section
         title="Best digital twins"
-        subtitle="Source-backed and structured â€” open these first"
         items={best}
         selectedCode={selectedCode}
         onSelect={onSelect}
@@ -176,15 +112,13 @@ export function AssetList({
 
       <Section
         title="Developing twins"
-        subtitle="Useful geometry, but more verified dimensions are needed"
         items={improving}
         selectedCode={selectedCode}
         onSelect={onSelect}
       />
 
       <Section
-        title="Illustrative / incomplete"
-        subtitle="Low-fidelity assets stay below until better source geometry is linked"
+        title="Other assets"
         items={basic}
         selectedCode={selectedCode}
         onSelect={onSelect}

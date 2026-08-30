@@ -1,0 +1,10 @@
+joblib<2,>=1.4
+mlflow<4,>=3
+numpy<3,>=2.0
+pandas<3,>=2.2
+scikit-learn<2,>=1.6
+xgboost<4,>=3
+
+[dev]
+pytest<9,>=8
+ruff<1,>=0.8

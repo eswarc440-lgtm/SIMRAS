@@ -2,6 +2,7 @@ import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useMemo, useState } from "react";
 import type { TwinResponse } from "../../types/twin";
+import type { PredictionStatus } from "../../services/predictionStatus";
 import { riskColor } from "../../utils";
 import { AssetSpecificModel } from "./AssetSpecificModels";
 import { DimensionAnnotations } from "./DimensionAnnotations";
@@ -28,7 +29,13 @@ function sourceBacked(twin: TwinResponse): boolean {
   );
 }
 
-export function TwinViewer3D({ twin }: { twin: TwinResponse }) {
+export function TwinViewer3D({
+  twin,
+  predictionStatus,
+}: {
+  twin: TwinResponse;
+  predictionStatus?: PredictionStatus;
+}) {
   const [showDimensions, setShowDimensions] = useState(true);
   const backed = sourceBacked(twin);
 

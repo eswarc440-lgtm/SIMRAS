@@ -88,15 +88,19 @@ class MLResult:
         return asdict(self)
 
 
-def condition_to_rating(condition: str | None, score: float | None) -> float | None:
-    if score is not None:
-        return max(0.0, min(9.0, float(score) * 9.0 / 100.0))
-    return {
-        "GOOD": 7.5,
-        "FAIR": 5.5,
-        "POOR": 3.5,
-        "CRITICAL": 1.5,
-    }.get((condition or "").upper())
+def condition_to_rating(
+    condition: str | None,
+    score: float | None,
+) -> float | None:
+    """
+    Generic condition labels and generic inspection scores are
+    not automatically equivalent to FHWA/NBI 0-9 ratings.
+
+    An explicitly sourced NBI-compatible engineering rating is
+    required before NBI inference.
+    """
+    return None
+
 
 
 def _checksum(path: Path) -> str:
@@ -112,7 +116,7 @@ def _load_artifacts(artifact_dir: Path) -> tuple[dict, dict[str, Any]] | None:
     if not manifest_path.exists():
         return None
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if manifest.get("stage") not in {"RESEARCH_TRANSFER", "VALIDATED_LOCAL"}:
+    if manifest.get("stage") not in {"PRODUCTION_DECISION_SUPPORT", "VALIDATED_LOCAL"}:
         return None
     models: dict[str, Any] = {}
     for filename in [
@@ -228,3 +232,4 @@ def predict_bridge(
         factors=list(dict.fromkeys(factors)),
         recommendations=recommendations,
     )
+

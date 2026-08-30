@@ -8,7 +8,7 @@ export interface GeometryPoint {
 export interface AssetSummary {
   asset_code: string;
   name: string;
-  asset_type: "bridge" | "dam" | "barrage";
+  asset_type: string;
   subtype?: string | null;
   district?: string | null;
   identity_status: string;
@@ -83,6 +83,11 @@ export interface TwinResponse {
     remaining_life_years?: number | null;
     rul_lower_bound?: number | null;
     rul_upper_bound?: number | null;
+    rul_confidence?: number | null;
+    rul_status?: string | null;
+    rul_basis?: string | null;
+    rul_basis_url?: string | null;
+    rul_method?: string | null;
     confidence?: number | null;
     model_version: string;
     feature_version: string;

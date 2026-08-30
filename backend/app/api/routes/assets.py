@@ -12,7 +12,7 @@ router = APIRouter(prefix="/assets", tags=["assets"])
 
 @router.get("", response_model=AssetListResponse)
 async def list_assets(
-    asset_type: str | None = Query(default=None, pattern="^(bridge|dam|barrage)$"),
+    asset_type: str | None = Query(default=None, pattern="^(bridge|dam|barrage|airport|temple)$"),
     district: str | None = None,
     search: str | None = None,
     limit: int = Query(default=100, ge=1, le=1000),

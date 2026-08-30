@@ -1,0 +1,57 @@
+{
+  "model_name": "simras_nbi_bridge_deterioration",
+  "model_version": "nbi_transfer_20260829_100503",
+  "feature_version": "nbi_bridge_state_v1",
+  "training_scope": "FHWA_NBI_US_BRIDGES_RESEARCH_TRANSFER",
+  "current_stage": "RESEARCH_TRANSFER",
+  "target_stage": "RESEARCH_TRANSFER",
+  "promotion_decision": "PROMOTION_BLOCKED",
+  "promotion_approved": false,
+  "checks": {
+    "model_gate:health_mae_le_1_0": true,
+    "model_gate:risk_auc_ge_0_70": true,
+    "model_gate:risk_brier_le_0_20": true,
+    "model_gate:risk_ece_le_0_10": true,
+    "model_gate:rul_mae_le_5_years": true,
+    "artifact_manifest_present": true,
+    "artifact_exists:health.joblib": true,
+    "artifact_checksum:health.joblib": true,
+    "artifact_exists:risk.joblib": true,
+    "artifact_checksum:risk.joblib": true,
+    "artifact_exists:risk_calibrator.joblib": true,
+    "artifact_checksum:risk_calibrator.joblib": true,
+    "artifact_exists:rul_lower.joblib": true,
+    "artifact_checksum:rul_lower.joblib": true,
+    "artifact_exists:rul_median.joblib": true,
+    "artifact_checksum:rul_median.joblib": true,
+    "artifact_exists:rul_upper.joblib": true,
+    "artifact_checksum:rul_upper.joblib": true,
+    "ap_compatibility_checked": true,
+    "ap_candidates_evaluated": true,
+    "ap_local_engineering_validation": false,
+    "ap_has_eligible_prediction_records": false,
+    "training_scope_declared": true,
+    "ap_transfer_limitation_declared": true
+  },
+  "blockers": [
+    "AP_LOCAL_LABELLED_VALIDATION_REQUIRED",
+    "NO_AP_ASSETS_MEET_INFERENCE_ELIGIBILITY"
+  ],
+  "ap_validation": {
+    "total_candidates": 22795,
+    "prediction_eligible": 0,
+    "prediction_withheld": 22795,
+    "verified_identities": 1,
+    "average_feature_coverage": 0.07660650142575123,
+    "max_feature_coverage": 0.1538,
+    "local_engineering_validation": false
+  },
+  "safety_policy": {
+    "allow_unverified_asset_prediction": false,
+    "allow_missing_core_feature_prediction": false,
+    "allow_fake_engineering_features": false,
+    "rul_authoritative_for_ap": false,
+    "intended_use": "DECISION_SUPPORT_ONLY"
+  },
+  "evaluated_at": "2026-08-30T13:20:45.893418+00:00"
+}

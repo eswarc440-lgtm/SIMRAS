@@ -1,0 +1,15 @@
+{
+  "validation_type": "AP_NBI_TRANSFER_COMPATIBILITY",
+  "generated_at": "2026-08-30T13:15:50.163271+00:00",
+  "total_bridge_candidates": 22795,
+  "prediction_eligible": 0,
+  "prediction_withheld": 22795,
+  "verified_identities": 1,
+  "average_feature_coverage": 0.07660650142575123,
+  "max_feature_coverage": 0.1538,
+  "stage": "AP_COMPATIBILITY_CHECKED",
+  "local_engineering_validation": false,
+  "promotion_allowed": false,
+  "promotion_blocker": "AP local labelled engineering validation has not yet been completed",
+  "policy": "Withhold predictions when identity/core engineering features are insufficient; never fabricate missing NBI fields."
+}

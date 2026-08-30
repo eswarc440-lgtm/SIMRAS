@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import type { ReactNode } from "react";
 import { CatmullRomCurve3, Vector3 } from "three";
 import type { TwinResponse } from "../../types/twin";
-
+import { ReferenceMatchedDigitalTwin } from "./ReferenceMatchedDigitalTwins";
 type Props = {
   twin: TwinResponse;
   colour: string;
@@ -574,9 +574,13 @@ export function AssetSpecificModel(props: Props) {
   const explicit = s(d, "template").toLowerCase();
   const name = twin.asset.name.toLowerCase();
   const type = twin.asset.asset_type.toLowerCase();
-  const subtype = String(twin.asset.subtype ?? "").toLowerCase();
 
-  const template =
+  if (type === "airport" || type === "temple") {
+    return <ReferenceMatchedDigitalTwin {...props} />;
+  }
+
+  const subtype = String(twin.asset.subtype ?? "").toLowerCase();
+const template =
     explicit ||
     (
       name.includes("flyover") ||
