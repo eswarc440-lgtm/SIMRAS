@@ -1,20 +1,15 @@
+import RealityTwinAssetViewer from "./features/digital-twin/RealityTwinAssetViewer";
 import { useEffect, useMemo, useState } from "react";
 import { AssetList } from "./components/AssetList";
 import { GISMap } from "./components/GISMap";
 import { KpiCard } from "./components/KpiCard";
 import { StatusPill } from "./components/StatusPill";
-import { CesiumTwinViewer } from "./features/digital-twin/CesiumTwinViewer";
-import { GoogleMapStreetView } from "./features/digital-twin/GoogleMapStreetView";
-import { EvidenceStatePanel } from "./features/digital-twin/EvidenceStatePanel";
 import { TwinPanels } from "./features/digital-twin/TwinPanels";
-import { TwinViewer3D } from "./features/digital-twin/TwinViewer3D";
+import { SelectedAssetReports } from "./features/reports/SelectedAssetReports";
 import { api } from "./services/api";
-import {
-  getPredictionStatus,
-  type PredictionStatus,
-} from "./services/predictionStatus";
-
 import type { EvidenceStateResponse } from "./types/evidence";
+import LegacyOverlayPruner from "./features/digital-twin/LegacyOverlayPruner";
+import DigitalTwinTelemetryPruner from "./features/digital-twin/DigitalTwinTelemetryPruner";
 import type {
   AssetSummary,
   MapFeatureCollection,
@@ -22,8 +17,8 @@ import type {
   TwinResponse,
 } from "./types/twin";
 
-type Workspace = "GIS" | "TWIN";
-type ViewerMode = "ASSET_MODEL" | "MAP_2D" | "GEOSPATIAL";
+type Workspace = "GIS" | "TWIN" | "REPORTS";
+type ViewerMode = "ASSET_MODEL" | "GEOSPATIAL";
 
 const emptyMapFeatures: MapFeatureCollection = {
   type: "FeatureCollection",
@@ -39,15 +34,12 @@ export default function App() {
   const [twin, setTwin] = useState<TwinResponse>();
   const [evidenceState, setEvidenceState] =
     useState<EvidenceStateResponse>();
-  const [predictionStatus, setPredictionStatus] =
-    useState<PredictionStatus>();
   const [workspace, setWorkspace] = useState<Workspace>("GIS");
   const [viewerMode, setViewerMode] =
     useState<ViewerMode>("ASSET_MODEL");
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
-  const [districtFilter, setDistrictFilter] = useState("all");
-  const [mapFeatureType] = useState("all");
+  const [mapFeatureType, setMapFeatureType] = useState("airport");
   const [mapFeatures, setMapFeatures] =
     useState<MapFeatureCollection>(emptyMapFeatures);
   const [mapSummary, setMapSummary] =
@@ -57,127 +49,50 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let cancelled = false;
-
-    Promise.all([
-      api.assets(),
-      api.twinCatalog(),
-      api.mapSummary(),
-    ])
-      .then(([response, catalog, mapResponse]) => {
-        if (cancelled) return;
-
-        const qualityByCode = new Map(
-          catalog.items.map((item) => [
-            item.asset_code,
-            item,
-          ]),
+    api.assets()
+      .then((response) => {
+        const ranked = [...response.items].sort(
+          (a, b) => (b.risk_score ?? -1) - (a.risk_score ?? -1),
         );
-
-        const ranked = response.items
-          .map((asset) => {
-            const quality = qualityByCode.get(
-              asset.asset_code,
-            );
-
-            return {
-              ...asset,
-              twin_quality_score:
-                quality?.twin_quality_score ?? 0,
-              twin_quality:
-                quality?.twin_quality ?? "BASIC",
-              twin_group:
-                quality?.twin_group ?? "BASIC",
-              twin_quality_label:
-                quality?.twin_quality_label ??
-                "Source-backed geometry incomplete",
-              twin_fidelity:
-                quality?.fidelity_level ?? "L0",
-              twin_source_backed:
-                quality?.source_backed ?? false,
-              twin_dimension_count:
-                quality?.dimension_count ?? 0,
-              twin_template:
-                quality?.template ?? "generic",
-            };
-          })
-          .sort((a, b) => {
-            const qualityDifference =
-              (b.twin_quality_score ?? 0) -
-              (a.twin_quality_score ?? 0);
-
-            if (qualityDifference !== 0) {
-              return qualityDifference;
-            }
-
-            return (
-              (b.risk_score ?? -1) -
-              (a.risk_score ?? -1)
-            );
-          });
 
         setAssets(ranked);
-        setMapSummary(mapResponse.items);
 
-        const configuredCode =
-          import.meta.env.VITE_DEFAULT_ASSET_ID;
+        const defaultCode = import.meta.env.VITE_DEFAULT_ASSET_ID;
 
-        const configured = ranked.find(
-          (asset) =>
-            asset.asset_code === configuredCode &&
-            (asset.twin_quality_score ?? 0) >= 70,
+        setSelected(
+          ranked.find((asset) => asset.asset_code === defaultCode) ??
+            ranked[0],
         );
-
-        const best =
-          ranked.find(
-            (asset) => asset.twin_group === "BEST",
-          ) ?? ranked[0];
-
-        setSelected(configured ?? best);
       })
-      .catch((cause: unknown) => {
-        if (cancelled) return;
-
+      .catch((cause: unknown) =>
         setError(
-          cause instanceof Error
-            ? cause.message
-            : String(cause),
-        );
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      });
+          cause instanceof Error ? cause.message : String(cause),
+        ),
+      )
+      .finally(() => setLoading(false));
 
-    return () => {
-      cancelled = true;
-    };
+    api.mapSummary()
+      .then((response) => setMapSummary(response.items))
+      .catch((cause: unknown) =>
+        setError(
+          cause instanceof Error ? cause.message : String(cause),
+        ),
+      );
   }, []);
+
   useEffect(() => {
-    let cancelled = false;
     setMapLoading(true);
 
     api.mapFeatures(
       mapFeatureType === "all" ? undefined : mapFeatureType,
     )
-      .then((response) => {
-        if (!cancelled) setMapFeatures(response);
-      })
-      .catch((cause: unknown) => {
-        if (!cancelled) {
-          setError(
-            cause instanceof Error ? cause.message : String(cause),
-          );
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setMapLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
+      .then(setMapFeatures)
+      .catch((cause: unknown) =>
+        setError(
+          cause instanceof Error ? cause.message : String(cause),
+        ),
+      )
+      .finally(() => setMapLoading(false));
   }, [mapFeatureType]);
 
   useEffect(() => {
@@ -188,72 +103,41 @@ export default function App() {
 
     setTwin(undefined);
     setEvidenceState(undefined);
-    setPredictionStatus(undefined);
     setError(undefined);
 
     Promise.allSettled([
       api.twin(assetCode),
       api.state(assetCode),
-      getPredictionStatus(assetCode),
-    ]).then(
-      ([
-        twinResult,
-        stateResult,
-        predictionResult,
-      ]) => {
-        if (cancelled) return;
+    ]).then(([twinResult, stateResult]) => {
+      if (cancelled) return;
 
-        if (twinResult.status === "fulfilled") {
-          if (
-            twinResult.value.asset.asset_code ===
-            assetCode
-          ) {
-            setTwin(twinResult.value);
-          }
-        } else {
-          setError(
-            twinResult.reason instanceof Error
-              ? twinResult.reason.message
-              : String(twinResult.reason),
-          );
+      if (twinResult.status === "fulfilled") {
+        if (twinResult.value.asset.asset_code === assetCode) {
+          setTwin(twinResult.value);
         }
+      } else {
+        setError(
+          twinResult.reason instanceof Error
+            ? twinResult.reason.message
+            : String(twinResult.reason),
+        );
+      }
 
-        if (stateResult.status === "fulfilled") {
-          setEvidenceState(stateResult.value);
-        }
-
-        if (
-          predictionResult.status ===
-          "fulfilled"
-        ) {
-          if (
-            predictionResult.value.asset
-              .asset_code === assetCode
-          ) {
-            setPredictionStatus(
-              predictionResult.value,
-            );
-          }
-        }
-      },
-    );
+      if (stateResult.status === "fulfilled") {
+        setEvidenceState(stateResult.value);
+      } else {
+        setError(
+          stateResult.reason instanceof Error
+            ? stateResult.reason.message
+            : String(stateResult.reason),
+        );
+      }
+    });
 
     return () => {
       cancelled = true;
     };
   }, [selected]);
-
-  const districts = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          assets
-            .map((asset) => asset.district)
-            .filter((value): value is string => Boolean(value)),
-        ),
-      ).sort((a, b) => a.localeCompare(b)),
-    [assets],
-  );
 
   const filteredAssets = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -262,19 +146,15 @@ export default function App() {
       const matchesType =
         typeFilter === "all" || asset.asset_type === typeFilter;
 
-      const matchesDistrict =
-        districtFilter === "all" ||
-        asset.district === districtFilter;
-
       const matchesText =
         !normalized ||
         `${asset.name} ${asset.district ?? ""}`
           .toLowerCase()
           .includes(normalized);
 
-      return matchesType && matchesDistrict && matchesText;
+      return matchesType && matchesText;
     });
-  }, [assets, query, typeFilter, districtFilter]);
+  }, [assets, query, typeFilter]);
 
   const mapLayers = useMemo(() => {
     const totals = new Map<string, number>();
@@ -311,11 +191,13 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      <DigitalTwinTelemetryPruner />
+      <LegacyOverlayPruner />
       <header className="topbar">
         <div className="brand-mark">S</div>
         <div className="brand-copy">
           <strong>SIMRAS</strong>
-          <span>Infrastructure intelligence Â· Andhra Pradesh</span>
+          <span>Infrastructure intelligence · Andhra Pradesh</span>
         </div>
 
         <nav>
@@ -332,6 +214,12 @@ export default function App() {
           >
             Digital twin
           </button>
+          <button
+            className={workspace === "REPORTS" ? "active" : ""}
+            onClick={() => setWorkspace("REPORTS")}
+          >
+            Reports
+          </button>
         </nav>
 
         <StatusPill label="Evidence backed" tone="good" />
@@ -341,19 +229,21 @@ export default function App() {
         <section className="hero-row">
           <div>
             <span className="eyebrow">
-              AP BRIDGES Â· DAMS Â· BARRAGES Â· AIRPORTS Â· TEMPLES
+              AP BRIDGES · DAMS · BARRAGES
             </span>
 
             <h1>
               {workspace === "GIS"
                 ? "Infrastructure risk command"
-                : selected?.name ?? "Digital twin"}
+                : workspace === "REPORTS"
+                  ? "Selected asset reports"
+                  : selected?.name ?? "Digital twin"}
             </h1>
 
             <p>
               Government observations, official evidence, source,
               timestamp, quality and confidence are shown separately.
-              SIMRAS predictions are never presented as official condition.
+              Missing structural evidence remains UNKNOWN.
             </p>
           </div>
 
@@ -362,7 +252,7 @@ export default function App() {
               className="primary-action"
               onClick={() => setWorkspace("TWIN")}
             >
-              Open selected twin â†’
+              Open selected twin →
             </button>
           )}
         </section>
@@ -391,7 +281,7 @@ export default function App() {
           <KpiCard
             label="High risk"
             value={highRisk}
-            detail="SIMRAS current risk classification"
+            detail="Existing registry classification"
             accent="#ff5b62"
           />
 
@@ -424,26 +314,10 @@ export default function App() {
                   <option value="airport">Airports</option>
                   <option value="temple">Temples</option>
                 </select>
-
-                <select
-                  value={districtFilter}
-                  onChange={(event) =>
-                    setDistrictFilter(event.target.value)
-                  }
-                  aria-label="Filter assets by district"
-                >
-                  <option value="all">All districts</option>
-
-                  {districts.map((district) => (
-                    <option key={district} value={district}>
-                      {district}
-                    </option>
-                  ))}
-                </select>
               </div>
 
               {loading ? (
-                <p className="loading">Loading registryâ€¦</p>
+                <p className="loading">Loading registry…</p>
               ) : (
                 <AssetList
                   assets={filteredAssets}
@@ -456,7 +330,7 @@ export default function App() {
             <div className="map-stage">
               <GISMap
                 assets={filteredAssets}
-                mapFeatures={mapFeatures}
+                mapFeatures={emptyMapFeatures}
                 selected={selected}
                 onSelect={setSelected}
               />
@@ -465,10 +339,11 @@ export default function App() {
                 <span><i className="low" />Low</span>
                 <span><i className="medium" />Medium</span>
                 <span><i className="high" />High</span>
-                <span><i className="context" />Context</span>
               </div>
             </div>
           </section>
+        ) : workspace === "REPORTS" ? (
+          <SelectedAssetReports selected={selected} twin={twin} />
         ) : (
           <section className="twin-workspace">
             <div className="twin-header">
@@ -487,31 +362,16 @@ export default function App() {
                 />
               </div>
 
-              <div className="segmented-control">
+              <div className="segmented-control" style={{ display: "none" }}>
                 <button
                   className={
                     viewerMode === "ASSET_MODEL"
                       ? "active"
                       : ""
                   }
-                  onClick={() =>
-                    setViewerMode("ASSET_MODEL")
-                  }
+                  onClick={() => setViewerMode("ASSET_MODEL")}
                 >
                   Asset model
-                </button>
-
-                <button
-                  className={
-                    viewerMode === "MAP_2D"
-                      ? "active"
-                      : ""
-                  }
-                  onClick={() =>
-                    setViewerMode("MAP_2D")
-                  }
-                >
-                  2D map
                 </button>
 
                 <button
@@ -520,9 +380,7 @@ export default function App() {
                       ? "active"
                       : ""
                   }
-                  onClick={() =>
-                    setViewerMode("GEOSPATIAL")
-                  }
+                  onClick={() => setViewerMode("GEOSPATIAL")}
                 >
                   Terrain & buildings 3D
                 </button>
@@ -532,37 +390,19 @@ export default function App() {
             {twin ? (
               <>
                 <div className="twin-stage">
-                  {viewerMode === "ASSET_MODEL" ? (
-                    <TwinViewer3D
-                      twin={twin}
-                      predictionStatus={predictionStatus}
-                    />
-                  ) : viewerMode === "MAP_2D" ? (
-                    <GoogleMapStreetView
-                      twin={twin}
-                    />
-                  ) : (
-                    <CesiumTwinViewer
-                      twin={twin}
-                      predictionStatus={predictionStatus}
-                    />
-                  )}
+                  <RealityTwinAssetViewer assetCode={selected?.asset_code} />
                 </div>
 
-
-                <TwinPanels twin={twin} predictionStatus={predictionStatus} />
-
-                {evidenceState ? (
-                  <EvidenceStatePanel state={evidenceState} />
-                ) : (
+                {!evidenceState && (
                   <p className="loading">
-                    Loading government evidence stateâ€¦
+                    Loading government evidence state...
                   </p>
                 )}
+
               </>
             ) : (
               <p className="loading">
-                Building canonical twin stateâ€¦
+                Building canonical twin state…
               </p>
             )}
           </section>

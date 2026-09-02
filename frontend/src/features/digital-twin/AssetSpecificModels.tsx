@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import type { ReactNode } from "react";
 import { CatmullRomCurve3, Vector3 } from "three";
 import type { TwinResponse } from "../../types/twin";
-import { ReferenceMatchedDigitalTwin } from "./ReferenceMatchedDigitalTwins";
+
 type Props = {
   twin: TwinResponse;
   colour: string;
@@ -174,7 +174,7 @@ function GirderBridge({ twin, colour }: Props) {
       })}
 
       <Water z={0} />
-      
+      <DimensionText twin={twin} />
     </group>
   );
 }
@@ -285,7 +285,7 @@ function CurvedFlyover({ twin, colour }: Props) {
         <meshStandardMaterial color="#896c4c" roughness={0.88} />
       </mesh>
 
-      
+      <DimensionText twin={twin} />
     </group>
   );
 }
@@ -343,7 +343,7 @@ function ArchBridge({ twin, colour }: Props) {
       })}
 
       <Water />
-      
+      <DimensionText twin={twin} />
     </group>
   );
 }
@@ -394,7 +394,7 @@ function GravityDam({ twin, colour }: Props) {
       </mesh>
 
       <Water z={-5.1} depth={7} />
-      
+      <DimensionText twin={twin} />
     </group>
   );
 }
@@ -433,7 +433,7 @@ function GatedBarrage({ twin, colour }: Props) {
       })}
 
       <Water width={28} depth={10} />
-      
+      <DimensionText twin={twin} />
     </group>
   );
 }
@@ -478,7 +478,7 @@ function Airport({ twin }: Props) {
       </mesh>
 
       <Ground />
-      
+      <DimensionText twin={twin} />
     </group>
   );
 }
@@ -550,7 +550,7 @@ function Temple({ twin }: Props) {
       </mesh>
 
       <Ground />
-      
+      <DimensionText twin={twin} />
     </group>
   );
 }
@@ -563,7 +563,7 @@ function Generic({ twin, colour }: Props) {
         <meshStandardMaterial color={colour} roughness={0.82} />
       </mesh>
       <Ground />
-      
+      <DimensionText twin={twin} />
     </group>
   );
 }
@@ -574,13 +574,9 @@ export function AssetSpecificModel(props: Props) {
   const explicit = s(d, "template").toLowerCase();
   const name = twin.asset.name.toLowerCase();
   const type = twin.asset.asset_type.toLowerCase();
-
-  if (type === "airport" || type === "temple") {
-    return <ReferenceMatchedDigitalTwin {...props} />;
-  }
-
   const subtype = String(twin.asset.subtype ?? "").toLowerCase();
-const template =
+
+  const template =
     explicit ||
     (
       name.includes("flyover") ||

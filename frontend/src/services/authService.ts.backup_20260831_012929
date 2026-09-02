@@ -1,0 +1,60 @@
+import type { AuthUser } from "../types";
+
+const STORAGE_KEY = "simras.session";
+
+function userFromEmail(email: string): AuthUser {
+  const trimmed = email.trim();
+  if (!trimmed) throw new Error("Email is required");
+  const local = trimmed.split("@")[0] || "User";
+  const name = local
+    .replace(/[._-]+/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+  return {
+    name,
+    email: trimmed,
+    phone: "",
+    organization: "",
+    role: "User",
+  };
+}
+
+export const authService = {
+  current(): AuthUser | null {
+    if (typeof window === "undefined") return null;
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as AuthUser;
+    } catch {
+      return null;
+    }
+  },
+
+  async login(email: string): Promise<AuthUser> {
+    const user = userFromEmail(email);
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+    return user;
+  },
+
+  async register(payload: { name: string; email: string; phone: string }): Promise<AuthUser> {
+    if (!payload.email.trim()) throw new Error("Email is required");
+    const user: AuthUser = {
+      name: payload.name.trim() || userFromEmail(payload.email).name,
+      email: payload.email.trim(),
+      phone: payload.phone.trim(),
+      organization: "",
+      role: "User",
+    };
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+    return user;
+  },
+
+  async verifyOtp(): Promise<boolean> {
+    throw new Error("OTP verification backend is not configured");
+  },
+
+  logout() {
+    window.localStorage.removeItem(STORAGE_KEY);
+  },
+};

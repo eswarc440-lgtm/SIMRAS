@@ -80,6 +80,11 @@ export interface TwinResponse {
     risk_level?: RiskLevel | null;
     hazard_score?: number | null;
     hazard_level?: RiskLevel | null;
+    operational_risk_score?: number | null;
+    operational_risk_level?: RiskLevel | null;
+    operational_confidence?: number | null;
+    operational_method?: string | null;
+    operational_status?: string | null;
     remaining_life_years?: number | null;
     rul_lower_bound?: number | null;
     rul_upper_bound?: number | null;

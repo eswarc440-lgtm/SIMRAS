@@ -2,14 +2,16 @@ import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useMemo, useState } from "react";
 import type { TwinResponse } from "../../types/twin";
-import type { PredictionStatus } from "../../services/predictionStatus";
 import { riskColor } from "../../utils";
 import { AssetSpecificModel } from "./AssetSpecificModels";
 import { DimensionAnnotations } from "./DimensionAnnotations";
 
+import { DamTelemetryOverlay } from "./DamTelemetryOverlay";
+import { LegacyOverlayPruner } from "./LegacyOverlayPruner";
 function GlbModel({ uri }: { uri: string }) {
   const { scene } = useGLTF(uri);
   const instance = useMemo(() => scene.clone(true), [scene]);
+
   return <primitive object={instance} scale={1} />;
 }
 
@@ -29,18 +31,15 @@ function sourceBacked(twin: TwinResponse): boolean {
   );
 }
 
-export function TwinViewer3D({
-  twin,
-  predictionStatus,
-}: {
-  twin: TwinResponse;
-  predictionStatus?: PredictionStatus;
-}) {
+export function TwinViewer3D({ twin }: { twin: TwinResponse }) {
   const [showDimensions, setShowDimensions] = useState(true);
   const backed = sourceBacked(twin);
 
   return (
     <div className="twin-canvas">
+      <LegacyOverlayPruner />
+      {/* SIMRAS_DAM_TELEMETRY_OVERLAY_V1 */}
+      <DamTelemetryOverlay twin={twin} />
       <Canvas
         key={`${twin.asset.asset_code}-${twin.twin.version}`}
         camera={{ position: [13, 8, 17], fov: 42 }}
@@ -67,15 +66,12 @@ export function TwinViewer3D({
             <AssetSpecificModel
               twin={twin}
               colour={riskColor(twin.ai.risk_level)}
-              showDimensions={false}
+              showDimensions={showDimensions}
             />
           )}
-
-          <DimensionAnnotations
-            twin={twin}
-            visible={showDimensions}
-          />
         </Suspense>
+
+        <DimensionAnnotations twin={twin} visible={showDimensions} />
 
         <OrbitControls
           makeDefault
@@ -87,10 +83,13 @@ export function TwinViewer3D({
 
       <div className="viewer-label">
         <strong>{twin.twin.fidelity_level}</strong>
+
         <span>
-          {backed
-            ? "Source-driven asset-specific parametric twin"
-            : "Illustrative type twin - geometry is not measured"}
+          {twin.twin.uri
+            ? "Measured/published model Â· check provenance"
+            : backed
+              ? "Source-driven asset-specific parametric twin Â· dimensions shown from linked records"
+              : "Illustrative type twin Â· dimensions are not claimed as measured"}
         </span>
       </div>
 
