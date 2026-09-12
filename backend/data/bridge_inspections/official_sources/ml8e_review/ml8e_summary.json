@@ -1,0 +1,28 @@
+{
+  "version": "ml8e_candidate_validation_v1",
+  "policy": {
+    "database_modified": false,
+    "training_labels_created": 0,
+    "predictions_created": 0,
+    "automatic_label_promotion": false,
+    "manual_review_required": true
+  },
+  "counts": {
+    "raw_ml8d_candidates": 130,
+    "deduplicated_candidates": 130,
+    "high_priority_exact_asset": 0,
+    "identifier_needs_asset_link": 10,
+    "ambiguous_multi_asset": 4,
+    "insufficient": 116,
+    "labels_created": 0
+  },
+  "tier_counts": {
+    "D_INSUFFICIENT_FOR_LABEL": 116,
+    "B_IDENTIFIER_NEEDS_ASSET_LINK": 10,
+    "C_AMBIGUOUS_MULTI_ASSET_PAGE": 4
+  },
+  "document_counts": {
+    "NHAI_Giddalur_Vinukonda_NH544D.pdf": 119,
+    "NHAI_Tada_Nellore_NH5_Vol_II.pdf": 11
+  }
+}

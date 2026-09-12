@@ -1,0 +1,27 @@
+=========================================================================================================
+SIMRAS STEP 5B - TEMPLE IDENTITY EVIDENCE RESULT
+=========================================================================================================
+
+Temple assets                    : 7
+Official identities verified     : 7
+ASI association review required  : 1
+ASI no-exact-name screening      : 6
+
+AP_TEMPLE_KANAKA_DURGA | VERIFIED | Andhra Pradesh Endowments Department | REVIEW_POSSIBLE_ASSOCIATED_ASI_EVIDENCE
+AP_TEMPLE_SRIKALAHASTI | VERIFIED | Andhra Pradesh Endowments Department | NO_EXACT_NAME_MATCH_IN_CURRENT_CPM_LIST
+AP_TEMPLE_SRISAILAM | VERIFIED | Andhra Pradesh Endowments Department | NO_EXACT_NAME_MATCH_IN_CURRENT_CPM_LIST
+AP_TEMPLE_SIMHACHALAM | VERIFIED | Andhra Pradesh Endowments Department | NO_EXACT_NAME_MATCH_IN_CURRENT_CPM_LIST
+AP_TEMPLE_ANNAVARAM | VERIFIED | Andhra Pradesh Endowments Department | NO_EXACT_NAME_MATCH_IN_CURRENT_CPM_LIST
+AP_TEMPLE_DWARAKA_TIRUMALA | VERIFIED | Andhra Pradesh Endowments Department | NO_EXACT_NAME_MATCH_IN_CURRENT_CPM_LIST
+AP_TEMPLE_TIRUMALA | VERIFIED | Tirumala Tirupati Devasthanams | NO_EXACT_NAME_MATCH_IN_CURRENT_CPM_LIST
+
+Database table:
+ public.temple_identity_evidence_verified
+
+Feature version:
+ ap_temple_identity_v1
+
+IMPORTANT:
+ Identity/history evidence is NOT structural-condition evidence.
+ No Health Score, structural Risk Score or RUL is created here.
+=========================================================================================================

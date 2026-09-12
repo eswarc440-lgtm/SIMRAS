@@ -1,0 +1,41 @@
+{
+  "schema_version": "simras_nhai_mbui_v1",
+  "authority": "National Highways Authority of India",
+  "evidence_type": "OFFICIAL_ENGINEERING_INSPECTION",
+  "source_standard": "NHAI O&M / IRC-SP 35 bridge inspection",
+  "required_identity_fields": [
+    "official_bridge_id or bridge_number",
+    "route",
+    "chainage or coordinates"
+  ],
+  "required_inspection_fields": [
+    "inspection_date",
+    "inspection_authority",
+    "source_document"
+  ],
+  "mbiu_component_fields": [
+    "condition_approach",
+    "condition_signs",
+    "condition_debris",
+    "condition_joint",
+    "condition_deck",
+    "condition_rails",
+    "condition_protection",
+    "condition_stream",
+    "condition_superstructure",
+    "condition_piers",
+    "condition_abutment"
+  ],
+  "promotion_policy": {
+    "synthetic_allowed": false,
+    "automatic_identity_match": false,
+    "official_source_required": true,
+    "inspection_date_required": true,
+    "bridge_specific_record_required": true,
+    "current_asset_condition_is_label": false,
+    "road_safety_audit_is_structural_label": false,
+    "minimum_for_current_condition_model": "one verified bridge-specific inspection",
+    "minimum_for_temporal_risk_model": "two verified dated inspections for same bridge",
+    "rul": "WITHHELD until sufficient longitudinal evidence exists"
+  }
+}

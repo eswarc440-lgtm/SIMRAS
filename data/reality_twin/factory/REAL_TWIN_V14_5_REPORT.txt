@@ -1,0 +1,11 @@
+﻿SIMRAS REAL TWIN V14.5 FAST COMPLETION REPORT
+============================================
+Assets: 194
+Models generated: 42
+Priority-1 generated: 21/21
+Failed: 0
+Empty extracts: 0
+Still pending: 152
+Workers used: 3
+
+TRUTH: OSM2World models are public-OSM visual context, not survey/BIM/photogrammetry.

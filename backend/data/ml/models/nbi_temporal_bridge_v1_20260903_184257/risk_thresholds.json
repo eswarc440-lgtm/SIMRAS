@@ -1,0 +1,5 @@
+{
+  "medium_probability": 0.5,
+  "high_probability": 0.7610619469026548,
+  "method": "calibration-set recall>=0.90 + maximum-F1 operating points"
+}

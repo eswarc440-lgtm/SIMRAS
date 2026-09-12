@@ -1,0 +1,37 @@
+﻿SIMRAS MAIN INFRASTRUCTURE TARGET
+DAM
+BRIDGE
+BARRAGE
+AIRPORT
+TEMPLE
+
+DATABASE RESULTS
+=========================================================================================================
+SIMRAS MAIN INFRASTRUCTURE DATABASE COUNTS
+=========================================================================================================
+
+DAM            : 167
+BRIDGE         : 23,119
+BARRAGE        : 10
+AIRPORT        : 8
+TEMPLE         : 7
+
+---------------------------------------------------------------------------------------------------------
+BARRAGE ASSETS
+---------------------------------------------------------------------------------------------------------
+AP_BAR_WRIS_B01201 | Chagallur Barrage | district=Anantapur | identity=CANDIDATE | estimated=False
+AP_BAR_WRIS_B00434 | Gotta Barrage | district=Srikakulam | identity=CANDIDATE | estimated=False
+AP_BAR_WRIS_B00435 | Neradi Barrage | district=Srikakulam | identity=CANDIDATE | estimated=False
+AP_DAM_00001 | Prakasam Barrage | district=NTR | identity=VERIFIED | estimated=False
+AP_BAR_WRIS_B00800 | Rallapadu Barrage | district=Prakasam | identity=CANDIDATE | estimated=False
+AP_BAR_WRIS_B00131 | Sir Arthur Cotton Barrage /Godavari Barrage | district=East Godavari | identity=CANDIDATE | estimated=False
+AP_BAR_WRIS_B00448 | Swarnamukhi Barrage | district=Sri Potti Sriramulu Nellore | identity=CANDIDATE | estimated=False
+AP_BAR_WRIS_B00165 | Tarakarama Thirtha Sagaram Barrage | district=Vizianagaram | identity=CANDIDATE | estimated=False
+AP_BAR_WRIS_B00429 | Thotapalli Barrage | district=Vizianagaram | identity=CANDIDATE | estimated=False
+AP_BAR_WRIS_B01609 | Vaikuntapuram Barrage | district=Guntur | identity=CANDIDATE | estimated=False
+
+TOTAL BARRAGES IN public.assets: 10
+
+Normalized dam/barrage engineering assets: 175
+
+=========================================================================================================

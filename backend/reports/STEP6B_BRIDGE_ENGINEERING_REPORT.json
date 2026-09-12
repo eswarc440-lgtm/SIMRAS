@@ -1,0 +1,63 @@
+{
+  "generated_at": "2026-09-03T13:39:39.990374+00:00",
+  "evidence_rows": 24,
+  "summary": {
+    "assets": 2,
+    "with_length": 2,
+    "with_piers": 2,
+    "with_width": 1,
+    "structural_labels": 0
+  },
+  "features": [
+    {
+      "asset_id": 2,
+      "asset_code": "AP_BR_00001",
+      "asset_name": "Godavari Arch Bridge",
+      "district": "East Godavari",
+      "structure_mode": "RAIL",
+      "length_m": 2745.0,
+      "width_m": null,
+      "pier_count": 28,
+      "abutment_count": null,
+      "span_count": 28,
+      "max_reported_span_m": 97.552,
+      "lane_or_track_count": 1,
+      "material_summary": "PRESTRESSED_RCC_TWIN_ARCHES_M45",
+      "completion_year_evidence": 1997,
+      "full_operation_year": 2003,
+      "current_maintenance_procurement": false,
+      "government_evidence_rows": 3,
+      "technical_reference_rows": 10,
+      "current_structural_condition_labels": 0,
+      "health_ml_readiness": "NO_REAL_STRUCTURAL_INSPECTION",
+      "risk_ml_readiness": "NO_AP_STRUCTURAL_FAILURE_LABEL",
+      "rul_readiness": "PLANNING_BASIS_AVAILABLE_NOT_VALIDATED",
+      "feature_version": "ap_bridge_engineering_v1"
+    },
+    {
+      "asset_id": 4,
+      "asset_code": "AP_BR_00002",
+      "asset_name": "Kanaka Durga Flyover",
+      "district": "NTR",
+      "structure_mode": "ROAD",
+      "length_m": 2600.0,
+      "width_m": 23.7744,
+      "pier_count": 45,
+      "abutment_count": 2,
+      "span_count": null,
+      "max_reported_span_m": 45.0,
+      "lane_or_track_count": 6,
+      "material_summary": "LRPC_STRANDS_AND_TMT_REINFORCEMENT",
+      "completion_year_evidence": 2020,
+      "full_operation_year": 2020,
+      "current_maintenance_procurement": true,
+      "government_evidence_rows": 2,
+      "technical_reference_rows": 9,
+      "current_structural_condition_labels": 0,
+      "health_ml_readiness": "NO_REAL_STRUCTURAL_INSPECTION",
+      "risk_ml_readiness": "NO_AP_STRUCTURAL_FAILURE_LABEL",
+      "rul_readiness": "WITHHOLD_RUL",
+      "feature_version": "ap_bridge_engineering_v1"
+    }
+  ]
+}

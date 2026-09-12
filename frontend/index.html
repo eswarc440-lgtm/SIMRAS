@@ -1,0 +1,537 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#08131f" />
+    <meta name="description" content="SIMRAS infrastructure digital twin" />
+    <title>SIMRAS Digital Twin</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  
+
+
+
+
+<!-- SIMRAS_CONTEXT_ACTION_V3_START -->
+
+<style>
+#simras-action-v3 {
+  position: relative;
+  display: inline-block;
+  z-index: 99999;
+}
+
+#simras-action-v3-main {
+  min-width: 255px;
+  padding: 17px 25px;
+  border: 0;
+  border-radius: 13px;
+  background: #67d5ee;
+  color: #061923;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+#simras-action-v3-main:hover {
+  filter: brightness(1.06);
+}
+
+#simras-action-v3-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 9px);
+  width: 285px;
+  overflow: hidden;
+  border: 1px solid #29495b;
+  border-radius: 13px;
+  background: #071b29;
+  box-shadow: 0 18px 45px rgba(0,0,0,.42);
+}
+
+#simras-action-v3.open #simras-action-v3-menu {
+  display: block;
+}
+
+.simras-action-v3-option {
+  display: block;
+  width: 100%;
+  padding: 17px 19px;
+  border: 0;
+  border-bottom: 1px solid #183747;
+  background: #071b29;
+  color: #f2f8fc;
+  cursor: pointer;
+  text-align: left;
+}
+
+.simras-action-v3-option:last-child {
+  border-bottom: 0;
+}
+
+.simras-action-v3-option:hover {
+  background: #102d3e;
+}
+
+.simras-action-v3-title {
+  display: block;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.simras-action-v3-sub {
+  display: block;
+  margin-top: 4px;
+  color: #88aabd;
+  font-size: 12px;
+  font-weight: 400;
+}
+</style>
+
+<script>
+(function () {
+  "use strict";
+
+  /*
+   * FINAL REQUIRED STRUCTURE
+   *
+   * GIS Command
+   *     Navigate to Digital Twin ->
+   *
+   * Digital Twin
+   *     Navigate to Reports page ->
+   *
+   * Reports
+   *     Download report
+   *        PDF
+   *        Word
+   */
+
+  function getPage() {
+    var h1 = document.querySelector("h1");
+
+    var heading = h1
+      ? (h1.textContent || "").trim().toLowerCase()
+      : "";
+
+    var body = document.body
+      ? (document.body.innerText || "").toLowerCase()
+      : "";
+
+    // -------------------------
+    // REPORTS
+    // -------------------------
+
+    if (
+      heading.indexOf("selected asset reports") !== -1
+    ) {
+      return "REPORTS";
+    }
+
+    // -------------------------
+    // GIS COMMAND
+    // -------------------------
+
+    if (
+      heading.indexOf("infrastructure risk command") !== -1
+    ) {
+      return "GIS";
+    }
+
+    // -------------------------
+    // DIGITAL TWIN
+    // -------------------------
+
+    if (
+      body.indexOf("simras / engineering digital twin") !== -1 ||
+      body.indexOf("hide dimensions") !== -1
+    ) {
+      return "DIGITAL_TWIN";
+    }
+
+    return "UNKNOWN";
+  }
+
+
+  function findTopAction() {
+    var nodes = Array.from(
+      document.querySelectorAll("a,button")
+    );
+
+    return nodes.find(function (node) {
+      if (
+        node.closest &&
+        node.closest("#simras-action-v3")
+      ) {
+        return false;
+      }
+
+      var text = (node.textContent || "")
+        .trim()
+        .toLowerCase();
+
+      return (
+        text.indexOf("download report") !== -1 ||
+        text.indexOf("open selected twin") !== -1 ||
+        text.indexOf("navigate to digital twin") !== -1 ||
+        text.indexOf("navigate to reports") !== -1
+      );
+    });
+  }
+
+
+  function findNav(label) {
+    var wanted = label.trim().toLowerCase();
+
+    var nodes = Array.from(
+      document.querySelectorAll("a,button")
+    );
+
+    return nodes.find(function (node) {
+      if (
+        node.closest &&
+        node.closest("#simras-action-v3")
+      ) {
+        return false;
+      }
+
+      return (
+        (node.textContent || "")
+          .trim()
+          .toLowerCase() === wanted
+      );
+    });
+  }
+
+
+  function goDigitalTwin() {
+    var nav = findNav("Digital twin");
+
+    if (nav) {
+      nav.click();
+      return;
+    }
+
+    window.location.href =
+      window.location.origin + "/digital-twin";
+  }
+
+
+  function goReports() {
+    var nav = findNav("Reports");
+
+    if (nav) {
+      nav.click();
+      return;
+    }
+
+    window.location.href =
+      window.location.origin + "/reports";
+  }
+
+
+  function selectedAsset() {
+    var body = document.body
+      ? document.body.innerText
+      : "";
+
+    var explicit = body.match(
+      /\bASSET[\s:\n]+(AP_[A-Z0-9_]+)/i
+    );
+
+    if (explicit && explicit[1]) {
+      return explicit[1].toUpperCase();
+    }
+
+    var fallback = body.match(
+      /\bAP_(?:DAM|BAR|BR|AIR|TEMPLE)_[A-Z0-9_]+\b/i
+    );
+
+    return fallback
+      ? fallback[0].toUpperCase()
+      : null;
+  }
+
+
+  function backendBase() {
+    return (
+      window.location.protocol +
+      "//" +
+      window.location.hostname +
+      ":8000"
+    );
+  }
+
+
+  function download(format) {
+    var asset = selectedAsset();
+
+    if (!asset) {
+      alert("Please select an asset first.");
+      return;
+    }
+
+    var url =
+      backendBase() +
+      "/api/v1/reports/assets/" +
+      encodeURIComponent(asset) +
+      "/assessment/" +
+      format;
+
+    window.open(url, "_blank");
+  }
+
+
+  function createRoot() {
+    var existing =
+      document.getElementById("simras-action-v3");
+
+    if (existing) {
+      return existing;
+    }
+
+    var original = findTopAction();
+
+    if (!original) {
+      return null;
+    }
+
+    var root = document.createElement("div");
+
+    root.id = "simras-action-v3";
+
+    original.replaceWith(root);
+
+    return root;
+  }
+
+
+  function makeMain(text) {
+    var button = document.createElement("button");
+
+    button.id = "simras-action-v3-main";
+    button.type = "button";
+    button.textContent = text;
+
+    return button;
+  }
+
+
+  function renderGIS(root) {
+    root.innerHTML = "";
+    root.classList.remove("open");
+
+    var button = makeMain(
+      "Navigate to Digital Twin  →"
+    );
+
+    button.addEventListener(
+      "click",
+      goDigitalTwin
+    );
+
+    root.appendChild(button);
+  }
+
+
+  function renderTwin(root) {
+    root.innerHTML = "";
+    root.classList.remove("open");
+
+    var button = makeMain(
+      "Navigate to Reports page  →"
+    );
+
+    button.addEventListener(
+      "click",
+      goReports
+    );
+
+    root.appendChild(button);
+  }
+
+
+  function renderReports(root) {
+    root.innerHTML = "";
+    root.classList.remove("open");
+
+    var main = makeMain(
+      "Download report  ▾"
+    );
+
+    var menu =
+      document.createElement("div");
+
+    menu.id =
+      "simras-action-v3-menu";
+
+
+    var pdf =
+      document.createElement("button");
+
+    pdf.type = "button";
+
+    pdf.className =
+      "simras-action-v3-option";
+
+    pdf.innerHTML =
+      '<span class="simras-action-v3-title">' +
+      '📄 Download PDF' +
+      '</span>' +
+      '<span class="simras-action-v3-sub">' +
+      'Selected asset report (.pdf)' +
+      '</span>';
+
+
+    var word =
+      document.createElement("button");
+
+    word.type = "button";
+
+    word.className =
+      "simras-action-v3-option";
+
+    word.innerHTML =
+      '<span class="simras-action-v3-title">' +
+      '📝 Download Word' +
+      '</span>' +
+      '<span class="simras-action-v3-sub">' +
+      'Selected asset report (.docx)' +
+      '</span>';
+
+
+    main.addEventListener(
+      "click",
+      function (event) {
+        event.stopPropagation();
+
+        root.classList.toggle("open");
+      }
+    );
+
+
+    pdf.addEventListener(
+      "click",
+      function (event) {
+        event.stopPropagation();
+
+        root.classList.remove("open");
+
+        download("pdf");
+      }
+    );
+
+
+    word.addEventListener(
+      "click",
+      function (event) {
+        event.stopPropagation();
+
+        root.classList.remove("open");
+
+        download("docx");
+      }
+    );
+
+
+    menu.appendChild(pdf);
+    menu.appendChild(word);
+
+    root.appendChild(main);
+    root.appendChild(menu);
+  }
+
+
+  function sync() {
+    var page = getPage();
+
+    if (page === "UNKNOWN") {
+      return;
+    }
+
+    var root = createRoot();
+
+    if (!root) {
+      return;
+    }
+
+    if (
+      root.dataset &&
+      root.dataset.page === page
+    ) {
+      return;
+    }
+
+    root.dataset.page = page;
+
+    if (page === "GIS") {
+      renderGIS(root);
+      return;
+    }
+
+    if (page === "DIGITAL_TWIN") {
+      renderTwin(root);
+      return;
+    }
+
+    if (page === "REPORTS") {
+      renderReports(root);
+    }
+  }
+
+
+  document.addEventListener(
+    "click",
+    function () {
+      var root =
+        document.getElementById(
+          "simras-action-v3"
+        );
+
+      if (root) {
+        root.classList.remove("open");
+      }
+    }
+  );
+
+
+  /*
+   * React / SPA:
+   * re-evaluate after route changes.
+   */
+
+  setInterval(sync, 200);
+
+  var observer =
+    new MutationObserver(sync);
+
+  observer.observe(
+    document.documentElement,
+    {
+      childList: true,
+      subtree: true
+    }
+  );
+
+  setTimeout(sync, 50);
+  setTimeout(sync, 250);
+  setTimeout(sync, 600);
+  setTimeout(sync, 1200);
+
+})();
+</script>
+
+<!-- SIMRAS_CONTEXT_ACTION_V3_END -->
+</body>
+</html>
+
+
+
+
+
+
+

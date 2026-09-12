@@ -1,0 +1,32 @@
+==============================================================================================================
+SIMRAS STEP 6A - BRIDGE INVENTORY + ML READINESS RESULT
+==============================================================================================================
+
+Bridge assets found              : 2
+Unique normalized bridges        : 2
+Potential duplicate groups       : 0
+
+Assets with official evidence    : 0
+Assets with any inspections      : 1
+Assets with confirmed real insp. : 0
+
+Built year available             : 2
+Material available               : 1
+Length available                 : 0
+Design life available            : 1
+
+AP_BR_00001 | Godavari Arch Bridge | district=East Godavari | built=1997 | material=steel_and_concrete | length=None | inspection=NO | health=NO_REAL_STRUCTURAL_INSPECTION | rul=PLANNING_BASIS_AVAILABLE
+AP_BR_00002 | Kanaka Durga Flyover | district=NTR | built=2020 | material=None | length=None | inspection=NO | health=NO_REAL_STRUCTURAL_INSPECTION | rul=WITHHOLD_RUL
+
+Bridge evidence strategy:
+  1. AP R&B / APRDC / government DPR and bridge records
+  2. MoRTH / INFRACON / NHAI / PMGSY evidence where available
+  3. Real structural inspections remain AP validation labels
+  4. FHWA NBI is TRANSFER LEARNING ONLY
+
+IMPORTANT:
+ NBI predictions must not be presented as Andhra Pradesh
+ validated predictions without AP held-out condition labels.
+
+Source plan: /app/data/processed/bridge/AP_BRIDGE_SOURCE_PLAN.csv
+==============================================================================================================

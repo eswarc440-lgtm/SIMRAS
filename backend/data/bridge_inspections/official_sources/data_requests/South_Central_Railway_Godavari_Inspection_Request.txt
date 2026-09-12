@@ -1,0 +1,36 @@
+Subject: Request for bridge inspection / condition records for academic digital-twin research
+
+Requested asset:
+Godavari Arch Bridge / Kovvur-Rajahmundry Railway Bridge
+Andhra Pradesh
+SIMRAS canonical code: AP_BR_00001
+
+Requested records, preferably in machine-readable form:
+
+1. Bridge number / official railway bridge identifier
+2. Inspection dates
+3. Inspection type
+4. Bridge Inspection Register observations
+5. Numerical Rating System (NRS), where applicable
+6. Condition Rating Number / Overall Rating Number, where applicable
+7. Foundation condition
+8. Pier / substructure condition
+9. Bearing condition
+10. PSC / superstructure condition
+11. Crack, spalling, corrosion or leakage observations
+12. Scour / waterway observations
+13. Repair or maintenance recommendations
+14. Date of repair / rehabilitation
+15. Inspector / engineering authority
+16. Photographs or inspection references, where releasable
+
+Purpose:
+Academic research for an infrastructure digital twin and condition-prediction
+prototype. No synthetic inspection labels will be substituted for unavailable records.
+
+Preferred formats:
+CSV, XLSX, database export, PDF Bridge Inspection Register, or scanned inspection report.
+
+Important:
+Inventory data alone is useful as engineering evidence but will not be treated as
+a structural-condition ML label unless the inspection/condition assessment is explicit.

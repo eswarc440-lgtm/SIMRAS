@@ -1,0 +1,7 @@
+﻿"airport_name","canonical_candidates","duplicate_count","action"
+"Kadapa Airport","AP_AIR_AAI_KADAPA","1","KEEP"
+"Kurnool Airport","AP_AIR_AAI_KURNOOL","1","KEEP"
+"Rajahmundry Airport","AP_AIR_AAI_RAJAHMUNDRY","1","KEEP"
+"Tirupati Airport","AP_AIR_AAI_TIRUPATI | AP_AIR_VOTP","2","REVIEW_ALIAS_MERGE"
+"Vijayawada Airport","AP_AIR_AAI_VIJAYAWADA | AP_AIR_VOBZ","2","REVIEW_ALIAS_MERGE"
+"Visakhapatnam Airport","AP_AIR_AAI_VISAKHAPATNAM","1","KEEP"

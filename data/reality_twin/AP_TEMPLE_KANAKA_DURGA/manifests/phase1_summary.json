@@ -1,0 +1,15 @@
+﻿{
+    "asset_code":  "AP_TEMPLE_KANAKA_DURGA",
+    "asset_name":  "Sri Durga Malleswara Swamy Varla Devasthanam",
+    "phase":  "REALITY_TWIN_PHASE_1_IMAGERY_PROVENANCE",
+    "official_coordinates":  "16.5154,80.6059",
+    "commons_pages_discovered":  42,
+    "photos_downloaded":  2,
+    "skipped":  0,
+    "failed":  40,
+    "total_bytes":  1917831,
+    "dimensions_status":  "NOT_VERIFIED",
+    "reconstruction_status":  "NOT_STARTED",
+    "survey_grade":  false,
+    "next_step":  "IMAGE_COVERAGE_REVIEW_THEN_COLMAP"
+}

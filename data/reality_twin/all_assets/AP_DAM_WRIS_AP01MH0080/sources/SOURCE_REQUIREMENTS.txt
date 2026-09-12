@@ -1,0 +1,26 @@
+﻿SIMRAS REAL TWIN SOURCE REQUIREMENTS
+====================================
+Asset code: AP_DAM_WRIS_AP01MH0080
+Name: Earlakatta  Tank
+Type: dam
+District: Prakasam
+Latitude: 
+Longitude: 
+
+Preferred reality hierarchy:
+1. Verified asset-specific GLB/BIM/photogrammetry
+2. Source-backed detailed OSM2World model
+3. Public geospatial terrain/building context
+4. Never present a generic procedural model as the real asset
+
+Dimension authority:
+CWC / NRLD / India-WRIS / AP WRD
+
+Strategy:
+VERIFIED_MODEL_OR_SURVEY -> OSM2WORLD_CONTEXT -> TERRAIN
+
+Truth rules:
+- Google/public imagery alone is not engineering geometry.
+- OSM geometry is public map geometry, not survey-grade unless separately proven.
+- Dimensions must retain source/provenance.
+- Exact asset model must have provenance before being marked verified.

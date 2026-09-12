@@ -1,0 +1,106 @@
+==============================================================================================================
+SIMRAS STEP 3 - BUILD REAL AP DAM/BARRAGE ML FEATURE DATASET
+==============================================================================================================
+
+Government hydrology files: 8
+
+--------------------------------------------------------------------------------------------------------------
+ap_reservoir_level_1970_2025.csv
+name       : Station
+code       : None
+date       : Data Acquisition Time
+parameter  : None
+values     : ['Manual Daily Reservoir water level (m)']
+rows read    : 126,645
+matched rows : 68,013
+
+--------------------------------------------------------------------------------------------------------------
+ap_reservoir_level_2026_2030.csv
+name       : Station
+code       : None
+date       : Data Acquisition Time
+parameter  : None
+values     : ['Manual Daily Reservoir water level (m)']
+rows read    : 799
+matched rows : 492
+
+--------------------------------------------------------------------------------------------------------------
+ap_reservoir_storage_1970_2025.csv
+name       : Station
+code       : None
+date       : Data Acquisition Time
+parameter  : None
+values     : ['Manual Daily Reservoir storage (mcm)']
+rows read    : 98,888
+matched rows : 58,598
+
+--------------------------------------------------------------------------------------------------------------
+ap_reservoir_storage_2026_2030.csv
+name       : Station
+code       : None
+date       : Data Acquisition Time
+parameter  : None
+values     : ['Manual Daily Reservoir storage (mcm)']
+rows read    : 684
+matched rows : 471
+
+--------------------------------------------------------------------------------------------------------------
+ap_river_discharge_2001_2025.csv
+name       : Station
+code       : None
+date       : Data Acquisition Time
+parameter  : None
+values     : ['Manual Daily River Water Discharge (m3/sec)']
+[SKIP] No defensible SIMRAS asset match.
+
+--------------------------------------------------------------------------------------------------------------
+ap_river_discharge_2026_2030.csv
+name       : Station
+code       : None
+date       : Data Acquisition Time
+parameter  : None
+values     : ['Manual Daily River Water Discharge (m3/sec)']
+[SKIP] No defensible SIMRAS asset match.
+
+--------------------------------------------------------------------------------------------------------------
+ap_river_velocity_discharge_2021_2025.csv
+name       : Station
+code       : None
+date       : Data Acquisition Time
+parameter  : None
+values     : ['River Water Level (m)', 'Total_discharge (m3/sec)']
+[SKIP] No defensible SIMRAS asset match.
+
+--------------------------------------------------------------------------------------------------------------
+ap_scada_water_discharge_2023_2025.csv
+name       : Reservoir
+code       : Station Code
+date       : Data Acquisition Time
+parameter  : Parameter Type
+values     : ['Data Value']
+[SKIP] No defensible SIMRAS asset match.
+
+==============================================================================================================
+STEP 3 RESULT
+==============================================================================================================
+Total dams+barrages              : 177
+Engineering feature assets       : 175
+Dynamic hydrology assets         : 11
+Dynamic hydrology coverage       : 6.21%
+Hydrology metrics discovered     : 2
+  - manual_daily_reservoir_storage_mcm
+  - manual_daily_reservoir_water_level_m
+
+Assets missing built_year        : 87
+Missing built_year + WRIS year   : 0
+Year mismatches to review        : 2
+
+Feature version:
+ap_dam_barrage_state_v1
+
+ML-ready CSV:
+/app/data/processed/dam_barrage/AP_DAM_BARRAGE_ML_FEATURES_V1.csv
+
+Database table:
+public.dam_barrage_feature_snapshots
+==============================================================================================================

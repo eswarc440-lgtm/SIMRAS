@@ -1,0 +1,8 @@
+{
+  "identifier_candidates": 10,
+  "single_match_requires_review": 0,
+  "ambiguous_matches": 0,
+  "no_match": 10,
+  "training_labels_created": 0,
+  "database_modified": false
+}

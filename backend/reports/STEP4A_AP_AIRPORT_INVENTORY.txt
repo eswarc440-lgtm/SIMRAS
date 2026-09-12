@@ -1,0 +1,19 @@
+===============================================================================================
+SIMRAS STEP 4A - ANDHRA PRADESH AIRPORT INVENTORY
+===============================================================================================
+
+Airport assets found       : 8
+ICAO automatically matched : 8
+Unresolved                 : 0
+
+AP_AIR_AAI_KADAPA | Kadapa Airport | VOCP | AUTO_NAME_MATCH
+AP_AIR_AAI_KURNOOL | Kurnool Airport | VOKU | AUTO_NAME_MATCH
+AP_AIR_AAI_RAJAHMUNDRY | Rajahmundry Airport | VORY | AUTO_NAME_MATCH
+AP_AIR_VOTP | Tirupati Airport | VOTP | AUTO_NAME_MATCH
+AP_AIR_AAI_TIRUPATI | Tirupati Airport | VOTP | AUTO_NAME_MATCH
+AP_AIR_AAI_VIJAYAWADA | Vijayawada Airport | VOBZ | AUTO_NAME_MATCH
+AP_AIR_VOBZ | Vijayawada Airport | VOBZ | AUTO_NAME_MATCH
+AP_AIR_AAI_VISAKHAPATNAM | Visakhapatnam Airport | VOVZ | AUTO_NAME_MATCH
+
+Source plan: /app/data/processed/airport/AP_AIRPORT_SOURCE_PLAN.csv
+===============================================================================================

@@ -1,0 +1,375 @@
+﻿{
+    "schema_version":  "real_twin_topology_v1",
+    "truth_policy":  {
+                         "official_sources_are_authoritative":  true,
+                         "wikipedia_is_authoritative_engineering_source":  false,
+                         "random_gate_counts_permitted":  false,
+                         "generated_dimensions_permitted":  false,
+                         "model_scale_must_be_verified_before_l2":  true
+                     },
+    "assets":  [
+                   {
+                       "asset_code":  "AP_DAM_00001",
+                       "asset_name":  "Prakasam Barrage",
+                       "asset_type":  "BARRAGE",
+                       "topology_status":  "OFFICIAL_TOPOLOGY_VERIFIED",
+                       "dimension_status":  "OFFICIAL_ENGINEERING_VERIFIED",
+                       "model_target":  "REAL_PARAMETRIC_TOPOLOGY",
+                       "fidelity_target":  "L2_AFTER_SCALE_AND_MODEL_VALIDATION",
+                       "structure":  {
+                                         "structural_type":  "gated barrage",
+                                         "main_length_m":  1232.92,
+                                         "regulator_count":  70,
+                                         "regulator_width_m":  12.19,
+                                         "regulator_height_m":  3.66,
+                                         "left_scouring_sluice_count":  6,
+                                         "right_scouring_sluice_count":  8,
+                                         "scouring_sluice_width_m":  5.18,
+                                         "scouring_sluice_height_m":  3.66,
+                                         "water_spread_area_sq_km":  30.0,
+                                         "completion_year":  1957
+                                     },
+                       "renderer_contract":  {
+                                                 "exact_repeated_bays":  70,
+                                                 "must_render_exact_gate_count":  true,
+                                                 "gate_count_may_be_randomized":  false,
+                                                 "must_render_road_deck":  true,
+                                                 "must_render_piers":  true,
+                                                 "must_render_water_channel":  true,
+                                                 "must_render_scouring_sluice_groups":  true
+                                             },
+                       "sources":  [
+                                       {
+                                           "authority":  "Krishna River Management Board",
+                                           "source_type":  "OFFICIAL_GOVERNMENT",
+                                           "url":  "https://www.krmb.gov.in/html/project37.html",
+                                           "supports":  [
+                                                            "completion_year",
+                                                            "main_length_m",
+                                                            "regulator_count",
+                                                            "regulator_width_m",
+                                                            "regulator_height_m",
+                                                            "scouring_sluices",
+                                                            "water_spread_area",
+                                                            "coordinates"
+                                                        ]
+                                       }
+                                   ]
+                   },
+                   {
+                       "asset_code":  "AP_DAM_00002",
+                       "asset_name":  "Polavaram Irrigation Project",
+                       "asset_type":  "DAM",
+                       "topology_status":  "OFFICIAL_TOPOLOGY_VERIFIED",
+                       "dimension_status":  "OFFICIAL_ENGINEERING_VERIFIED",
+                       "model_target":  "MULTI_COMPONENT_REAL_PARAMETRIC_TOPOLOGY",
+                       "fidelity_target":  "L2_AFTER_SCALE_AND_LAYOUT_VALIDATION",
+                       "structure":  {
+                                         "structural_type":  "earth-cum-rock-fill dam plus gated concrete spillway",
+                                         "earth_rockfill_total_length_m":  2454.0,
+                                         "maximum_dam_height_m":  50.0,
+                                         "spillway_length_m":  1118.4,
+                                         "radial_gate_count":  48,
+                                         "radial_gate_width_m":  16.0,
+                                         "radial_gate_height_m":  20.0,
+                                         "powerhouse_installed_capacity_mw":  960,
+                                         "power_unit_count":  12,
+                                         "power_unit_capacity_mw":  80,
+                                         "live_reservoir_capacity_tmc":  75.2,
+                                         "spillway_design_discharge_cumec":  141435
+                                     },
+                       "renderer_contract":  {
+                                                 "exact_repeated_bays":  48,
+                                                 "must_render_exact_gate_count":  true,
+                                                 "gate_count_may_be_randomized":  false,
+                                                 "must_separate_earth_rockfill_dam_from_spillway":  true,
+                                                 "must_render_radial_gate_spillway":  true,
+                                                 "must_render_powerhouse_as_separate_component":  true,
+                                                 "powerhouse_unit_count":  12,
+                                                 "must_not_reuse_prakasam_geometry":  true
+                                             },
+                       "sources":  [
+                                       {
+                                           "authority":  "Polavaram Project Authority",
+                                           "source_type":  "OFFICIAL_GOVERNMENT",
+                                           "url":  "https://ppa.gov.in/WPSCore/Common/WebPages/Home/AboutProject.aspx",
+                                           "supports":  [
+                                                            "earth_rockfill_total_length_m",
+                                                            "maximum_dam_height_m",
+                                                            "spillway_length_m",
+                                                            "radial_gate_count",
+                                                            "radial_gate_dimensions",
+                                                            "spillway_design_discharge",
+                                                            "powerhouse_capacity",
+                                                            "power_unit_count"
+                                                        ]
+                                       },
+                                       {
+                                           "authority":  "Central Water Commission",
+                                           "source_type":  "OFFICIAL_GOVERNMENT",
+                                           "url":  "https://cwc.gov.in/sites/default/files/arcwc2018-19.pdf",
+                                           "supports":  [
+                                                            "spillway_type",
+                                                            "radial_gate_count",
+                                                            "radial_gate_dimensions",
+                                                            "overflow_blocks",
+                                                            "river_sluices"
+                                                        ]
+                                       }
+                                   ]
+                   },
+                   {
+                       "asset_code":  "AP_DAM_NWDP_AP01VH0059",
+                       "asset_name":  "Srisailam Project (N.S.R.S.P)",
+                       "asset_type":  "DAM",
+                       "topology_status":  "OFFICIAL_TOPOLOGY_VERIFIED",
+                       "dimension_status":  "OFFICIAL_ENGINEERING_VERIFIED",
+                       "model_target":  "REAL_GRAVITY_DAM_TOPOLOGY",
+                       "fidelity_target":  "L2_AFTER_MODEL_SCALE_VALIDATION",
+                       "structure":  {
+                                         "structural_type":  "concrete gravity dam",
+                                         "dam_length_m":  512.0,
+                                         "dam_height_m":  145.0,
+                                         "radial_crest_gate_count":  12,
+                                         "radial_gate_width_m":  18.3,
+                                         "radial_gate_height_m":  16.7,
+                                         "river_sluice_count":  2,
+                                         "river_sluice_width_m":  3.65,
+                                         "river_sluice_height_m":  9.14,
+                                         "gross_storage_mcm":  6110.9,
+                                         "live_storage_mcm":  6014.17,
+                                         "designed_spillway_capacity_m3s":  38369
+                                     },
+                       "renderer_contract":  {
+                                                 "exact_repeated_bays":  12,
+                                                 "must_render_exact_gate_count":  true,
+                                                 "gate_count_may_be_randomized":  false,
+                                                 "must_render_gravity_dam_profile":  true,
+                                                 "must_render_spillway_section":  true,
+                                                 "must_render_river_sluices":  true
+                                             },
+                       "sources":  [
+                                       {
+                                           "authority":  "Central Water Commission / NDSA",
+                                           "source_type":  "OFFICIAL_GOVERNMENT",
+                                           "url":  "https://dharma.cwc.gov.in/dharma/public/uploads/front_upload_file/174860534186541140.pdf",
+                                           "supports":  [
+                                                            "structural_type",
+                                                            "dam_length_m",
+                                                            "dam_height_m",
+                                                            "gross_storage_mcm",
+                                                            "live_storage_mcm",
+                                                            "designed_spillway_capacity_m3s"
+                                                        ]
+                                       },
+                                       {
+                                           "authority":  "Krishna River Management Board",
+                                           "source_type":  "OFFICIAL_GOVERNMENT",
+                                           "url":  "https://krmb.gov.in/html/project19.html",
+                                           "supports":  [
+                                                            "radial_crest_gate_count",
+                                                            "radial_gate_dimensions",
+                                                            "river_sluice_count",
+                                                            "river_sluice_dimensions",
+                                                            "spillway_geometry"
+                                                        ]
+                                       }
+                                   ]
+                   },
+                   {
+                       "asset_code":  "AP_DAM_WRIS_AP01HH0062",
+                       "asset_name":  "Somasila Reservoir",
+                       "asset_type":  "DAM",
+                       "topology_status":  "PARTIAL_OFFICIAL_TOPOLOGY",
+                       "dimension_status":  "OFFICIAL_STATIC_ENGINEERING_VERIFIED",
+                       "model_target":  "REAL_SCALE_PROFILE_GATE_TOPOLOGY_PENDING",
+                       "fidelity_target":  "L1_UNTIL_GATE_AND_LAYOUT_EVIDENCE",
+                       "structure":  {
+                                         "structural_type":  "concrete gravity",
+                                         "dam_length_m":  760.0,
+                                         "dam_height_m":  39.0,
+                                         "gross_storage_mcm":  2208.37,
+                                         "live_storage_mcm":  1994.1,
+                                         "designed_spillway_capacity_m3s":  22375,
+                                         "gate_count":  null,
+                                         "gate_count_status":  "NOT_VERIFIED"
+                                     },
+                       "renderer_contract":  {
+                                                 "must_render_real_length_height_ratio":  true,
+                                                 "must_render_exact_gate_count":  false,
+                                                 "gate_count_may_be_randomized":  false,
+                                                 "gate_geometry_status":  "WITHHOLD_UNTIL_OFFICIAL_SOURCE"
+                                             },
+                       "sources":  [
+                                       {
+                                           "authority":  "Central Water Commission / NDSA",
+                                           "source_type":  "OFFICIAL_GOVERNMENT",
+                                           "url":  "https://dharma.cwc.gov.in/dharma/public/uploads/front_upload_file/174860534186541140.pdf",
+                                           "supports":  [
+                                                            "structural_type",
+                                                            "dam_length_m",
+                                                            "dam_height_m",
+                                                            "gross_storage_mcm",
+                                                            "live_storage_mcm",
+                                                            "designed_spillway_capacity_m3s"
+                                                        ]
+                                       }
+                                   ]
+                   },
+                   {
+                       "asset_code":  "AP_AIR_AAI_VIJAYAWADA",
+                       "asset_name":  "Vijayawada Airport",
+                       "asset_type":  "AIRPORT",
+                       "topology_status":  "OFFICIAL_AERODROME_GEOMETRY_AVAILABLE",
+                       "dimension_status":  "OFFICIAL_RUNWAY_VERIFIED",
+                       "model_target":  "GEOREFERENCED_AERODROME_LAYOUT",
+                       "fidelity_target":  "L2_AFTER_CHART_DIGITISATION",
+                       "structure":  {
+                                         "runway_designation":  "08/26",
+                                         "runway_length_m":  3360.0,
+                                         "runway_width_m":  45.0,
+                                         "runway_08_true_bearing_deg":  77.75,
+                                         "runway_26_true_bearing_deg":  257.75,
+                                         "runway_strip_length_m":  3480.0,
+                                         "runway_strip_width_m":  280.0
+                                     },
+                       "renderer_contract":  {
+                                                 "must_render_real_runway_length_width_ratio":  true,
+                                                 "must_use_real_runway_orientation":  true,
+                                                 "must_render_runway_08_26":  true,
+                                                 "taxiway_apron_layout_source":  "AAI_AERODROME_CHART",
+                                                 "terminal_geometry":  "CHART_AND_VISUAL_REFERENCE_REQUIRED"
+                                             },
+                       "sources":  [
+                                       {
+                                           "authority":  "Airports Authority of India",
+                                           "source_type":  "OFFICIAL_GOVERNMENT",
+                                           "url":  "https://aim-india.aai.aero/eaip/eaip-v2-04-2026/eAIP/IN-AD%202.1VOBZ-en-GB.html",
+                                           "supports":  [
+                                                            "runway_designation",
+                                                            "runway_dimensions",
+                                                            "true_bearings",
+                                                            "threshold_coordinates",
+                                                            "strip_dimensions"
+                                                        ]
+                                       }
+                                   ]
+                   },
+                   {
+                       "asset_code":  "AP_TEMPLE_TTD_001",
+                       "asset_name":  "Sri Venkateswara Swamy Temple, Tirumala",
+                       "asset_type":  "TEMPLE",
+                       "topology_status":  "OFFICIAL_ARCHITECTURAL_LAYOUT_PARTIAL",
+                       "dimension_status":  "OFFICIAL_FOOTPRINT_VERIFIED",
+                       "model_target":  "REAL_TEMPLE_COMPLEX_LAYOUT",
+                       "fidelity_target":  "L2_AFTER_ARCHITECTURAL_PLAN_RECONSTRUCTION",
+                       "structure":  {
+                                         "main_temple_length_ft":  415.0,
+                                         "main_temple_width_ft":  263.0,
+                                         "prakara_count":  3,
+                                         "architecture":  "Dravidian",
+                                         "required_components":  [
+                                                                     "sanctum",
+                                                                     "three prakarams",
+                                                                     "gopuram entrances",
+                                                                     "mandapams",
+                                                                     "Ananda Nilayam"
+                                                                 ]
+                                     },
+                       "renderer_contract":  {
+                                                 "must_render_415x263_foot_footprint_ratio":  true,
+                                                 "must_render_three_prakarams":  true,
+                                                 "must_not_use_generic_single_gopuram_model":  true,
+                                                 "architectural_details_require_plan_reference":  true
+                                             },
+                       "sources":  [
+                                       {
+                                           "authority":  "Tirumala Tirupati Devasthanams",
+                                           "source_type":  "OFFICIAL_TEMPLE_AUTHORITY",
+                                           "url":  "https://news.tirumala.org/tirumala-temple-an-architectural-marvel-_-%E0%B0%85%E0%B0%A6%E0%B1%8D%E0%B0%AD%E0%B1%81%E0%B0%A4%E0%B0%BE%E0%B0%B2-%E0%B0%A8%E0%B0%BF%E0%B0%B2%E0%B0%AF%E0%B0%82-%E0%B0%B6%E0%B1%8D%E0%B0%B0/",
+                                           "supports":  [
+                                                            "main_temple_length_ft",
+                                                            "main_temple_width_ft",
+                                                            "prakara_count"
+                                                        ]
+                                       }
+                                   ]
+                   },
+                   {
+                       "asset_code":  "AP_BAR_WRIS_B00131",
+                       "asset_name":  "Sir Arthur Cotton Barrage / Godavari Barrage",
+                       "asset_type":  "BARRAGE",
+                       "topology_status":  "OFFICIAL_TOPOLOGY_VERIFIED",
+                       "dimension_status":  "OFFICIAL_ENGINEERING_VERIFIED",
+                       "model_target":  "FOUR_ARM_REAL_BARRAGE_TOPOLOGY",
+                       "fidelity_target":  "L2_AFTER_DRAWING_SCALE_ORIENTATION_VALIDATION",
+                       "structure":  {
+                                         "structural_type":  "glacis barrage on RCC raft",
+                                         "arm_count":  4,
+                                         "total_bay_count":  175,
+                                         "gate_vent_width_m":  16.29,
+                                         "gate_vent_height_m":  3.35,
+                                         "structural_barrage_length_m":  3599.06,
+                                         "intermediate_embankment_length_m":  2238,
+                                         "total_cross_river_length_m":  5837,
+                                         "roadway_clear_width_m":  6.7,
+                                         "footpath_width_each_side_m":  0.762,
+                                         "rcc_raft_thickness_m":  1.37,
+                                         "arms":  [
+                                                      {
+                                                          "name":  "Dowleswaram",
+                                                          "length_m":  1440.05,
+                                                          "bay_count":  70
+                                                      },
+                                                      {
+                                                          "name":  "Ralli",
+                                                          "length_m":  884.45,
+                                                          "bay_count":  43
+                                                      },
+                                                      {
+                                                          "name":  "Maddur",
+                                                          "length_m":  469.66,
+                                                          "bay_count":  23
+                                                      },
+                                                      {
+                                                          "name":  "Vizzeswaram",
+                                                          "length_m":  804.9,
+                                                          "bay_count":  39
+                                                      }
+                                                  ]
+                                     },
+                       "renderer_contract":  {
+                                                 "must_render_four_arms":  true,
+                                                 "must_render_exact_gate_count":  true,
+                                                 "exact_total_gate_count":  175,
+                                                 "gate_count_may_be_randomized":  false,
+                                                 "must_render_arm_specific_counts":  true,
+                                                 "must_render_road_deck":  true,
+                                                 "must_render_intermediate_embankments":  true,
+                                                 "exact_vertical_profile_verified":  false
+                                             },
+                       "sources":  [
+                                       {
+                                           "authority":  "Central Water Commission",
+                                           "source_type":  "OFFICIAL_GOVERNMENT",
+                                           "title":  "History of Irrigation Development in Andhra Pradesh",
+                                           "url":  "https://www.cwc.gov.in/sites/default/files/16-history-irrigation-development-andhra-pradesh.pdf",
+                                           "supports":  [
+                                                            "arm_count",
+                                                            "arm_lengths",
+                                                            "arm_bay_counts",
+                                                            "total_bay_count",
+                                                            "gate_vent_dimensions",
+                                                            "barrage_length",
+                                                            "embankment_length",
+                                                            "total_cross_river_length",
+                                                            "roadway_width",
+                                                            "footpath_width",
+                                                            "raft_thickness",
+                                                            "structural_type"
+                                                        ]
+                                       }
+                                   ]
+                   }
+               ]
+}

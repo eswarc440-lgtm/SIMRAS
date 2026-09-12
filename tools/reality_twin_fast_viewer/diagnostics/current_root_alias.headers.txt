@@ -1,0 +1,10 @@
+﻿Vary
+X-XSS-Protection
+X-Frame-Options
+X-Content-Type-Options
+Alt-Svc
+Content-Length
+Content-Type
+Date
+Server
+

@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-09-03T02:16:38.332772+00:00",
+  "dataset_inventory": [
+    {
+      "path": "/workspace/archive/real_twin_factory_v13_1_20260902_135959/all_asset_real_twin_manifest.csv",
+      "rows": 194,
+      "columns": 16,
+      "health_target": "health_score",
+      "risk_target": null,
+      "group_column": "asset_code",
+      "date_column": null,
+      "type_column": "asset_type",
+      "score": 45.194
+    },
+    {
+      "path": "/workspace/archive/real_twin_factory_v13_1_20260902_135959/real_twin_priority_queue.csv",
+      "rows": 194,
+      "columns": 16,
+      "health_target": "health_score",
+      "risk_target": null,
+      "group_column": "asset_code",
+      "date_column": null,
+      "type_column": "asset_type",
+      "score": 45.194
+    }
+  ],
+  "current_database_prediction_state": {
+    "error": "No module named 'psycopg2'"
+  },
+  "rules": {
+    "synthetic_demo_rows_removed": true,
+    "asset_group_split_required_for_production": true,
+    "locked_test_set": true,
+    "unsupported_rul_not_trained": true,
+    "classification_accuracy_target": 0.97,
+    "health_regression_not_reported_as_fake_accuracy": true
+  }
+}

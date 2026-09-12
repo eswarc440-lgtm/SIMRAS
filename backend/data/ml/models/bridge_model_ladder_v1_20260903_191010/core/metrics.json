@@ -1,0 +1,16 @@
+{
+  "roc_auc": 0.6451565045147194,
+  "pr_auc": 0.10293523270214769,
+  "poor_prevalence": 0.06711743209047176,
+  "brier": 0.06160725221600705,
+  "baseline_brier": 0.0626132479381728,
+  "ece": 0.0007575939956265144,
+  "gates": {
+    "roc_auc_ge_0_70": false,
+    "pr_auc_beats_prevalence": true,
+    "brier_beats_baseline": true,
+    "ece_le_0_10": true
+  },
+  "all_gates_passed": false,
+  "status": "FAILED_TEMPORAL_VALIDATION"
+}

@@ -1,0 +1,15 @@
+{
+    "directory":  "/work/data/reality_twin/factory/osm_extracts",
+    "extracts":  [
+                     {
+                         "output":  "AP_BAR_WRIS_B00448.osm.pbf",
+                         "description":  "Swarnamukhi Barrage / barrage",
+                         "bbox":  [
+                                      80.05730247,
+                                      13.99438047,
+                                      80.08130247,
+                                      14.01838047
+                                  ]
+                     }
+                 ]
+}

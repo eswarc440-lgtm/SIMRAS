@@ -1,0 +1,42 @@
+﻿{
+    "generated_at":  "2026-08-31T23:38:37.0974374+05:30",
+    "scope":  "AP_BRIDGE_RUNTIME_VALIDATION_READ_ONLY",
+    "sampled_bridges":  2,
+    "inference_counts":  {
+                             "full_ml":  2,
+                             "sparse_ml":  0,
+                             "rules":  0,
+                             "unavailable":  0,
+                             "errors":  0,
+                             "total_ml":  2
+                         },
+    "ml_coverage_percent":  100,
+    "health_distribution":  {
+                                "min":  77,
+                                "p10":  77,
+                                "median":  77,
+                                "p90":  77,
+                                "max":  90.2,
+                                "mean":  83.6
+                            },
+    "risk_distribution":  {
+                              "min":  0.4,
+                              "p10":  0.4,
+                              "median":  0.4,
+                              "p90":  0.4,
+                              "max":  0.4,
+                              "mean":  0.4
+                          },
+    "safety_checks":  {
+                          "health_0_100":  true,
+                          "risk_0_100":  true,
+                          "confidence_0_1":  true,
+                          "sparse_rul_withheld":  true
+                      },
+    "notes":  [
+                  "This validates runtime behavior and output ranges, not Andhra Pradesh engineering accuracy.",
+                  "Local accuracy requires source-backed AP bridge inspection/condition labels.",
+                  "Sparse ML remains RESEARCH_TRANSFER and must not be described as locally validated.",
+                  "Dam/barrage assets are outside this bridge validation."
+              ]
+}

@@ -1,0 +1,26 @@
+====================================================================================================
+SIMRAS STEP 4C.1 - VERIFIED AIRPORT MAINTENANCE RECOVERY
+====================================================================================================
+
+Unique AP airports covered       : 6 / 6
+Verified procurement records     : 9
+High-significance records        : 3
+
+VOBZ   | events=2  | high=1  | known_cost=INR 9,067,500
+VOCP   | events=2  | high=0  | known_cost=INR 10,309,215
+VOKU   | events=1  | high=1  | known_cost=INR 0
+VORY   | events=2  | high=1  | known_cost=INR 0
+VOTP   | events=1  | high=0  | known_cost=INR 12,500,000
+VOVZ   | events=1  | high=0  | known_cost=INR 12,216,040
+
+Database table:
+ public.airport_maintenance_evidence_verified
+
+IMPORTANT SEMANTICS:
+ These rows prove official procurement / maintenance activity.
+ They do NOT prove that the work was completed.
+ They are NOT PCI or structural-condition ground truth.
+
+Local AAI document download status:
+ DNS_BLOCKED_ON_SIMRAS_HOST
+====================================================================================================

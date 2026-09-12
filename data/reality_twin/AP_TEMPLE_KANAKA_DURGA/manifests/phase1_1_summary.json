@@ -1,0 +1,12 @@
+﻿{
+    "asset_code":  "AP_TEMPLE_KANAKA_DURGA",
+    "discovered":  42,
+    "downloaded":  14,
+    "failed":  28,
+    "skipped":  0,
+    "high_resolution_candidates":  13,
+    "minimum_images_for_sparse_attempt_met":  true,
+    "dimensions_verified":  false,
+    "reconstruction_started":  false,
+    "next_gate":  "VISUAL_COVERAGE_REVIEW"
+}

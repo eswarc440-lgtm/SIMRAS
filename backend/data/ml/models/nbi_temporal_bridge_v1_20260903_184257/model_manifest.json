@@ -1,0 +1,42 @@
+{
+  "model_version": "nbi_temporal_bridge_v1_20260903_184257",
+  "infrastructure_class": "BRIDGE",
+  "source": "FHWA NBI 2022-2025 longitudinal inspection transitions",
+  "scope": "RESEARCH_TRANSFER_US_NBI_TO_ANDHRA_PRADESH",
+  "AP_ground_truth_validation": false,
+  "production_AP_status": "NOT_YET_APPROVED",
+  "models": {
+    "poor_risk": {
+      "status": "NBI_TEMPORAL_VALIDATED_RESEARCH_TRANSFER",
+      "target": "P(next inspection condition = POOR)",
+      "risk_score_definition": "calibrated probability * 100",
+      "thresholds": {
+        "medium_probability": 0.5,
+        "high_probability": 0.7610619469026548,
+        "method": "calibration-set recall>=0.90 + maximum-F1 operating points"
+      }
+    },
+    "condition": {
+      "status": "NBI_TEMPORAL_VALIDATED_RESEARCH_TRANSFER",
+      "target": "next inspection GOOD / FAIR / POOR"
+    },
+    "deterioration": {
+      "status": "NBI_TEMPORAL_VALIDATED_RESEARCH_TRANSFER",
+      "target": "next-year minimum structural rating decreases"
+    },
+    "rating_change": {
+      "status": "RESEARCH_TRANSFER_FAILED_VALIDATION_GATES",
+      "target": "next-year minimum rating change"
+    }
+  },
+  "health_score": {
+    "status": "WITHHELD",
+    "reason": "No independently validated numeric Health Score target exists."
+  },
+  "remaining_useful_life": {
+    "status": "WITHHELD",
+    "reason": "One-year deterioration transitions do not establish validated RUL."
+  },
+  "risk_model_temporal_gates_passed": true,
+  "next_required_gate": "AP feature compatibility and abstention testing before any Andhra Pradesh prediction is stored."
+}

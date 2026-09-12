@@ -1,0 +1,20 @@
+﻿SIMRAS MAPILLARY MANUAL COVERAGE SCOUT
+=====================================
+
+Asset: AP_TEMPLE_KANAKA_DURGA
+Location: 16.5154, 80.6059
+
+1. Mapillary opens at the asset location.
+2. Zoom in and click a GREEN sequence/dot nearest the temple.
+3. Use the playback arrows at the top of the image viewer.
+4. Confirm that the same temple/gopuram stays visible while the camera MOVES.
+5. Prefer a long continuous sequence, ideally 30+ images.
+6. Open the three-dot menu -> Advanced / Advanced Options.
+7. Copy:
+   - Image key (pKey)
+   - Sequence key
+   - Current Mapillary URL
+8. Return to this PowerShell window and paste them when requested.
+
+Do not use isolated photos as reconstruction evidence.
+Do not claim dimensions or survey-grade accuracy from Mapillary imagery alone.

@@ -1,0 +1,105 @@
+{
+  "phase": "ML-5D",
+  "purpose": "Build a conservative AP/NBI shared bridge feature representation.",
+  "AP": {
+    "path": "/app/data/ml/crosswalk/bridge_ml5d_20260903_185819/ap_bridge_shared_features.csv",
+    "rows": 23119,
+    "coverage": {
+      "structure_length_m": {
+        "populated": 23118,
+        "total": 23119,
+        "percent": 99.99567455339763
+      },
+      "route_class": {
+        "populated": 21318,
+        "total": 23119,
+        "percent": 92.20987066914658
+      },
+      "lanes_count": {
+        "populated": 3129,
+        "total": 23119,
+        "percent": 13.53432241878974
+      },
+      "built_year": {
+        "populated": 64,
+        "total": 23119,
+        "percent": 0.2768285825511484
+      },
+      "bridge_age_years": {
+        "populated": 64,
+        "total": 23119,
+        "percent": 0.2768285825511484
+      }
+    },
+    "transfer_scope_counts": {
+      "NO_HIGHWAY_CLASS": 376,
+      "HIGHWAY_TRANSFER_CANDIDATE": 21318,
+      "RAIL_ONLY_EXCLUDED_FROM_NBI": 1425
+    },
+    "route_class_counts": {
+      "MISSING": 1801,
+      "HIGH_CAPACITY": 3190,
+      "ARTERIAL": 5129,
+      "COLLECTOR": 7298,
+      "OTHER": 418,
+      "LOCAL": 5283
+    }
+  },
+  "NBI": {
+    "path": "/app/data/ml/crosswalk/bridge_ml5d_20260903_185819/nbi_shared_temporal_transitions.csv",
+    "rows": 1852780,
+    "pairs": {
+      "2022->2023": 616241,
+      "2023->2024": 617292,
+      "2024->2025": 619247
+    },
+    "route_class_counts": {
+      "LOCAL": 705509,
+      "COLLECTOR": 489998,
+      "ARTERIAL": 414070,
+      "HIGH_CAPACITY": 243201,
+      "OTHER": 2
+    }
+  },
+  "approved_shared_features": [
+    {
+      "feature": "structure_length_m",
+      "AP_source": "bridge_digital_twin_profiles.actual_length_m",
+      "NBI_source": "official NBI structure length",
+      "status": "APPROVED"
+    },
+    {
+      "feature": "route_class",
+      "AP_source": "OpenStreetMap highway tag",
+      "NBI_source": "NBI functional class",
+      "status": "COARSE_CROSSWALK"
+    },
+    {
+      "feature": "lanes_count",
+      "AP_source": "OSM/reported lanes",
+      "NBI_source": "NBI lanes on structure",
+      "status": "APPROVED_WHEN_PRESENT"
+    },
+    {
+      "feature": "bridge_age_years",
+      "AP_source": "assets.built_year",
+      "NBI_source": "NBI year built",
+      "status": "APPROVED_WHEN_PRESENT"
+    }
+  ],
+  "explicitly_excluded": [
+    "render_width_m",
+    "render_width_basis",
+    "generic assets.condition",
+    "synthetic inspection records",
+    "experimental RUL",
+    "NBI current structural condition ratings from sparse AP model inputs"
+  ],
+  "reported_width_policy": "May be retained as factual report context when actually reported, but AP coverage is too low for the statewide sparse model.",
+  "rail_bridge_policy": "Rail-only bridges are excluded from the FHWA highway-bridge transfer model.",
+  "health_score": "WITHHELD",
+  "RUL": "WITHHELD",
+  "AP_ground_truth_validation": false,
+  "database_predictions_written": false,
+  "next_phase": "ML-5E train and temporally validate the shared sparse model."
+}

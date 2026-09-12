@@ -1,0 +1,139 @@
+{
+  "generated_at": "2026-09-03T02:40:17.053998+00:00",
+  "classes": {
+    "AIRPORT": {
+      "assets": 8,
+      "government_evidence_assets": 0,
+      "real_inspection_assets": 0,
+      "built_year_assets": 0,
+      "design_life_assets": 0,
+      "material_assets": 0,
+      "health_mode": "NEED_STRUCTURAL_EVIDENCE",
+      "risk_mode": "NEED_RISK_EVIDENCE",
+      "rul_mode": "NEED_BUILT_YEAR_AND_DESIGN_LIFE"
+    },
+    "BARRAGE": {
+      "assets": 10,
+      "government_evidence_assets": 10,
+      "real_inspection_assets": 0,
+      "built_year_assets": 3,
+      "design_life_assets": 0,
+      "material_assets": 0,
+      "health_mode": "EVIDENCE_ENGINEERING_ESTIMATE_ONLY",
+      "risk_mode": "EVIDENCE_BACKED_RISK_AVAILABLE",
+      "rul_mode": "PLANNING_ESTIMATE_ONLY_IF_VERIFIED_DESIGN_LIFE_ADDED"
+    },
+    "BRIDGE": {
+      "assets": 2,
+      "government_evidence_assets": 0,
+      "real_inspection_assets": 0,
+      "built_year_assets": 2,
+      "design_life_assets": 0,
+      "material_assets": 1,
+      "health_mode": "TRANSFER_SPARSE_ML_ONLY",
+      "risk_mode": "TRANSFER_SPARSE_ML_ONLY",
+      "rul_mode": "PLANNING_ESTIMATE_ONLY_IF_VERIFIED_DESIGN_LIFE_ADDED"
+    },
+    "DAM": {
+      "assets": 167,
+      "government_evidence_assets": 166,
+      "real_inspection_assets": 0,
+      "built_year_assets": 87,
+      "design_life_assets": 0,
+      "material_assets": 1,
+      "health_mode": "EVIDENCE_ENGINEERING_ESTIMATE_ONLY",
+      "risk_mode": "EVIDENCE_BACKED_RISK_AVAILABLE",
+      "rul_mode": "PLANNING_ESTIMATE_ONLY_IF_VERIFIED_DESIGN_LIFE_ADDED"
+    },
+    "TEMPLE": {
+      "assets": 7,
+      "government_evidence_assets": 0,
+      "real_inspection_assets": 0,
+      "built_year_assets": 0,
+      "design_life_assets": 0,
+      "material_assets": 0,
+      "health_mode": "NEED_STRUCTURAL_EVIDENCE",
+      "risk_mode": "NEED_RISK_EVIDENCE",
+      "rul_mode": "NEED_BUILT_YEAR_AND_DESIGN_LIFE"
+    }
+  },
+  "official_evidence": {
+    "columns": [
+      "id",
+      "asset_id",
+      "document_id",
+      "source_id",
+      "evidence_type",
+      "field_name",
+      "numeric_value",
+      "text_value",
+      "unit",
+      "rating_system",
+      "observed_at",
+      "valid_from",
+      "valid_to",
+      "authority_level",
+      "origin",
+      "quality_flag",
+      "confidence_score",
+      "is_official",
+      "is_derived",
+      "is_synthetic",
+      "processing_method",
+      "extraction_metadata",
+      "created_at",
+      "updated_at"
+    ],
+    "rows": 176
+  },
+  "next_training_requirements": {
+    "BRIDGE": [
+      "inspection condition score",
+      "deck condition",
+      "superstructure condition",
+      "substructure condition",
+      "material",
+      "span count",
+      "length",
+      "maintenance history",
+      "design life"
+    ],
+    "DAM": [
+      "dam safety inspection",
+      "structural condition",
+      "seepage / uplift observations",
+      "gate condition",
+      "reservoir level/storage",
+      "discharge",
+      "maintenance history",
+      "design life"
+    ],
+    "BARRAGE": [
+      "gate condition",
+      "pier/abutment condition",
+      "structural inspection",
+      "discharge",
+      "water level",
+      "maintenance",
+      "design life"
+    ],
+    "AIRPORT": [
+      "runway pavement condition index",
+      "runway age",
+      "pavement material",
+      "maintenance/rehabilitation",
+      "traffic/load cycles",
+      "runway dimensions",
+      "design life"
+    ],
+    "TEMPLE": [
+      "structural inspection",
+      "building age",
+      "material",
+      "crack/damage condition",
+      "foundation condition",
+      "maintenance/restoration history",
+      "design life or conservation assessment"
+    ]
+  }
+}

@@ -1,0 +1,625 @@
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
+import { ArrowLeft, Download, Plus, Search } from "lucide-react";
+import { DashboardLayout } from "../../layouts/DashboardLayout";
+import { ChartCard, EmptyState, PageHeader } from "../../components/common/PageHeader";
+import { RiskBadge, StatusBadge } from "../../components/common/StatusBadge";
+import { StatCard } from "../../components/common/StatCard";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Progress } from "../../components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../components/ui/dialog";
+import { apiRequest } from "../../services/api";
+import type { InfrastructureAsset, InspectionRecord } from "../../types";
+
+function mapApiAsset(asset: any): InfrastructureAsset {
+  const healthScore = Number(asset.health_score ?? 0);
+  const riskScore = Number(asset.risk_score ?? 0);
+  const riskLevel = String(asset.risk_level || '').toLowerCase();
+  
+  // Handle both asset_type and type fields from API
+  const assetType = asset.asset_type || asset.type || 'Other';
+  
+  // Normalize asset type to match frontend expectations
+  let normalizedType: InfrastructureAsset['type'] = 'Other';
+  const typeLower = String(assetType).toLowerCase();
+  if (typeLower.includes('bridge')) normalizedType = 'Bridge';
+  else if (typeLower.includes('road')) normalizedType = 'Road';
+  else if (typeLower.includes('dam') || typeLower.includes('barrage')) normalizedType = 'Water';
+  else if (typeLower.includes('building') || typeLower.includes('school') || typeLower.includes('hospital')) normalizedType = 'Building';
+  else if (typeLower.includes('airport')) normalizedType = 'Utility';
+  else if (typeLower.includes('power')) normalizedType = 'Utility';
+  else if (typeLower.includes('railway')) normalizedType = 'Other';
+  
+  return {
+    id: asset.asset_id || asset.id,
+    name: asset.name || 'Unnamed Asset',
+    type: normalizedType,
+    location: asset.location || asset.district || 'Unknown',
+    district: asset.district || 'Unknown',
+    lat: Number(asset.latitude ?? 0),
+    lng: Number(asset.longitude ?? 0),
+    health: healthScore >= 80 ? 'healthy' : healthScore >= 50 ? 'warning' : 'critical',
+    healthScore,
+    risk: riskLevel.includes('high') || riskLevel.includes('critical') ? 'high' : riskLevel.includes('medium') ? 'medium' : riskScore >= 50 ? 'high' : riskScore >= 25 ? 'medium' : 'low',
+    riskScore,
+    lastInspection: 'Live data',
+    status: asset.status || 'Operational',
+    builtYear: Number(asset.built_year ?? asset.age ?? 2000),
+    rulYears: Number(asset.remaining_useful_life ?? asset.remaining_life ?? 10),
+  };
+}
+
+export function InfrastructurePage() {
+  const [rows, setRows] = useState<InfrastructureAsset[]>([]);
+  const [query, setQuery] = useState("");
+  const [type, setType] = useState("All types");
+  const [health, setHealth] = useState("All health");
+  const [risk, setRisk] = useState("All risk");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    id: "",
+    name: "",
+    asset_type: "Bridge",
+    location: "",
+    district: "",
+    latitude: 0,
+    longitude: 0,
+    built_year: new Date().getFullYear(),
+    health_score: 80,
+    risk_level: "Low",
+    risk_score: 30,
+    status: "Operational",
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+
+    setLoading(true);
+    setError(null);
+
+    apiRequest<{ total: number; items: any[] }>('/api/v1/infrastructure?limit=1000')
+      .then((payload) => {
+        if (!isMounted) return;
+        const nextRows = (payload.items ?? []).map(mapApiAsset);
+        setRows(nextRows);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Infrastructure list fetch failed', error);
+        if (!isMounted) return;
+        setRows([]);
+        setError('Unable to load real infrastructure records from the live database.');
+        setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleAddAsset = async () => {
+    setIsSubmitting(true);
+    try {
+      const response = await apiRequest<any>('/api/v1/infrastructure', {
+        method: 'POST',
+        body: JSON.stringify({
+          asset_id: formData.id,
+          name: formData.name,
+          type: formData.asset_type,
+          district: formData.district,
+          location: formData.location,
+          latitude: formData.latitude,
+          longitude: formData.longitude,
+          age: new Date().getFullYear() - formData.built_year,
+          status: formData.status,
+        }),
+      });
+
+      const newAsset = mapApiAsset(response);
+      setRows((currentRows) => [...currentRows, newAsset]);
+      
+      // Reset form and close dialog
+      setFormData({
+        id: "",
+        name: "",
+        asset_type: "Bridge",
+        location: "",
+        district: "",
+        latitude: 0,
+        longitude: 0,
+        built_year: new Date().getFullYear(),
+        health_score: 80,
+        risk_level: "Low",
+        risk_score: 30,
+        status: "Operational",
+      });
+      setIsAddDialogOpen(false);
+      
+      // Show success message
+      alert('Asset created successfully!');
+    } catch (error) {
+      console.error('Failed to create asset:', error);
+      alert('Failed to create asset. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const filtered = useMemo(
+    () =>
+      rows.filter((a) => {
+        const q = query.toLowerCase();
+        return (
+          (a.name.toLowerCase().includes(q) || a.id.toLowerCase().includes(q) || a.location.toLowerCase().includes(q)) &&
+          (type === "All types" || a.type === type) &&
+          (health === "All health" || a.health === health.toLowerCase()) &&
+          (risk === "All risk" || a.risk === risk.toLowerCase())
+        );
+      }),
+    [rows, query, type, health, risk],
+  );
+
+  return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        <PageHeader
+          eyebrow="Digital Infrastructure"
+          title="Infrastructure Assets"
+          description="Central register of monitored structures with condition, risk and inspection state."
+          actions={
+            <div className="flex gap-2">
+              <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="size-4" />
+                    Add Asset
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px]">
+                  <DialogHeader>
+                    <DialogTitle>Add New Infrastructure Asset</DialogTitle>
+                    <DialogDescription>Create a new asset record in the system.</DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="asset-id">Asset ID *</Label>
+                        <Input
+                          id="asset-id"
+                          placeholder="e.g., BR-10001"
+                          value={formData.id}
+                          onChange={(e) => setFormData({ ...formData, id: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="asset-name">Name *</Label>
+                        <Input
+                          id="asset-name"
+                          placeholder="Asset name"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="asset-type">Asset Type *</Label>
+                        <Select value={formData.asset_type} onValueChange={(value) => setFormData({ ...formData, asset_type: value })}>
+                          <SelectTrigger id="asset-type">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {["Bridge", "Road", "Dam", "Port", "Airport", "Railway", "Power Plant", "Building", "Water Tank", "School", "Hospital", "Barrage", "Canal"].map((t) => (
+                              <SelectItem key={t} value={t}>{t}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="location">Location *</Label>
+                        <Input
+                          id="location"
+                          placeholder="Location"
+                          value={formData.location}
+                          onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="district">District *</Label>
+                        <Input
+                          id="district"
+                          placeholder="District"
+                          value={formData.district}
+                          onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="built-year">Built Year</Label>
+                        <Input
+                          id="built-year"
+                          type="number"
+                          placeholder="2000"
+                          value={formData.built_year}
+                          onChange={(e) => setFormData({ ...formData, built_year: parseInt(e.target.value) })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="latitude">Latitude *</Label>
+                        <Input
+                          id="latitude"
+                          type="number"
+                          step="0.0001"
+                          placeholder="16.5165"
+                          value={formData.latitude}
+                          onChange={(e) => setFormData({ ...formData, latitude: parseFloat(e.target.value) })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="longitude">Longitude *</Label>
+                        <Input
+                          id="longitude"
+                          type="number"
+                          step="0.0001"
+                          placeholder="80.6150"
+                          value={formData.longitude}
+                          onChange={(e) => setFormData({ ...formData, longitude: parseFloat(e.target.value) })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="health-score">Health Score (0-100)</Label>
+                        <Input
+                          id="health-score"
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={formData.health_score}
+                          onChange={(e) => setFormData({ ...formData, health_score: parseInt(e.target.value) })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="risk-level">Risk Level</Label>
+                        <Select value={formData.risk_level} onValueChange={(value) => setFormData({ ...formData, risk_level: value })}>
+                          <SelectTrigger id="risk-level">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Low">Low</SelectItem>
+                            <SelectItem value="Medium">Medium</SelectItem>
+                            <SelectItem value="High">High</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleAddAsset} disabled={isSubmitting || !formData.id || !formData.name || !formData.location || !formData.district}>
+                      {isSubmitting ? "Creating..." : "Create Asset"}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+
+              <Button variant="outline">
+                <Download className="size-4" />
+                Export
+              </Button>
+            </div>
+          }
+        />
+
+        <section aria-label="Filters" className="grid gap-3 rounded-lg border bg-card p-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="min-w-0 space-y-1.5">
+            <Label htmlFor="asset-search" className="text-xs text-muted-foreground">
+              Search
+            </Label>
+            <div className="relative">
+              <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+              <Input id="asset-search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Asset ID, name or location" className="pl-9" />
+            </div>
+          </div>
+          {[
+            { id: "type", label: "Asset Type", value: type, set: setType, options: ["All types", "Bridge", "Road", "Building", "Water", "Utility", "Other"] },
+            { id: "health", label: "Health", value: health, set: setHealth, options: ["All health", "Healthy", "Warning", "Critical"] },
+            { id: "risk", label: "Risk", value: risk, set: setRisk, options: ["All risk", "Low", "Medium", "High"] },
+          ].map((f) => (
+            <div key={f.id} className="min-w-0 space-y-1.5">
+              <Label htmlFor={`f-${f.id}`} className="text-xs text-muted-foreground">
+                {f.label}
+              </Label>
+              <Select value={f.value} onValueChange={f.set}>
+                <SelectTrigger id={`f-${f.id}`} className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {f.options.map((o) => (
+                    <SelectItem key={o} value={o}>
+                      {o}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ))}
+        </section>
+
+        <ChartCard title="Asset Register" subtitle={`${filtered.length} assets`}>
+          {loading ? (
+            <div className="flex min-h-40 items-center justify-center text-sm text-muted-foreground">Loading live infrastructure records…</div>
+          ) : error ? (
+            <EmptyState title="Live data unavailable" description={error} />
+          ) : filtered.length === 0 ? (
+            <EmptyState title="No assets match these filters" description="Adjust the search or filter criteria." />
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Asset ID</TableHead>
+                    <TableHead>Asset Name</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Location</TableHead>
+                    <TableHead>Health</TableHead>
+                    <TableHead>Risk</TableHead>
+                    <TableHead>Last Inspection</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filtered.map((a) => (
+                    <TableRow key={a.id}>
+                      <TableCell>
+                        <Link to="/infrastructure/$id" params={{ id: a.id }} className="font-mono text-xs text-primary underline underline-offset-4">
+                          {a.id}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="text-sm font-medium">{a.name}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{a.type}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{a.location}</TableCell>
+                      <TableCell><StatusBadge status={a.health} /></TableCell>
+                      <TableCell><RiskBadge risk={a.risk} /></TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{a.lastInspection}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{a.status}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </ChartCard>
+      </div>
+    </DashboardLayout>
+  );
+}
+
+export function AssetDetailsPage({ id }: { id: string }) {
+  const [asset, setAsset] = useState<InfrastructureAsset | null>(null);
+  const [history, setHistory] = useState<InspectionRecord[]>([]);
+  const [prediction, setPrediction] = useState<{ risk: InfrastructureAsset['risk']; prediction: string; confidence: number; predictedAt: string } | null>(null);
+
+  useEffect(() => {
+    apiRequest<any>(`/api/v1/infrastructure/${encodeURIComponent(id)}`)
+      .then((data) => setAsset(mapApiAsset(data)))
+      .catch((error) => console.error('Asset detail fetch failed', error));
+
+    apiRequest<Array<any>>(`/api/v1/assets/${encodeURIComponent(id)}/inspections`)
+      .then((records) => setHistory(records.slice(0, 5).map((item) => ({
+        id: String(item.id ?? 'INS'),
+        date: item.inspection_date ? new Date(item.inspection_date).toLocaleDateString() : 'Unknown',
+        inspector: item.inspector || 'Field inspector',
+        finding: item.notes || item.inspection_type || item.condition || 'Inspection record',
+        health: Number(item.inspection_score ?? 0) >= 80 ? 'healthy' : Number(item.inspection_score ?? 0) >= 50 ? 'warning' : 'critical',
+        score: Number(item.inspection_score ?? 0),
+      }))))
+      .catch((error) => console.error('Inspection history fetch failed', error));
+
+    apiRequest<any>(`/api/v1/predictions/${encodeURIComponent(id)}`)
+      .then((item) => {
+        if (!item) return;
+        const riskScore = Number(item.risk_score ?? item.risk_prediction ?? 0);
+        const healthScore = Number(item.health_score ?? item.health_prediction ?? 0);
+        setPrediction({
+          risk: riskScore >= 50 ? 'high' : riskScore >= 25 ? 'medium' : 'low',
+          prediction: item.maintenance_recommendation || `Risk score ${riskScore.toFixed(1)} with ${healthScore.toFixed(0)} health index`,
+          confidence: Math.min(99, Math.max(65, Number(item.prediction_confidence ?? 0.85) * 100)),
+          predictedAt: item.predicted_at || item.prediction_timestamp || 'Live',
+        });
+      })
+      .catch((error) => console.error('Prediction fetch failed', error));
+  }, [id]);
+
+  if (!asset) {
+    return (
+      <DashboardLayout>
+        <EmptyState title="Asset not found" description={`No monitored asset matches the identifier ${id}.`} />
+      </DashboardLayout>
+    );
+  }
+
+  return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        <Link to="/infrastructure" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="size-4" aria-hidden="true" />
+          Back to Infrastructure Assets
+        </Link>
+
+        <PageHeader
+          eyebrow={`${asset.id} · ${asset.type}`}
+          title={asset.name}
+          description={`${asset.location}, ${asset.district} district · Commissioned ${asset.builtYear}`}
+          actions={
+            <>
+              <StatusBadge status={asset.health} />
+              <RiskBadge risk={asset.risk} />
+            </>
+          }
+        />
+
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard label="Health Score" value={asset.healthScore} tone={asset.health === "healthy" ? "success" : asset.health === "warning" ? "warning" : "danger"} />
+          <StatCard label="Risk Score" value={asset.riskScore} tone={asset.risk === "low" ? "success" : asset.risk === "medium" ? "warning" : "danger"} />
+          <StatCard label="Remaining Useful Life" value={`${asset.rulYears} yrs`} tone="accent" />
+          <StatCard label="Status" value={asset.status} />
+        </div>
+
+        <div className="grid gap-4 xl:grid-cols-2">
+          <ChartCard title="Overview" subtitle="Asset attributes and spatial reference">
+            <dl className="grid grid-cols-2 gap-4 text-sm">
+              {[
+                { k: "Asset ID", v: asset.id },
+                { k: "Type", v: asset.type },
+                { k: "Location", v: `${asset.location}, ${asset.district}` },
+                { k: "Coordinates", v: `${asset.lat.toFixed(4)}, ${asset.lng.toFixed(4)}` },
+                { k: "Commissioned", v: String(asset.builtYear) },
+                { k: "Last inspection", v: asset.lastInspection },
+              ].map((r) => (
+                <div key={r.k}>
+                  <dt className="eyebrow text-muted-foreground">{r.k}</dt>
+                  <dd className="mt-1">{r.v}</dd>
+                </div>
+              ))}
+            </dl>
+            <div className="mt-5 border-t pt-5">
+              <p className="eyebrow text-muted-foreground">Condition index</p>
+              <Progress value={asset.healthScore} className="mt-2" />
+            </div>
+          </ChartCard>
+
+          <ChartCard title="AI Prediction" subtitle="Latest model output for this asset">
+            {prediction ? (
+              <div className="space-y-4">
+                <p className="text-sm">{prediction.prediction}</p>
+                <div className="flex flex-wrap items-center gap-6">
+                  <div>
+                    <p className="eyebrow text-muted-foreground">Risk level</p>
+                    <div className="mt-1.5"><RiskBadge risk={prediction.risk} /></div>
+                  </div>
+                  <div>
+                    <p className="eyebrow text-muted-foreground">Confidence</p>
+                    <p className="mt-1 font-display text-xl font-bold tabular-nums">{prediction.confidence.toFixed(1)}%</p>
+                  </div>
+                  <div>
+                    <p className="eyebrow text-muted-foreground">Generated</p>
+                    <p className="mt-1 text-sm">{prediction.predictedAt}</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <EmptyState title="No prediction in the current cycle" description="This asset will be scored in the next model run." />
+            )}
+          </ChartCard>
+        </div>
+
+        <ChartCard title="Inspection History" subtitle="Field observations recorded against this asset" action={
+            <Button asChild variant="outline" size="sm">
+              <Link to="/infrastructure/$id/history" params={{ id: asset.id }}>
+                Full history
+              </Link>
+            </Button>
+          }>
+          <ul className="divide-y">
+            {history.slice(0, 3).map((h) => (
+              <li key={h.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 py-3.5 first:pt-0">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium">{h.finding}</p>
+                  <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">{h.id} · {h.date} · {h.inspector}</p>
+                </div>
+                <StatusBadge status={h.health} />
+              </li>
+            ))}
+          </ul>
+        </ChartCard>
+      </div>
+    </DashboardLayout>
+  );
+}
+
+export function AssetHistoryPage({ id }: { id: string }) {
+  const [asset, setAsset] = useState<InfrastructureAsset | null>(null);
+  const [history, setHistory] = useState<InspectionRecord[]>([]);
+
+  useEffect(() => {
+    apiRequest<any>(`/api/v1/infrastructure/${encodeURIComponent(id)}`)
+      .then((data) => setAsset(mapApiAsset(data)))
+      .catch((error) => console.error('Asset detail fetch failed', error));
+
+    apiRequest<Array<any>>(`/api/v1/assets/${encodeURIComponent(id)}/inspections`)
+      .then((records) => setHistory(records.map((item) => ({
+        id: String(item.id ?? 'INS'),
+        date: item.inspection_date ? new Date(item.inspection_date).toLocaleDateString() : 'Unknown',
+        inspector: item.inspector || 'Field inspector',
+        finding: item.notes || item.inspection_type || item.condition || 'Inspection record',
+        health: Number(item.inspection_score ?? 0) >= 80 ? 'healthy' : Number(item.inspection_score ?? 0) >= 50 ? 'warning' : 'critical',
+        score: Number(item.inspection_score ?? 0),
+      }))))
+      .catch((error) => console.error('Inspection history fetch failed', error));
+  }, [id]);
+
+  return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        <Link to="/infrastructure/$id" params={{ id }} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="size-4" aria-hidden="true" />
+          Back to asset
+        </Link>
+        <PageHeader eyebrow={id} title="Inspection History" description={asset ? asset.name : "Asset record"} />
+        <ChartCard title="All Inspections" subtitle={`${history.length} records`}>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Inspection ID</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Inspector</TableHead>
+                  <TableHead className="min-w-[280px]">Finding</TableHead>
+                  <TableHead>Health</TableHead>
+                  <TableHead className="text-right">Score</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {history.map((h) => (
+                  <TableRow key={h.id}>
+                    <TableCell className="font-mono text-xs">{h.id}</TableCell>
+                    <TableCell className="text-sm">{h.date}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{h.inspector}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{h.finding}</TableCell>
+                    <TableCell><StatusBadge status={h.health} /></TableCell>
+                    <TableCell className="text-right tabular-nums">{h.score}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </ChartCard>
+      </div>
+    </DashboardLayout>
+  );
+}

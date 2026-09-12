@@ -1,0 +1,23 @@
+=========================================================================================================
+SIMRAS STEP 5A - ANDHRA PRADESH TEMPLE INVENTORY
+=========================================================================================================
+
+Temple assets found          : 7
+Unique normalized temples    : 7
+Potential duplicate groups   : 0
+
+AP_TEMPLE_KANAKA_DURGA | Sri Durga Malleswara Swamy Varla Devasthanam | district=NTR | built_year=None | lat=None | lon=None
+AP_TEMPLE_SRIKALAHASTI | Sri Kalahasteeswara Swamy Temple | district=Tirupati | built_year=None | lat=None | lon=None
+AP_TEMPLE_SRISAILAM | Sri Mallikarjuna Swamy Temple, Srisailam | district=Nandyal | built_year=None | lat=None | lon=None
+AP_TEMPLE_SIMHACHALAM | Sri Varaha Lakshmi Narasimha Temple, Simhachalam | district=Visakhapatnam | built_year=None | lat=None | lon=None
+AP_TEMPLE_ANNAVARAM | Sri Veera Venkata Satyanarayana Swamy Temple, Annavaram | district=Kakinada | built_year=None | lat=None | lon=None
+AP_TEMPLE_DWARAKA_TIRUMALA | Sri Venkateswara Swamy Temple, Dwaraka Tirumala | district=Eluru | built_year=None | lat=None | lon=None
+AP_TEMPLE_TIRUMALA | Sri Venkateswara Swamy Temple, Tirumala | district=Tirupati | built_year=None | lat=None | lon=None
+
+Government evidence plan:
+  1. AP Endowments / TMS identity
+  2. ASI protected-monument registry
+  3. Government conservation / restoration procurement
+
+Source plan: /app/data/processed/temple/AP_TEMPLE_SOURCE_PLAN.csv
+=========================================================================================================

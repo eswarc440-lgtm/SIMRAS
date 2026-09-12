@@ -1,0 +1,242 @@
+{
+  "generated_at": "2026-09-03T13:41:33.746891+00:00",
+  "canonical_bridge_assets": 2,
+  "candidate_database_sources": 1,
+  "likely_promotion_sources": [],
+  "bridge_related_files": 9,
+  "database_candidates": [
+    {
+      "schema": "public",
+      "table": "map_features",
+      "table_type": "BASE TABLE",
+      "score": 6,
+      "estimated_rows": -1,
+      "exact_rows": 21,
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint"
+        },
+        {
+          "name": "source_id",
+          "type": "integer"
+        },
+        {
+          "name": "external_id",
+          "type": "character varying"
+        },
+        {
+          "name": "name",
+          "type": "character varying"
+        },
+        {
+          "name": "feature_type",
+          "type": "character varying"
+        },
+        {
+          "name": "subtype",
+          "type": "character varying"
+        },
+        {
+          "name": "geometry",
+          "type": "USER-DEFINED"
+        },
+        {
+          "name": "attributes",
+          "type": "jsonb"
+        },
+        {
+          "name": "identity_status",
+          "type": "character varying"
+        },
+        {
+          "name": "confidence_score",
+          "type": "double precision"
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone"
+        }
+      ],
+      "sample_rows": [
+        {
+          "id": 1,
+          "source_id": 96,
+          "external_id": "node/12994101236",
+          "name": "Gannavaram Airport",
+          "feature_type": "airport",
+          "subtype": "aerodrome",
+          "attributes": "{'name': 'Gannavaram Airport', 'aeroway': 'aerodrome'}",
+          "identity_status": "SOURCE_REPORTED",
+          "confidence_score": 0.75,
+          "retrieved_at": "2026-08-28 03:50:31.815473+00:00",
+          "created_at": "2026-08-28 03:50:34.980790+00:00",
+          "updated_at": "2026-08-28 03:50:34.980790+00:00"
+        },
+        {
+          "id": 2,
+          "source_id": 96,
+          "external_id": "way/82611242",
+          "name": "Tirupati Airport",
+          "feature_type": "airport",
+          "subtype": "public",
+          "attributes": "{'ref': 'TIR', 'iata': 'TIR', 'icao': 'VOTP', 'name': 'Tirupati Airport', 'aeroway': 'aerodrome', 'operator': 'Airports Authority of India', 'wikidata': 'Q1321723', 'wikipedia': 'en:Tirupati Airport', 'aerodrome:type': 'public'}",
+          "identity_status": "SOURCE_REPORTED",
+          "confidence_score": 0.75,
+          "retrieved_at": "2026-08-28 03:50:31.815473+00:00",
+          "created_at": "2026-08-28 03:50:34.980790+00:00",
+          "updated_at": "2026-08-28 03:50:34.980790+00:00"
+        },
+        {
+          "id": 3,
+          "source_id": 96,
+          "external_id": "way/101362695",
+          "name": "Nagarjuna Sagar",
+          "feature_type": "airport",
+          "subtype": "aerodrome",
+          "attributes": "{'icao': 'VONS', 'name': 'Nagarjuna Sagar', 'aeroway': 'aerodrome', 'wikidata': 'Q12694095'}",
+          "identity_status": "SOURCE_REPORTED",
+          "confidence_score": 0.75,
+          "retrieved_at": "2026-08-28 03:50:31.815473+00:00",
+          "created_at": "2026-08-28 03:50:34.980790+00:00",
+          "updated_at": "2026-08-28 03:50:34.980790+00:00"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "data/processed/bridge/AP_BRIDGE_ENGINEERING_EVIDENCE.csv",
+      "size_mb": 0.008,
+      "suffix": ".csv",
+      "header": [
+        "asset_id",
+        "asset_name",
+        "asset_code",
+        "evidence_type",
+        "feature_name",
+        "numeric_value",
+        "text_value",
+        "unit",
+        "component",
+        "source_tier",
+        "source_authority",
+        "source_key",
+        "source_title",
+        "is_derived",
+        "verification_method",
+        "is_synthetic",
+        "is_current_condition_label",
+        "is_health_label",
+        "is_risk_label",
+        "is_rul_label",
+        "verified_at"
+      ]
+    },
+    {
+      "path": "reports/STEP6A_BRIDGE_INVENTORY.json",
+      "size_mb": 0.002,
+      "suffix": ".json",
+      "header": null
+    },
+    {
+      "path": "reports/STEP6A_BRIDGE_INVENTORY.txt",
+      "size_mb": 0.002,
+      "suffix": ".txt",
+      "header": null
+    },
+    {
+      "path": "reports/STEP6B_BRIDGE_ENGINEERING_REPORT.json",
+      "size_mb": 0.002,
+      "suffix": ".json",
+      "header": null
+    },
+    {
+      "path": "data/processed/bridge/AP_BRIDGE_ENGINEERING_FEATURES.csv",
+      "size_mb": 0.001,
+      "suffix": ".csv",
+      "header": [
+        "asset_id",
+        "asset_code",
+        "asset_name",
+        "district",
+        "structure_mode",
+        "length_m",
+        "width_m",
+        "pier_count",
+        "abutment_count",
+        "span_count",
+        "max_reported_span_m",
+        "lane_or_track_count",
+        "material_summary",
+        "completion_year_evidence",
+        "full_operation_year",
+        "current_maintenance_procurement",
+        "government_evidence_rows",
+        "technical_reference_rows",
+        "current_structural_condition_labels",
+        "health_ml_readiness",
+        "risk_ml_readiness",
+        "rul_readiness",
+        "feature_version"
+      ]
+    },
+    {
+      "path": "data/processed/bridge/AP_BRIDGE_SOURCE_PLAN.csv",
+      "size_mb": 0.001,
+      "suffix": ".csv",
+      "header": [
+        "asset_id",
+        "asset_code",
+        "asset_name",
+        "normalized_name",
+        "district",
+        "latitude",
+        "longitude",
+        "built_year",
+        "material",
+        "design_life_years",
+        "length_m",
+        "width_m",
+        "height_m",
+        "official_evidence_rows",
+        "inspection_rows",
+        "real_inspection_rows",
+        "synthetic_inspection_rows",
+        "prediction_rows",
+        "real_inspection_status",
+        "health_ml_readiness",
+        "rul_readiness",
+        "recommended_primary_sources",
+        "transfer_learning_source",
+        "source_status"
+      ]
+    },
+    {
+      "path": "reports/STEP6B_BRIDGE_ENGINEERING_REPORT.txt",
+      "size_mb": 0.001,
+      "suffix": ".txt",
+      "header": null
+    },
+    {
+      "path": "reports/ml/latest/11_BRIDGE_MODEL_REPORT.md",
+      "size_mb": 0.0,
+      "suffix": ".md",
+      "header": null
+    },
+    {
+      "path": "reports/ml/run_20260903_020557/11_BRIDGE_MODEL_REPORT.md",
+      "size_mb": 0.0,
+      "suffix": ".md",
+      "header": null
+    }
+  ]
+}

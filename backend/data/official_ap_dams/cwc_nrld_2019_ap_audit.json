@@ -1,0 +1,20 @@
+{
+  "rows": 166,
+  "prakasam_anchor": {
+    "name": true,
+    "river": true,
+    "completion_year": true,
+    "height": true,
+    "length": true,
+    "spillway": true
+  },
+  "field_coverage": {
+    "river": 166,
+    "completion_year": 106,
+    "height_m": 165,
+    "length_m": 159,
+    "gross_storage_mcm": 165,
+    "effective_storage_mcm": 145,
+    "spillway_capacity_cumecs": 140
+  }
+}

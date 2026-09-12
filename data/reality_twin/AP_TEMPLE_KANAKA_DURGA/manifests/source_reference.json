@@ -1,0 +1,39 @@
+﻿{
+    "asset_code":  "AP_TEMPLE_KANAKA_DURGA",
+    "asset_name":  "Sri Durga Malleswara Swamy Varla Devasthanam",
+    "identity_status":  "VERIFIED",
+    "official_coordinates":  {
+                                 "latitude":  16.5154,
+                                 "longitude":  80.6059,
+                                 "source":  "Sri Durga Malleswara Swamy Varla Devasthanam official website - Topography",
+                                 "source_url":  "https://kanakadurgamma.org/en-in/about/the-temple-history/topography",
+                                 "status":  "SOURCE_BACKED"
+                             },
+    "official_identity_sources":  [
+                                      {
+                                          "organisation":  "Sri Durga Malleswara Swamy Varla Devasthanam",
+                                          "url":  "https://www.kanakadurgamma.org/",
+                                          "use":  "Official temple identity/location reference"
+                                      },
+                                      {
+                                          "organisation":  "Andhra Pradesh Tourism Development Corporation",
+                                          "url":  "https://tourism.ap.gov.in/assets/img/Brochures/AP%20Temples%20Brochure.pdf",
+                                          "use":  "Government tourism identity/reference imagery"
+                                      }
+                                  ],
+    "imagery_source":  {
+                           "provider":  "Wikimedia Commons",
+                           "category":  "Category:Kanaka Durga Temple",
+                           "api":  "https://commons.wikimedia.org/w/api.php",
+                           "policy":  "Each file keeps its own license/author/source metadata in the manifest."
+                       },
+    "dimensions":  {
+                       "status":  "NOT_VERIFIED",
+                       "note":  "No exact engineering dimensions are asserted in Phase 1. Do not metrically scale the reconstruction until a verified dimension, survey measurement, or control-point baseline is available."
+                   },
+    "geometry":  {
+                     "status":  "NOT_RECONSTRUCTED",
+                     "fidelity_target":  "L2_IMAGE_BASED_CANDIDATE",
+                     "note":  "Public photos are candidate inputs only. They do not by themselves prove survey-grade geometry."
+                 }
+}

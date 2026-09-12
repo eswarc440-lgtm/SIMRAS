@@ -1,0 +1,820 @@
+
+================================================================================
+SIMRAS ML ARTIFACT + DATA + RUNTIME DISCOVERY
+================================================================================
+Generated: 2026-09-03 01:44:58
+
+1. ACTIVE DOCKER SERVICES
+--------------------------------------------------------------------------------
+NAME                             IMAGE                          COMMAND                  SERVICE    CREATED          STATUS                 PORTS
+simras-digital-twin-backend-1    simras-digital-twin-backend    "sh -c 'alembic upgrGǪ"   backend    11 minutes ago   Up 10 minutes          0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+simras-digital-twin-db-1         postgis/postgis:17-3.5         "docker-entrypoint.sGǪ"   db         2 days ago       Up 4 hours (healthy)   0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+simras-digital-twin-frontend-1   simras-digital-twin-frontend   "docker-entrypoint.sGǪ"   frontend   11 minutes ago   Up 10 minutes          0.0.0.0:5173->5173/tcp, [::]:5173->5173/tcp
+
+2. MODEL ARTIFACTS ON WINDOWS HOST
+--------------------------------------------------------------------------------
+
+LastWriteTime       SizeMB FullName                                                                                                                                           
+-------------       ------ --------                                                                                                                                           
+01-09-2026 02:02:08  0.001 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_sparse\risk_calibrator.joblib                                           
+01-09-2026 02:02:08  0.001 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_sparse_candidate_20260901_015950\risk_calibrator.joblib                 
+01-09-2026 02:02:08  1.048 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_sparse_candidate_20260901_015950\risk.joblib                            
+01-09-2026 02:02:08  1.048 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_sparse\risk.joblib                                                      
+01-09-2026 02:02:08  1.043 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_sparse\health.joblib                                                    
+01-09-2026 02:02:08  1.043 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_sparse_candidate_20260901_015950\health.joblib                          
+01-09-2026 02:00:56  0.328 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_candidate_20260901_015950\rul_upper.joblib                              
+01-09-2026 02:00:56  0.328 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi\rul_upper.joblib                                                        
+01-09-2026 02:00:56  0.017 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_candidate_20260901_015950\rul_median.joblib                             
+01-09-2026 02:00:56  0.017 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi\rul_median.joblib                                                       
+01-09-2026 02:00:56  0.023 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi\rul_lower.joblib                                                        
+01-09-2026 02:00:56  0.023 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_candidate_20260901_015950\rul_lower.joblib                              
+01-09-2026 02:00:56  0.001 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_candidate_20260901_015950\risk_calibrator.joblib                        
+01-09-2026 02:00:56  0.001 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi\risk_calibrator.joblib                                                  
+01-09-2026 02:00:56  0.569 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi\risk.joblib                                                             
+01-09-2026 02:00:56  0.569 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_candidate_20260901_015950\risk.joblib                                   
+01-09-2026 02:00:55  0.454 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi\health.joblib                                                           
+01-09-2026 02:00:55  0.454 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_candidate_20260901_015950\health.joblib                                 
+01-09-2026 01:55:34  0.328 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_candidate_20260901_015424\rul_upper.joblib                              
+01-09-2026 01:55:34  0.017 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_candidate_20260901_015424\rul_median.joblib                             
+01-09-2026 01:55:34  0.023 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_candidate_20260901_015424\rul_lower.joblib                              
+01-09-2026 01:55:34  0.001 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_candidate_20260901_015424\risk_calibrator.joblib                        
+01-09-2026 01:55:34  0.569 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_candidate_20260901_015424\risk.joblib                                   
+01-09-2026 01:55:34  0.454 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_candidate_20260901_015424\health.joblib                                 
+31-08-2026 23:35:57  0.001 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_resume_integer_outputs_v3_20260901_021444\bridge_nbi_sparse\risk_calibrator.joblib
+31-08-2026 23:35:57  0.001 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015424\bridge_nbi_sparse\risk_calibrator.joblib  
+31-08-2026 23:35:57  0.001 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015950\bridge_nbi_sparse\risk_calibrator.joblib  
+31-08-2026 23:35:57  1.048 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_resume_integer_outputs_v3_20260901_021444\bridge_nbi_sparse\risk.joblib           
+31-08-2026 23:35:57  1.048 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015950\bridge_nbi_sparse\risk.joblib             
+31-08-2026 23:35:57  1.048 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015424\bridge_nbi_sparse\risk.joblib             
+31-08-2026 23:35:57  1.043 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015424\bridge_nbi_sparse\health.joblib           
+31-08-2026 23:35:57  1.043 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_resume_integer_outputs_v3_20260901_021444\bridge_nbi_sparse\health.joblib         
+31-08-2026 23:35:57  1.043 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015950\bridge_nbi_sparse\health.joblib           
+31-08-2026 23:30:16  0.001 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_phase1_sparse_bridge_20260831_233456\bridge_nbi_sparse\risk_calibrator.joblib     
+31-08-2026 23:30:16  1.048 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_phase1_sparse_bridge_20260831_233456\bridge_nbi_sparse\risk.joblib                
+31-08-2026 23:30:16  1.043 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_phase1_sparse_bridge_20260831_233456\bridge_nbi_sparse\health.joblib              
+29-08-2026 15:35:03  0.328 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015950\bridge_nbi\rul_upper.joblib               
+29-08-2026 15:35:03  0.328 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_resume_integer_outputs_v3_20260901_021444\bridge_nbi\rul_upper.joblib             
+29-08-2026 15:35:03  0.328 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015424\bridge_nbi\rul_upper.joblib               
+29-08-2026 15:35:03  0.017 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015950\bridge_nbi\rul_median.joblib              
+29-08-2026 15:35:03  0.017 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_resume_integer_outputs_v3_20260901_021444\bridge_nbi\rul_median.joblib            
+29-08-2026 15:35:03  0.017 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015424\bridge_nbi\rul_median.joblib              
+29-08-2026 15:35:03  0.023 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_resume_integer_outputs_v3_20260901_021444\bridge_nbi\rul_lower.joblib             
+29-08-2026 15:35:03  0.023 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015424\bridge_nbi\rul_lower.joblib               
+29-08-2026 15:35:03  0.023 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015950\bridge_nbi\rul_lower.joblib               
+29-08-2026 15:35:03  0.001 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015950\bridge_nbi\risk_calibrator.joblib         
+29-08-2026 15:35:03  0.001 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_resume_integer_outputs_v3_20260901_021444\bridge_nbi\risk_calibrator.joblib       
+29-08-2026 15:35:03  0.001 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015424\bridge_nbi\risk_calibrator.joblib         
+29-08-2026 15:35:03  0.569 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015424\bridge_nbi\risk.joblib                    
+29-08-2026 15:35:03  0.569 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015950\bridge_nbi\risk.joblib                    
+29-08-2026 15:35:03  0.569 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_resume_integer_outputs_v3_20260901_021444\bridge_nbi\risk.joblib                  
+29-08-2026 15:35:03  0.454 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015950\bridge_nbi\health.joblib                  
+29-08-2026 15:35:03  0.454 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015424\bridge_nbi\health.joblib                  
+29-08-2026 15:35:03  0.454 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_resume_integer_outputs_v3_20260901_021444\bridge_nbi\health.joblib                
+
+
+
+
+3. TRAINING REPORTS / MANIFESTS / METRICS
+--------------------------------------------------------------------------------
+
+LastWriteTime       SizeKB FullName                                                                                                                                         
+-------------       ------ --------                                                                                                                                         
+02-09-2026 22:16:38   70.4 D:\simras-digital-twin-repository\simras-digital-twin\frontend\public\reality-twin\model-manifest.json                                           
+02-09-2026 19:29:27   72.4 D:\simras-digital-twin-repository\simras-digital-twin\archive\reality_twin_v21_20260902_221638\frontend\public\reality-twin\model-manifest.json  
+02-09-2026 19:29:27   72.4 D:\simras-digital-twin-repository\simras-digital-twin\archive\reality_twin_v16_3_20260902_194245\frontend\public\reality-twin\model-manifest.json
+02-09-2026 19:29:27   72.4 D:\simras-digital-twin-repository\simras-digital-twin\archive\reality_twin_v21_20260902_215655\frontend\public\reality-twin\model-manifest.json  
+02-09-2026 18:48:05   76.1 D:\simras-digital-twin-repository\simras-digital-twin\archive\real_twin_factory_v13_1_20260902_192926\model-manifest.json                        
+02-09-2026 14:00:41   72.4 D:\simras-digital-twin-repository\simras-digital-twin\archive\real_twin_v14_4_20260902_145123\frontend\public\reality-twin\model-manifest.json   
+02-09-2026 14:00:41   72.4 D:\simras-digital-twin-repository\simras-digital-twin\archive\real_twin_v14_20260902_140807\frontend\public\reality-twin\model-manifest.json     
+02-09-2026 14:00:41   72.4 D:\simras-digital-twin-repository\simras-digital-twin\archive\real_twin_v14_3_20260902_143442\frontend\public\reality-twin\model-manifest.json   
+02-09-2026 14:00:41   72.4 D:\simras-digital-twin-repository\simras-digital-twin\archive\real_twin_v14_1_20260902_141551\frontend\public\reality-twin\model-manifest.json   
+02-09-2026 14:00:41   72.4 D:\simras-digital-twin-repository\simras-digital-twin\archive\real_twin_v14_2_20260902_142015\frontend\public\reality-twin\model-manifest.json   
+02-09-2026 14:00:00   72.4 D:\simras-digital-twin-repository\simras-digital-twin\archive\real_twin_factory_v13_1_20260902_140041\model-manifest.json                        
+02-09-2026 13:47:57   60.1 D:\simras-digital-twin-repository\simras-digital-twin\archive\real_twin_factory_v13_1_20260902_135959\model-manifest.json                        
+02-09-2026 07:31:27   24.7 D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\AP_TEMPLE_KANAKA_DURGA\manifests\wikimedia_imagery_manifest_v2.json      
+02-09-2026 06:56:04    3.3 D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\AP_TEMPLE_KANAKA_DURGA\manifests\wikimedia_imagery_manifest.json         
+01-09-2026 02:02:08    2.6 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_sparse\manifest.json                                                  
+01-09-2026 02:02:08    2.6 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_sparse_candidate_20260901_015950\manifest.json                        
+01-09-2026 02:00:56    3.6 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_candidate_20260901_015950\manifest.json                               
+01-09-2026 02:00:56    3.6 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi\manifest.json                                                         
+01-09-2026 01:55:34    3.6 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\bridge_nbi_candidate_20260901_015424\manifest.json                               
+31-08-2026 23:35:57    2.6 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015950\bridge_nbi_sparse\manifest.json         
+31-08-2026 23:35:57    2.6 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015424\bridge_nbi_sparse\manifest.json         
+31-08-2026 23:35:57    2.6 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_resume_integer_outputs_v3_20260901_021444\bridge_nbi_sparse\manifest.json       
+31-08-2026 23:30:16    2.6 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_phase1_sparse_bridge_20260831_233456\bridge_nbi_sparse\manifest.json            
+31-08-2026 22:00:20    0.7 D:\simras-digital-twin-repository\simras-digital-twin\archive\stage7_selected_asset_reports_20260831_220020\stage7_backup_manifest.json          
+31-08-2026 21:56:28    0.7 D:\simras-digital-twin-repository\simras-digital-twin\archive\stage7_selected_asset_reports_20260831_215628\stage7_backup_manifest.json          
+31-08-2026 21:53:05    0.7 D:\simras-digital-twin-repository\simras-digital-twin\archive\stage7_selected_asset_reports_20260831_215305\stage7_backup_manifest.json          
+31-08-2026 21:51:06    0.7 D:\simras-digital-twin-repository\simras-digital-twin\archive\stage7_selected_asset_reports_20260831_215106\stage7_backup_manifest.json          
+29-08-2026 15:35:03    2.4 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015424\bridge_nbi\manifest.json                
+29-08-2026 15:35:03    2.4 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_resume_integer_outputs_v3_20260901_021444\bridge_nbi\manifest.json              
+29-08-2026 15:35:03    2.4 D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015950\bridge_nbi\manifest.json                
+
+
+
+
+4. TRAINING / FEATURE DATASETS
+--------------------------------------------------------------------------------
+
+LastWriteTime       SizeMB FullName                                                                                                                          
+-------------       ------ --------                                                                                                                          
+26-08-2026 22:20:49   4.58 D:\simras-digital-twin-repository\simras-digital-twin\data\processed\ap-bridge-groups.csv                                         
+26-08-2026 22:15:59  4.262 D:\simras-digital-twin-repository\simras-digital-twin\data\processed\ap-bridge-candidates.csv                                     
+30-08-2026 18:37:59  4.036 D:\simras-digital-twin-repository\simras-digital-twin\data\processed\osm_bridge_lines_import.csv                                  
+26-08-2026 22:20:49  0.832 D:\simras-digital-twin-repository\simras-digital-twin\data\processed\ap-bridge-group-members.csv                                  
+27-08-2026 21:28:23   0.08 D:\simras-digital-twin-repository\simras-digital-twin\data\processed\nwdp-reservoir-AP_DAM_NWDP_AP01VH0059.csv                    
+30-08-2026 06:30:22  0.047 D:\simras-digital-twin-repository\simras-digital-twin\data\processed\nasa-power-AP_DAM_00001.csv                                  
+27-08-2026 07:38:25   0.03 D:\simras-digital-twin-repository\simras-digital-twin\data\processed\ap-dam-registry-verified.csv                                 
+27-08-2026 07:38:25  0.003 D:\simras-digital-twin-repository\simras-digital-twin\data\processed\ap-dam-registry-review.csv                                   
+26-08-2026 22:15:58  0.003 D:\simras-digital-twin-repository\simras-digital-twin\data\processed\ap-bridge-duplicate-geometries.csv                           
+31-08-2026 23:38:37  0.001 D:\simras-digital-twin-repository\simras-digital-twin\artifacts\validation\ap_bridge_ml_validation_20260831_233835.csv            
+02-09-2026 19:45:30      0 D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\coordinate_truth\godavari_arch_bridge_coordinate_truth.csv
+
+
+
+
+5. BACKUP / OLD ML DIRECTORIES
+--------------------------------------------------------------------------------
+D:\simras-digital-twin-repository\simras-digital-twin\archive\asset_registry_shape_check_20260901_224919
+D:\simras-digital-twin-repository\simras-digital-twin\archive\asset_registry_shape_check_20260901_224925
+D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_phase1_sparse_bridge_20260831_231537
+D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_phase1_sparse_bridge_20260831_231710
+D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_phase1_sparse_bridge_20260831_231902
+D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_phase1_sparse_bridge_20260831_232054
+D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_phase1_sparse_bridge_20260831_232344
+D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_phase1_sparse_bridge_20260831_232913
+D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_phase1_sparse_bridge_20260831_233456
+D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_phase3_real_evidence_gate_20260831_234240
+D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_phase3_real_evidence_gate_v2_20260831_234610
+D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_phase4_inspection_only_full_nbi_20260831_234901
+D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_phase4_inspection_only_full_nbi_20260831_235601
+D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015424
+D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_rebuild_integer_outputs_20260901_015950
+D:\simras-digital-twin-repository\simras-digital-twin\archive\ml_resume_integer_outputs_v3_20260901_021444
+D:\simras-digital-twin-repository\simras-digital-twin\archive\stage7_3_clean_dashboard_real_ml_v10_20260831_225830
+D:\simras-digital-twin-repository\simras-digital-twin\archive\stage7_selected_asset_reports_20260831_215106\ml
+D:\simras-digital-twin-repository\simras-digital-twin\archive\stage7_selected_asset_reports_20260831_215106\ml\simras_ml
+D:\simras-digital-twin-repository\simras-digital-twin\archive\stage7_selected_asset_reports_20260831_215305\ml
+D:\simras-digital-twin-repository\simras-digital-twin\archive\stage7_selected_asset_reports_20260831_215305\ml\simras_ml
+D:\simras-digital-twin-repository\simras-digital-twin\archive\stage7_selected_asset_reports_20260831_215628\ml
+D:\simras-digital-twin-repository\simras-digital-twin\archive\stage7_selected_asset_reports_20260831_215628\ml\simras_ml
+D:\simras-digital-twin-repository\simras-digital-twin\archive\stage7_selected_asset_reports_20260831_220020\ml
+D:\simras-digital-twin-repository\simras-digital-twin\archive\stage7_selected_asset_reports_20260831_220020\ml\simras_ml
+D:\simras-digital-twin-repository\simras-digital-twin\artifacts
+D:\simras-digital-twin-repository\simras-digital-twin\artifacts\models
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\ml
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_AIR_AAI_KADAPA\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_AIR_AAI_KURNOOL\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_AIR_AAI_RAJAHMUNDRY\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_AIR_AAI_TIRUPATI\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_AIR_AAI_VIJAYAWADA\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_AIR_AAI_VISAKHAPATNAM\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_AIR_VOBZ\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_AIR_VOTP\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_BAR_WRIS_B00131\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_BAR_WRIS_B00165\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_BAR_WRIS_B00429\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_BAR_WRIS_B00434\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_BAR_WRIS_B00435\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_BAR_WRIS_B00448\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_BAR_WRIS_B00800\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_BAR_WRIS_B01201\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_BAR_WRIS_B01609\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_BR_00001\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_BR_00002\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_00001\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_00002\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_NWDP_AP01HH0040\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_NWDP_AP01HH0049\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_NWDP_AP01MH0011\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_NWDP_AP01MH0074\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_NWDP_AP01MH0135\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_NWDP_AP01VH0059\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01_0131\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01HH0019\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01HH0023\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01HH0024\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01HH0043\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01HH0057\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01HH0060\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01HH0062\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01HH0064\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01HH0081\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01HH0127\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01HH0130\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01HH0132\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01HH0133\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01HH0137\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01HH0149\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01HH0159\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01HH0169\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0002\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0005\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0006\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0013\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0032\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0033\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0034\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0037\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0041\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0045\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0048\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0050\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0051\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0054\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0055\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0061\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0067\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0068\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0070\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0071\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0077\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0084\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0085\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0086\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0087\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0090\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0091\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0093\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0096\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0097\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0098\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0099\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0102\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0103\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0104\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0105\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0106\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0107\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0108\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0111\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0113\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0115\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0116\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0117\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0118\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0119\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0120\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0122\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0123\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0124\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0125\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0136\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01LH0147\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0001\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0003\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0004\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0010\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0015\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0016\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0017\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0018\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0021\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0022\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0026\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0027\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0028\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0030\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0036\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0039\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0042\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0044\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0046\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0047\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0052\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0053\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0056\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0058\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0063\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0065\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0066\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0069\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0072\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0073\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0074\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0075\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0076\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0078\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0080\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0083\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0089\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0092\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0094\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0095\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0100\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0109\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0114\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0121\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0128\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0129\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0138\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0140\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0145\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0148\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0150\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0152\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0166\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0167\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_AP01MH0168\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D00569\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D00587\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D00719\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D00721\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D00963\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D01773\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D01824\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D01879\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D02041\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D02086\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D02198\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D02215\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D02269\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D02317\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D02672\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D03507\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D04538\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D06026\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D06052\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D06074\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D06095\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D06139\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D06208\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D06327\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D06350\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D06351\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D06352\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D06353\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D06354\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D06356\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D06393\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D06394\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_D06395\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_DAM_WRIS_TL47HH0060\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_TEMPLE_ANNAVARAM\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_TEMPLE_DWARAKA_TIRUMALA\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_TEMPLE_KANAKA_DURGA\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_TEMPLE_SIMHACHALAM\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_TEMPLE_SRIKALAHASTI\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_TEMPLE_SRISAILAM\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\all_assets\AP_TEMPLE_TIRUMALA\models
+D:\simras-digital-twin-repository\simras-digital-twin\data\training
+D:\simras-digital-twin-repository\simras-digital-twin\evidence_panel_backup_20260831_075219
+D:\simras-digital-twin-repository\simras-digital-twin\frontend\dist\reality-twin\models
+D:\simras-digital-twin-repository\simras-digital-twin\frontend\public\reality-twin\models
+D:\simras-digital-twin-repository\simras-digital-twin\frontend_alias_backup_20260831_000339
+D:\simras-digital-twin-repository\simras-digital-twin\frontend_backup_20260830_225933
+D:\simras-digital-twin-repository\simras-digital-twin\frontend_failed_merge_backup_20260830_231544
+D:\simras-digital-twin-repository\simras-digital-twin\frontend_failed_merge_backup_20260830_232431
+D:\simras-digital-twin-repository\simras-digital-twin\frontend_failed_merge_backup_20260830_232733
+D:\simras-digital-twin-repository\simras-digital-twin\frontend_failed_merge_backup_20260830_233536
+D:\simras-digital-twin-repository\simras-digital-twin\ml
+D:\simras-digital-twin-repository\simras-digital-twin\ml\simras_ml
+D:\simras-digital-twin-repository\simras-digital-twin\ml\simras_ml.egg-info
+D:\simras-digital-twin-repository\simras-digital-twin\tools\osm2world\current\models
+
+6. MODEL PATHS REFERENCED BY BACKEND SOURCE
+--------------------------------------------------------------------------------
+
+Path                                                                                                         LineNumber Line                                                                                                                                                                                                    
+----                                                                                                         ---------- ----                                                                                                                                                                                                    
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\api\routes\analytics.py                            63                 "artifact_uri": row.artifact_uri,                                                                                                                                                       
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\api\routes\selected_asset_reports.py              144         "artifact_uri": row.artifact_uri,                                                                                                                                                               
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\api\routes\ui_compat.py                           582 async def _latest_model_registry(session: AsyncSession):                                                                                                                                                
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\api\routes\ui_compat.py                           584         result = await session.execute(text("SELECT * FROM model_registry ORDER BY id DESC LIMIT 1"))                                                                                                   
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\api\routes\ui_compat.py                           786     model = await _latest_model_registry(session)                                                                                                                                                       
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\api\routes\ui_compat.py                           788         lines = ["SIMRAS Model Governance Report", "No model_registry record is currently available."]                                                                                                  
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\api\routes\ui_compat.py                           798             f"Artifact URI: {model.get('artifact_uri', 'N/A')}",                                                                                                                                        
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\models\entities.before_evidence.py                261     __tablename__ = "model_registry"                                                                                                                                                                    
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\models\entities.before_evidence.py                270     artifact_uri: Mapped[str | None] = mapped_column(Text)                                                                                                                                              
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\models\entities.py                                261     __tablename__ = "model_registry"                                                                                                                                                                    
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\models\entities.py                                270     artifact_uri: Mapped[str | None] = mapped_column(Text)                                                                                                                                              
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\asset_health_assessment_report.py        257     full_bridge = method == "calibrated_nbi_bridge_ml"                                                                                                                                                  
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\asset_health_assessment_report.py        258     sparse_bridge = "sparse_nbi_bridge_ml" in method                                                                                                                                                    
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\asset_health_assessment_report.py        670             prediction_method == "calibrated_nbi_bridge_ml"                                                                                                                                             
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\asset_health_assessment_report.py        671             or "sparse_nbi_bridge_ml" in prediction_method                                                                                                                                              
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          119         "health.joblib",                                                                                                                                                                                
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          120         "risk.joblib",                                                                                                                                                                                  
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          121         "risk_calibrator.joblib",                                                                                                                                                                       
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          122         "rul_lower.joblib",                                                                                                                                                                             
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          123         "rul_median.joblib",                                                                                                                                                                            
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          124         "rul_upper.joblib",                                                                                                                                                                             
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          130         models[filename] = joblib.load(path)                                                                                                                                                            
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          175     health_rating = float(np.clip(models["health.joblib"].predict(frame)[0], 0, 9))                                                                                                                     
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          181     raw_risk = float(models["risk.joblib"].predict_proba(frame)[0, 1])                                                                                                                                  
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          183         models["risk_calibrator.joblib"].predict_proba(_logit(raw_risk))[0, 1]                                                                                                                          
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          188     rul_lower = float(np.clip(models["rul_lower.joblib"].predict(frame)[0], 0, 30))                                                                                                                     
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          189     rul_median = float(np.clip(models["rul_median.joblib"].predict(frame)[0], 0, 30))                                                                                                                   
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          190     rul_upper = float(np.clip(models["rul_upper.joblib"].predict(frame)[0], 0, 30))                                                                                                                     
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          225         prediction_method="calibrated_nbi_bridge_ml",                                                                                                                                                   
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          260     root = Path(artifact_dir or os.getenv("SIMRAS_SPARSE_ML_ARTIFACT_DIR","/artifacts/bridge_nbi_sparse"))                                                                                              
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          266     for filename in ["health.joblib","risk.joblib","risk_calibrator.joblib"]:                                                                                                                           
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          269         models[filename]=joblib.load(p)                                                                                                                                                                 
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          275     h=float(np.clip(models["health.joblib"].predict(frame)[0],0,9))                                                                                                                                     
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          276     raw=float(models["risk.joblib"].predict_proba(frame)[0,1])                                                                                                                                          
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          277     prob=float(models["risk_calibrator.joblib"].predict_proba(_logit(raw))[0,1])                                                                                                                        
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\ml_predictor.py                          287     return SparseMLResult(round(health_score,1),round(min(lo,hi),1),round(max(lo,hi),1),round(risk_score,1),risk_level,None,None,None,round(confidence,2),str(manifest["version"]),str(manifest["feature
+                                                                                                                        _version"]),"RESEARCH_TRANSFER","sparse_nbi_bridge_ml",False,str(manifest["training_scope"]),int(manifest.get("prediction_horizon_years",3)),factors,recs)                                              
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\report_decision_support.py               288     return "nbi_bridge" in text or "bridge_ml" in text or "calibrated_nbi" in text                                                                                                                      
+D:\simras-digital-twin-repository\simras-digital-twin\backend\app\services\report_decision_support.py               329         or "CALIBRATED_NBI_BRIDGE_ML" in method_upper                                                                                                                                                   
+D:\simras-digital-twin-repository\simras-digital-twin\backend\scripts\register_model.py                              50                 artifact_uri=str(artifact_dir),                                                                                                                                                         
+D:\simras-digital-twin-repository\simras-digital-twin\backend\scripts\register_model.py                              51                 checksum=manifest["artifact_checksums"].get("health.joblib"),                                                                                                                           
+D:\simras-digital-twin-repository\simras-digital-twin\backend\tests\test_ml_predictor.py                             41         "health.joblib": ConstantRegressor(6.3),                                                                                                                                                        
+D:\simras-digital-twin-repository\simras-digital-twin\backend\tests\test_ml_predictor.py                             42         "risk.joblib": ConstantClassifier(0.42),                                                                                                                                                        
+D:\simras-digital-twin-repository\simras-digital-twin\backend\tests\test_ml_predictor.py                             43         "risk_calibrator.joblib": LogisticIdentity(),                                                                                                                                                   
+D:\simras-digital-twin-repository\simras-digital-twin\backend\tests\test_ml_predictor.py                             44         "rul_lower.joblib": ConstantRegressor(4),                                                                                                                                                       
+D:\simras-digital-twin-repository\simras-digital-twin\backend\tests\test_ml_predictor.py                             45         "rul_median.joblib": ConstantRegressor(4),                                                                                                                                                      
+D:\simras-digital-twin-repository\simras-digital-twin\backend\tests\test_ml_predictor.py                             46         "rul_upper.joblib": ConstantRegressor(11),                                                                                                                                                      
+
+
+
+
+7. ACTIVE BACKEND CONTAINER MOUNTS
+--------------------------------------------------------------------------------
+unknown shorthand flag: '>' in ->
+System.Management.Automation.RemoteException
+Usage:  docker inspect [OPTIONS] NAME|ID [NAME|ID...]
+System.Management.Automation.RemoteException
+Run 'docker inspect --help' for more information
+
+8. ARTIFACTS INSIDE ACTIVE BACKEND CONTAINER
+--------------------------------------------------------------------------------
+/artifacts/bridge_nbi/health.joblib
+/artifacts/bridge_nbi/manifest.json
+/artifacts/bridge_nbi/risk.joblib
+/artifacts/bridge_nbi/risk_calibrator.joblib
+/artifacts/bridge_nbi/rul_lower.joblib
+/artifacts/bridge_nbi/rul_median.joblib
+/artifacts/bridge_nbi/rul_upper.joblib
+/artifacts/bridge_nbi_candidate_20260901_015424/health.joblib
+/artifacts/bridge_nbi_candidate_20260901_015424/manifest.json
+/artifacts/bridge_nbi_candidate_20260901_015424/risk.joblib
+/artifacts/bridge_nbi_candidate_20260901_015424/risk_calibrator.joblib
+/artifacts/bridge_nbi_candidate_20260901_015424/rul_lower.joblib
+/artifacts/bridge_nbi_candidate_20260901_015424/rul_median.joblib
+/artifacts/bridge_nbi_candidate_20260901_015424/rul_upper.joblib
+/artifacts/bridge_nbi_candidate_20260901_015950/health.joblib
+/artifacts/bridge_nbi_candidate_20260901_015950/manifest.json
+/artifacts/bridge_nbi_candidate_20260901_015950/risk.joblib
+/artifacts/bridge_nbi_candidate_20260901_015950/risk_calibrator.joblib
+/artifacts/bridge_nbi_candidate_20260901_015950/rul_lower.joblib
+/artifacts/bridge_nbi_candidate_20260901_015950/rul_median.joblib
+/artifacts/bridge_nbi_candidate_20260901_015950/rul_upper.joblib
+/artifacts/bridge_nbi_sparse/health.joblib
+/artifacts/bridge_nbi_sparse/manifest.json
+/artifacts/bridge_nbi_sparse/risk.joblib
+/artifacts/bridge_nbi_sparse/risk_calibrator.joblib
+/artifacts/bridge_nbi_sparse_candidate_20260901_015950/health.joblib
+/artifacts/bridge_nbi_sparse_candidate_20260901_015950/manifest.json
+/artifacts/bridge_nbi_sparse_candidate_20260901_015950/risk.joblib
+/artifacts/bridge_nbi_sparse_candidate_20260901_015950/risk_calibrator.joblib
+/data/reality_twin/AP_TEMPLE_KANAKA_DURGA/manifests/wikimedia_imagery_manifest.json
+/data/reality_twin/AP_TEMPLE_KANAKA_DURGA/manifests/wikimedia_imagery_manifest_v2.json
+
+9. OLD / STOPPED CONTAINERS
+--------------------------------------------------------------------------------
+f8e6c9f7b423|simras-digital-twin-frontend-1|simras-digital-twin-frontend|Up 12 minutes
+538b67705046|simras-digital-twin-backend-1|simras-digital-twin-backend|Up 12 minutes
+915e502505f6|simras-digital-twin-db-1|postgis/postgis:17-3.5|Up 4 hours (healthy)
+2d21e112e94d|structure-guard-api|backend-api|Exited (3) 6 days ago
+49fb45f3785d|structure-guard-postgis|postgis/postgis:17-3.5|Exited (0) 6 days ago
+
+10. SEARCH POSSIBLE SIMRAS ARTIFACTS INSIDE OTHER CONTAINERS
+--------------------------------------------------------------------------------
+
+### CONTAINER: simras-digital-twin-frontend-1 (f8e6c9f7b423)
+/app/dist/reality-twin/model-manifest.json
+/app/public/reality-twin/model-manifest.json
+
+### CONTAINER: simras-digital-twin-backend-1 (538b67705046)
+/data/reality_twin/AP_TEMPLE_KANAKA_DURGA/manifests/wikimedia_imagery_manifest.json
+/data/reality_twin/AP_TEMPLE_KANAKA_DURGA/manifests/wikimedia_imagery_manifest_v2.json
+/artifacts/bridge_nbi/health.joblib
+/artifacts/bridge_nbi/manifest.json
+/artifacts/bridge_nbi/risk.joblib
+/artifacts/bridge_nbi/risk_calibrator.joblib
+/artifacts/bridge_nbi/rul_lower.joblib
+/artifacts/bridge_nbi/rul_median.joblib
+/artifacts/bridge_nbi/rul_upper.joblib
+/artifacts/bridge_nbi_candidate_20260901_015424/health.joblib
+/artifacts/bridge_nbi_candidate_20260901_015424/manifest.json
+/artifacts/bridge_nbi_candidate_20260901_015424/risk.joblib
+/artifacts/bridge_nbi_candidate_20260901_015424/risk_calibrator.joblib
+/artifacts/bridge_nbi_candidate_20260901_015424/rul_lower.joblib
+/artifacts/bridge_nbi_candidate_20260901_015424/rul_median.joblib
+/artifacts/bridge_nbi_candidate_20260901_015424/rul_upper.joblib
+/artifacts/bridge_nbi_candidate_20260901_015950/health.joblib
+/artifacts/bridge_nbi_candidate_20260901_015950/manifest.json
+/artifacts/bridge_nbi_candidate_20260901_015950/risk.joblib
+/artifacts/bridge_nbi_candidate_20260901_015950/risk_calibrator.joblib
+/artifacts/bridge_nbi_candidate_20260901_015950/rul_lower.joblib
+/artifacts/bridge_nbi_candidate_20260901_015950/rul_median.joblib
+/artifacts/bridge_nbi_candidate_20260901_015950/rul_upper.joblib
+/artifacts/bridge_nbi_sparse/health.joblib
+/artifacts/bridge_nbi_sparse/manifest.json
+/artifacts/bridge_nbi_sparse/risk.joblib
+/artifacts/bridge_nbi_sparse/risk_calibrator.joblib
+/artifacts/bridge_nbi_sparse_candidate_20260901_015950/health.joblib
+/artifacts/bridge_nbi_sparse_candidate_20260901_015950/manifest.json
+/artifacts/bridge_nbi_sparse_candidate_20260901_015950/risk.joblib
+/artifacts/bridge_nbi_sparse_candidate_20260901_015950/risk_calibrator.joblib
+
+### CONTAINER: simras-digital-twin-db-1 (915e502505f6)
+[NONE]
+
+11. GIT BRANCHES CONTAINING ML ARTIFACTS / DATA
+--------------------------------------------------------------------------------
+
+### backup-before-rollback-20260831-015437
+  artifacts/bridge_nbi/ap_compatibility.csv
+  artifacts/bridge_nbi/ap_validation_report.json
+  artifacts/bridge_nbi/health.joblib
+  artifacts/bridge_nbi/manifest.json
+  artifacts/bridge_nbi/promotion_report.json
+  artifacts/bridge_nbi/risk.joblib
+  artifacts/bridge_nbi/risk_calibrator.joblib
+  artifacts/bridge_nbi/rul_lower.joblib
+  artifacts/bridge_nbi/rul_median.joblib
+  artifacts/bridge_nbi/rul_upper.joblib
+
+### backup-before-rollback-20260831-015511
+  artifacts/bridge_nbi/health.joblib
+  artifacts/bridge_nbi/manifest.json
+  artifacts/bridge_nbi/risk.joblib
+  artifacts/bridge_nbi/risk_calibrator.joblib
+  artifacts/bridge_nbi/rul_lower.joblib
+  artifacts/bridge_nbi/rul_median.joblib
+  artifacts/bridge_nbi/rul_upper.joblib
+
+### codex-current-digital-twin
+  archive/compiler_guided_ts_repair_20260831_010453/src/assets/infra/bridge-arch.jpg.asset.json
+  archive/compiler_guided_ts_repair_20260831_010453/src/assets/infra/bridge-cable.jpg.asset.json
+  archive/compiler_guided_ts_repair_20260831_010453/src/assets/infra/dam-mist.jpg.asset.json
+  archive/compiler_guided_ts_repair_20260831_010453/src/assets/infra/dam-spillway.jpg.asset.json
+  archive/final_hardening_20260901_003800/src/assets/infra/bridge-arch.jpg.asset.json
+  archive/final_hardening_20260901_003800/src/assets/infra/bridge-cable.jpg.asset.json
+  archive/final_hardening_20260901_003800/src/assets/infra/dam-mist.jpg.asset.json
+  archive/final_hardening_20260901_003800/src/assets/infra/dam-spillway.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend__package-lock.json
+  archive/full_health_repair_20260831_010243/frontend__package.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/infra/barrage.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/infra/bridge-arch.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/infra/bridge-cable.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/infra/civic-building.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/infra/dam-mist.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/infra/dam-spillway.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/infra/road-ghat.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/infra/road-highway.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/simras-logo.png.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/videos/hero-bg-clean.mp4.asset.json
+  archive/full_project_audit_20260901_002714/ml_manifests.csv
+  archive/ml_phase1_sparse_bridge_20260831_233456/bridge_nbi_sparse/health.joblib
+  archive/ml_phase1_sparse_bridge_20260831_233456/bridge_nbi_sparse/manifest.json
+  archive/ml_phase1_sparse_bridge_20260831_233456/bridge_nbi_sparse/risk.joblib
+  archive/ml_phase1_sparse_bridge_20260831_233456/bridge_nbi_sparse/risk_calibrator.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi/health.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi/manifest.json
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi/risk.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi/risk_calibrator.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi/rul_lower.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi/rul_median.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi/rul_upper.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi_sparse/health.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi_sparse/manifest.json
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi_sparse/risk.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi_sparse/risk_calibrator.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi/health.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi/manifest.json
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi/risk.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi/risk_calibrator.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi/rul_lower.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi/rul_median.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi/rul_upper.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi_sparse/health.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi_sparse/manifest.json
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi_sparse/risk.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi_sparse/risk_calibrator.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi/health.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi/manifest.json
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi/risk.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi/risk_calibrator.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi/rul_lower.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi/rul_median.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi/rul_upper.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi_sparse/health.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi_sparse/manifest.json
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi_sparse/risk.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi_sparse/risk_calibrator.joblib
+  archive/remove_legacy_dimension_screen_v2_20260901_012427/src/assets/infra/bridge-arch.jpg.asset.json
+  archive/remove_legacy_dimension_screen_v2_20260901_012427/src/assets/infra/bridge-cable.jpg.asset.json
+  archive/remove_legacy_dimension_screen_v2_20260901_012427/src/assets/infra/dam-mist.jpg.asset.json
+  archive/remove_legacy_dimension_screen_v2_20260901_012427/src/assets/infra/dam-spillway.jpg.asset.json
+  archive/stage7_selected_asset_reports_20260831_215106/stage7_backup_manifest.json
+  archive/stage7_selected_asset_reports_20260831_215305/stage7_backup_manifest.json
+  archive/stage7_selected_asset_reports_20260831_215628/stage7_backup_manifest.json
+  archive/stage7_selected_asset_reports_20260831_220020/stage7_backup_manifest.json
+  artifacts/bridge_nbi/health.joblib
+  artifacts/bridge_nbi/manifest.json
+  artifacts/bridge_nbi/risk.joblib
+  artifacts/bridge_nbi/risk_calibrator.joblib
+  artifacts/bridge_nbi/rul_lower.joblib
+  artifacts/bridge_nbi/rul_median.joblib
+  artifacts/bridge_nbi/rul_upper.joblib
+  artifacts/bridge_nbi_candidate_20260901_015424/health.joblib
+  artifacts/bridge_nbi_candidate_20260901_015424/manifest.json
+  artifacts/bridge_nbi_candidate_20260901_015424/risk.joblib
+  artifacts/bridge_nbi_candidate_20260901_015424/risk_calibrator.joblib
+  artifacts/bridge_nbi_candidate_20260901_015424/rul_lower.joblib
+  artifacts/bridge_nbi_candidate_20260901_015424/rul_median.joblib
+  artifacts/bridge_nbi_candidate_20260901_015424/rul_upper.joblib
+  artifacts/bridge_nbi_candidate_20260901_015950/health.joblib
+  artifacts/bridge_nbi_candidate_20260901_015950/manifest.json
+  artifacts/bridge_nbi_candidate_20260901_015950/risk.joblib
+  artifacts/bridge_nbi_candidate_20260901_015950/risk_calibrator.joblib
+  artifacts/bridge_nbi_candidate_20260901_015950/rul_lower.joblib
+  artifacts/bridge_nbi_candidate_20260901_015950/rul_median.joblib
+  artifacts/bridge_nbi_candidate_20260901_015950/rul_upper.joblib
+  artifacts/bridge_nbi_sparse/health.joblib
+  artifacts/bridge_nbi_sparse/manifest.json
+  artifacts/bridge_nbi_sparse/risk.joblib
+  artifacts/bridge_nbi_sparse/risk_calibrator.joblib
+  artifacts/bridge_nbi_sparse_candidate_20260901_015950/health.joblib
+  artifacts/bridge_nbi_sparse_candidate_20260901_015950/manifest.json
+  artifacts/bridge_nbi_sparse_candidate_20260901_015950/risk.joblib
+  artifacts/bridge_nbi_sparse_candidate_20260901_015950/risk_calibrator.joblib
+  artifacts/validation/ap_bridge_ml_validation_20260831_233835.csv
+  artifacts/validation/ap_bridge_ml_validation_20260831_233835.json
+  frontend/public/reality-twin/model-manifest.json
+  frontend/src/assets/infra/bridge-arch.jpg.asset.json
+  frontend/src/assets/infra/bridge-cable.jpg.asset.json
+
+### codex-frontend-source-v3
+  artifacts/bridge_nbi/ap_compatibility.csv
+  artifacts/bridge_nbi/ap_validation_report.json
+  artifacts/bridge_nbi/health.joblib
+  artifacts/bridge_nbi/manifest.json
+  artifacts/bridge_nbi/promotion_report.json
+  artifacts/bridge_nbi/risk.joblib
+  artifacts/bridge_nbi/risk_calibrator.joblib
+  artifacts/bridge_nbi/rul_lower.joblib
+  artifacts/bridge_nbi/rul_median.joblib
+  artifacts/bridge_nbi/rul_upper.joblib
+  frontend/src/assets/infra/bridge-arch.jpg.asset.json
+  frontend/src/assets/infra/bridge-cable.jpg.asset.json
+  frontend/src/assets/infra/dam-mist.jpg.asset.json
+  frontend/src/assets/infra/dam-spillway.jpg.asset.json
+
+### main
+  archive/compiler_guided_ts_repair_20260831_010453/src/assets/infra/bridge-arch.jpg.asset.json
+  archive/compiler_guided_ts_repair_20260831_010453/src/assets/infra/bridge-cable.jpg.asset.json
+  archive/compiler_guided_ts_repair_20260831_010453/src/assets/infra/dam-mist.jpg.asset.json
+  archive/compiler_guided_ts_repair_20260831_010453/src/assets/infra/dam-spillway.jpg.asset.json
+  archive/final_hardening_20260901_003800/src/assets/infra/bridge-arch.jpg.asset.json
+  archive/final_hardening_20260901_003800/src/assets/infra/bridge-cable.jpg.asset.json
+  archive/final_hardening_20260901_003800/src/assets/infra/dam-mist.jpg.asset.json
+  archive/final_hardening_20260901_003800/src/assets/infra/dam-spillway.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend__package-lock.json
+  archive/full_health_repair_20260831_010243/frontend__package.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/infra/barrage.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/infra/bridge-arch.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/infra/bridge-cable.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/infra/civic-building.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/infra/dam-mist.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/infra/dam-spillway.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/infra/road-ghat.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/infra/road-highway.jpg.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/simras-logo.png.asset.json
+  archive/full_health_repair_20260831_010243/frontend_src/assets/videos/hero-bg-clean.mp4.asset.json
+  archive/full_project_audit_20260901_002714/ml_manifests.csv
+  archive/ml_phase1_sparse_bridge_20260831_233456/bridge_nbi_sparse/health.joblib
+  archive/ml_phase1_sparse_bridge_20260831_233456/bridge_nbi_sparse/manifest.json
+  archive/ml_phase1_sparse_bridge_20260831_233456/bridge_nbi_sparse/risk.joblib
+  archive/ml_phase1_sparse_bridge_20260831_233456/bridge_nbi_sparse/risk_calibrator.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi/health.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi/manifest.json
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi/risk.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi/risk_calibrator.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi/rul_lower.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi/rul_median.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi/rul_upper.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi_sparse/health.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi_sparse/manifest.json
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi_sparse/risk.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015424/bridge_nbi_sparse/risk_calibrator.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi/health.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi/manifest.json
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi/risk.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi/risk_calibrator.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi/rul_lower.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi/rul_median.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi/rul_upper.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi_sparse/health.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi_sparse/manifest.json
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi_sparse/risk.joblib
+  archive/ml_rebuild_integer_outputs_20260901_015950/bridge_nbi_sparse/risk_calibrator.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi/health.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi/manifest.json
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi/risk.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi/risk_calibrator.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi/rul_lower.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi/rul_median.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi/rul_upper.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi_sparse/health.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi_sparse/manifest.json
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi_sparse/risk.joblib
+  archive/ml_resume_integer_outputs_v3_20260901_021444/bridge_nbi_sparse/risk_calibrator.joblib
+  archive/remove_legacy_dimension_screen_v2_20260901_012427/src/assets/infra/bridge-arch.jpg.asset.json
+  archive/remove_legacy_dimension_screen_v2_20260901_012427/src/assets/infra/bridge-cable.jpg.asset.json
+  archive/remove_legacy_dimension_screen_v2_20260901_012427/src/assets/infra/dam-mist.jpg.asset.json
+  archive/remove_legacy_dimension_screen_v2_20260901_012427/src/assets/infra/dam-spillway.jpg.asset.json
+  archive/stage7_selected_asset_reports_20260831_215106/stage7_backup_manifest.json
+  archive/stage7_selected_asset_reports_20260831_215305/stage7_backup_manifest.json
+  archive/stage7_selected_asset_reports_20260831_215628/stage7_backup_manifest.json
+  archive/stage7_selected_asset_reports_20260831_220020/stage7_backup_manifest.json
+  artifacts/bridge_nbi/health.joblib
+  artifacts/bridge_nbi/manifest.json
+  artifacts/bridge_nbi/risk.joblib
+  artifacts/bridge_nbi/risk_calibrator.joblib
+  artifacts/bridge_nbi/rul_lower.joblib
+  artifacts/bridge_nbi/rul_median.joblib
+  artifacts/bridge_nbi/rul_upper.joblib
+  artifacts/bridge_nbi_candidate_20260901_015424/health.joblib
+  artifacts/bridge_nbi_candidate_20260901_015424/manifest.json
+  artifacts/bridge_nbi_candidate_20260901_015424/risk.joblib
+  artifacts/bridge_nbi_candidate_20260901_015424/risk_calibrator.joblib
+  artifacts/bridge_nbi_candidate_20260901_015424/rul_lower.joblib
+  artifacts/bridge_nbi_candidate_20260901_015424/rul_median.joblib
+  artifacts/bridge_nbi_candidate_20260901_015424/rul_upper.joblib
+  artifacts/bridge_nbi_candidate_20260901_015950/health.joblib
+  artifacts/bridge_nbi_candidate_20260901_015950/manifest.json
+  artifacts/bridge_nbi_candidate_20260901_015950/risk.joblib
+  artifacts/bridge_nbi_candidate_20260901_015950/risk_calibrator.joblib
+  artifacts/bridge_nbi_candidate_20260901_015950/rul_lower.joblib
+  artifacts/bridge_nbi_candidate_20260901_015950/rul_median.joblib
+  artifacts/bridge_nbi_candidate_20260901_015950/rul_upper.joblib
+  artifacts/bridge_nbi_sparse/health.joblib
+  artifacts/bridge_nbi_sparse/manifest.json
+  artifacts/bridge_nbi_sparse/risk.joblib
+  artifacts/bridge_nbi_sparse/risk_calibrator.joblib
+  artifacts/bridge_nbi_sparse_candidate_20260901_015950/health.joblib
+  artifacts/bridge_nbi_sparse_candidate_20260901_015950/manifest.json
+  artifacts/bridge_nbi_sparse_candidate_20260901_015950/risk.joblib
+  artifacts/bridge_nbi_sparse_candidate_20260901_015950/risk_calibrator.joblib
+  artifacts/validation/ap_bridge_ml_validation_20260831_233835.csv
+  artifacts/validation/ap_bridge_ml_validation_20260831_233835.json
+  frontend/src/assets/infra/bridge-arch.jpg.asset.json
+  frontend/src/assets/infra/bridge-cable.jpg.asset.json
+  frontend/src/assets/infra/dam-mist.jpg.asset.json
+
+### origin/codex-frontend-source-v3
+  artifacts/bridge_nbi/ap_compatibility.csv
+  artifacts/bridge_nbi/ap_validation_report.json
+  artifacts/bridge_nbi/health.joblib
+  artifacts/bridge_nbi/manifest.json
+  artifacts/bridge_nbi/promotion_report.json
+  artifacts/bridge_nbi/risk.joblib
+  artifacts/bridge_nbi/risk_calibrator.joblib
+  artifacts/bridge_nbi/rul_lower.joblib
+  artifacts/bridge_nbi/rul_median.joblib
+  artifacts/bridge_nbi/rul_upper.joblib
+  frontend/src/assets/infra/bridge-arch.jpg.asset.json
+  frontend/src/assets/infra/bridge-cable.jpg.asset.json
+  frontend/src/assets/infra/dam-mist.jpg.asset.json
+  frontend/src/assets/infra/dam-spillway.jpg.asset.json
+
+### origin/main
+  artifacts/bridge_nbi/ap_compatibility.csv
+  artifacts/bridge_nbi/ap_validation_report.json
+  artifacts/bridge_nbi/health.joblib
+  artifacts/bridge_nbi/manifest.json
+  artifacts/bridge_nbi/promotion_report.json
+  artifacts/bridge_nbi/risk.joblib
+  artifacts/bridge_nbi/risk_calibrator.joblib
+  artifacts/bridge_nbi/rul_lower.joblib
+  artifacts/bridge_nbi/rul_median.joblib
+  artifacts/bridge_nbi/rul_upper.joblib
+
+12. CURRENT DATABASE PREDICTIONS
+--------------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<stdin>", line 17, in <module>
+  File "<string>", line 2, in create_engine
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/deprecations.py", line 281, in warned
+    return fn(*args, **kwargs)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 617, in create_engine
+    dbapi = dbapi_meth(**dbapi_args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/psycopg2.py", line 697, in import_dbapi
+    import psycopg2
+ModuleNotFoundError: No module named 'psycopg2'
+
+================================================================================
+DISCOVERY COMPLETE
+================================================================================
+Report saved to:
+  .\backend\reports\SIMRAS_ML_ARTIFACT_DISCOVERY.txt
+
+DO NOT retrain or delete anything yet.
+The next step depends on where the existing models and training evidence are found.
+================================================================================

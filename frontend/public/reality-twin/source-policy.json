@@ -1,0 +1,21 @@
+{
+  "system": "SIMRAS Andhra Pradesh Statewide Reality Twin",
+  "base_engine": "OpenFreeMap + MapLibre GL JS",
+  "base_data": "OpenStreetMap-derived OpenFreeMap vector tiles",
+  "statewide_scope": true,
+  "all_assets_source": "/reality-twin/assets.json",
+  "model_manifest": "/reality-twin/model-manifest.json",
+  "model_priority": [
+    "L4_ENGINEERING_SENSOR_CONNECTED",
+    "L3_SURVEY_BIM_VERIFIED_PHOTOGRAMMETRY",
+    "L2_SOURCE_BACKED_ASSET_MODEL",
+    "L1_PUBLIC_3D_CONTEXT"
+  ],
+  "accuracy_policy": {
+    "public_3d_context": "visual/geographic context only",
+    "dimensions": "verified only from official drawings, survey, BIM, or validated photogrammetry",
+    "generic_extrusion": "must never be described as survey-grade structure",
+    "missing_evidence": "show N/A or context fallback; never fabricate"
+  },
+  "bulk_local_generation_required": false
+}

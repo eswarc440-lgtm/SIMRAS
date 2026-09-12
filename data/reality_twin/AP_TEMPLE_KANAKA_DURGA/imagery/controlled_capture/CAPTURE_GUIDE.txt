@@ -1,0 +1,46 @@
+﻿SIMRAS CONTROLLED CAPTURE GUIDE
+===============================
+
+Asset: AP_TEMPLE_KANAKA_DURGA
+
+GOAL
+----
+Create one coherent, overlapping image sequence suitable for photogrammetry.
+
+TARGET
+------
+Preferred: 40-60 photos
+Minimum attempt: 30 photos
+Overlap: 70-80% between neighboring images
+
+IMPORTANT
+---------
+1. MOVE physically between photos.
+2. Do not stand in one place and only rotate.
+3. Keep the SAME structure visible across consecutive frames.
+4. Avoid large jumps in viewpoint.
+5. Prefer daylight with stable lighting.
+6. Avoid heavy motion blur, zoom changes, extreme filters, portrait mode blur.
+7. Keep original files. Do not send screenshots or social-media compressed copies.
+8. For 360 capture, use multiple physical positions around the asset.
+9. Capture only from safe/publicly accessible locations and follow site rules.
+10. Do not infer engineering dimensions from these photos alone.
+
+SUGGESTED SEQUENCE
+------------------
+A. FRONT_APPROACH      12 photos
+B. LEFT_ARC             8 photos
+C. RIGHT_ARC            8 photos
+D. UPPER_DETAILS        6 photos
+E. WIDE_CONTEXT         6 photos
+F. REAR/SIDE (if safe)  6 photos
+
+TOTAL PLANNED: 46 photos
+
+COPY PHOTOS HERE
+----------------
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\AP_TEMPLE_KANAKA_DURGA\imagery\controlled_capture\raw
+
+After copying the original photos into that folder, rerun this same script.
+It will validate image count, readable files, resolution, and duplicate hashes,
+then build a clean selected set for the next COLMAP phase.

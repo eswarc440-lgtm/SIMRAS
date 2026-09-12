@@ -1,0 +1,37 @@
+2.3 Pavements 
+2.3.1 Flexible Pavement 
+A number of different pavement design methods were analysed as indicated in Table B-2 
+below : 
+Table B-2 Pavement Design Methods 
+2.3.2 The recommended design is suggested based on the above methods and for a design life of 20 
+years but from practical consideration it appears appropriate to reduce the thickness from 230 
+mm to 220 mm for section km 110.0 to km 134.4 (existing) and from 210 mm to 200 mm for 
+section km 52.8 to km 66.1 (existing) thus reducing the design life slightly to 18 years. For 
+other sections the design life is of 20 years. 
+Pavement Design 
+1 
+2 
+3+4 
+The recommended design are shown in Table B-3 
+Table B-3 Pavement Composition for Project Highway 
+Design Type 
+Overlay design 
+Flexible pavement 
+rehabilitation 
+New rigid pavements 
+2.3.3 Overlay Design 
+Design Method 
+IRC:81-1997, TRRL 833, 
+AASHTO Design Manual, 
+Analytical Empirical Design 
+IRC:37- 1999, approved draft, 
+AASHTO Design Manual, 
+Analytical Empirical Design 
+RN 3 1, extrapolated 
+IRC:58-1988, AASHTO 
+Design Manual, Cement 
+Manufacturers' Association 
+Method, PCA design method 
+A number of methods were studied for the overlay pavement design and recommended design 
+is based on the mean of the values obtained from all the methods as the variation in thickness 
+were minimal. 

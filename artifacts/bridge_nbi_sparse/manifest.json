@@ -1,0 +1,89 @@
+{
+  "model_name": "simras_nbi_bridge_sparse_challenger",
+  "version": "nbi_sparse_20260831_203208",
+  "stage": "RESEARCH_TRANSFER",
+  "model_validated": false,
+  "training_scope": "FHWA_NBI_US_BRIDGES_SPARSE_RESEARCH_TRANSFER",
+  "prediction_horizon_years": 3,
+  "feature_version": "nbi_bridge_sparse_state_v1",
+  "features": [
+    "age_years",
+    "material_code",
+    "span_count",
+    "max_span_m",
+    "structure_length_m"
+  ],
+  "training_rows": 260701,
+  "calibration_rows": 55182,
+  "test_rows": 56000,
+  "training_bridges": 53925,
+  "calibration_bridges": 11411,
+  "test_bridges": 11566,
+  "training_years": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "evaluation_protocol": {
+    "split_unit": "bridge_key",
+    "train_partition": "<70",
+    "calibration_partition": "70-84",
+    "test_partition": ">=85",
+    "bridge_identity_leakage_control": true,
+    "test_partition_held_out": true,
+    "calibration_uses_test": false
+  },
+  "feature_coverage_training": {
+    "age_years": 1.0,
+    "material_code": 1.0,
+    "span_count": 1.0,
+    "max_span_m": 1.0,
+    "structure_length_m": 1.0
+  },
+  "feature_coverage_test": {
+    "age_years": 1.0,
+    "material_code": 1.0,
+    "span_count": 1.0,
+    "max_span_m": 1.0,
+    "structure_length_m": 1.0
+  },
+  "health_error_quantiles_rating": {
+    "lower": -1.1024639186723926,
+    "upper": 1.0919001207869221
+  },
+  "metrics": {
+    "health_mae_rating": 0.7098042646584934,
+    "health_rmse_rating": 0.9323236642244261,
+    "health_baseline_mae_rating": 0.893375,
+    "risk_roc_auc": 0.8270752854623332,
+    "risk_pr_auc": 0.40980683103547494,
+    "risk_brier": 0.08902619037989955,
+    "risk_ece": 0.010775859390098399,
+    "risk_prevalence": 0.12394131664322013,
+    "risk_baseline_brier": 0.10859625131943132
+  },
+  "gates": {
+    "health_beats_baseline": true,
+    "health_mae_le_1_25": true,
+    "risk_auc_ge_0_70": true,
+    "risk_pr_auc_beats_prevalence": true,
+    "risk_brier_beats_baseline": true,
+    "risk_ece_le_0_10": true
+  },
+  "artifact_checksums": {
+    "health.joblib": "ab1fe597deb534790da6300040e2ea20097f5f6be89c0c2ea20264609e4a2d8b",
+    "risk.joblib": "84007d19c82f52193245141ce933144c7f7c0890a06b579eb55f24dd3808f04e",
+    "risk_calibrator.joblib": "713d2682d1ea38d905667bfc1ffd277ec76a4ec06eb2f06df48e2d6934041125"
+  },
+  "data_source": "U.S. FHWA National Bridge Inventory annual histories",
+  "limitations": [
+    "Not locally validated for Andhra Pradesh",
+    "Sparse transfer model omits condition rating",
+    "Use only as research decision support",
+    "Dam and barrage predictions are outside scope",
+    "RUL intentionally not produced"
+  ],
+  "created_at": "2026-08-31T20:32:08.336711+00:00"
+}

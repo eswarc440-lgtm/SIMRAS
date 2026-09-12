@@ -1,0 +1,281 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SIMRAS Open Public 3D Reality Twin</title>
+<link href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" rel="stylesheet">
+<script src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js"></script>
+<style>
+html,body,#map{width:100%;height:100%;margin:0;overflow:hidden;font-family:Arial,sans-serif}
+#panel{position:absolute;z-index:10;left:12px;top:12px;width:400px;max-height:calc(100% - 24px);overflow:auto;background:rgba(15,23,42,.95);color:white;border-radius:12px;padding:14px;box-shadow:0 10px 35px rgba(0,0,0,.35)}
+h1{font-size:17px;margin:0 0 7px}.muted{font-size:12px;color:#cbd5e1;line-height:1.45}.warn{font-size:12px;color:#fde68a;line-height:1.45;margin-top:5px}
+select,button{width:100%;box-sizing:border-box;margin-top:8px;padding:9px;border-radius:7px;border:1px solid #475569;background:#0f172a;color:white}
+button{cursor:pointer;background:#1d4ed8;border:0;font-weight:600}.row{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.cardgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}.card{background:#1e293b;padding:8px;border-radius:8px;font-size:12px;word-break:break-word}
+.badge{display:inline-block;padding:3px 7px;border-radius:999px;background:#334155;font-size:11px;margin-top:7px;max-width:100%;word-break:break-word}
+#status{font-size:12px;margin-top:8px;color:#bfdbfe}
+.maplibregl-ctrl-attrib{font-size:10px}
+@media(max-width:600px){#panel{left:8px;right:8px;top:8px;width:auto;max-height:60%;}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="panel">
+<h1>SIMRAS - Open Public 3D Reality Twin</h1>
+<div class="muted">No key / no billing. OpenStreetMap-derived 3D + public terrain + optional open aerial imagery.</div>
+<div class="warn">This is the fastest truthful public-source twin. Footprints/heights reflect available OSM/public data; they are not guaranteed survey-grade. Engineering dimensions remain authoritative-source only.</div>
+
+<select id="typeFilter"><option value="">All asset types</option></select>
+<select id="assetSelect"></select>
+<button id="fly">Fly to selected asset</button>
+
+<div class="row">
+<button id="toggle3d">3D Buildings: ON</button>
+<button id="toggleTerrain">Terrain: ON</button>
+</div>
+<div class="row">
+<button id="toggleAerial">Open Aerial: OFF</button>
+<button id="toggleRoads">Major Roads: ON</button>
+</div>
+
+<div id="status">Loading public 3D map...</div>
+<div id="details"></div>
+</div>
+
+<script>
+const map=new maplibregl.Map({
+  container:"map",
+  style:"https://tiles.openfreemap.org/styles/liberty",
+  center:[80.65,16.50],
+  zoom:7.2,
+  pitch:55,
+  bearing:-18,
+  maxPitch:85,
+  attributionControl:true
+});
+map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),"top-right");
+map.addControl(new maplibregl.ScaleControl({unit:"metric"}),"bottom-right");
+
+const typeFilter=document.getElementById("typeFilter");
+const assetSelect=document.getElementById("assetSelect");
+const details=document.getElementById("details");
+const status=document.getElementById("status");
+
+let assets=[];
+let buildingsOn=true,terrainOn=true,aerialOn=false,roadsOn=true;
+let buildingLayerAdded=false,aerialAdded=false,roadLayerAdded=false;
+
+function isCoord(a){return Number.isFinite(+a.longitude)&&Number.isFinite(+a.latitude)}
+function current(){return assets.find(a=>a.asset_code===assetSelect.value)}
+
+function showDetails(a){
+ if(!a){details.innerHTML="";return}
+ details.innerHTML=`
+ <div class="cardgrid">
+  <div class="card"><b>Type</b><br>${a.type||"N/A"}</div>
+  <div class="card"><b>District</b><br>${a.district||"N/A"}</div>
+  <div class="card"><b>Fidelity</b><br>${a.fidelity_status||"L1_PUBLIC_3D"}</div>
+  <div class="card"><b>Dimensions</b><br>${a.dimension_status||"NOT VERIFIED"}</div>
+ </div>
+ <div class="badge">${a.visual_strategy||"OPEN_PUBLIC_3D"}</div>
+ <div class="muted" style="margin-top:8px">
+  <b>${a.name||a.asset_code}</b><br>${a.asset_code}<br>
+  ${a.latitude}, ${a.longitude}<br><br>
+  Dimension authority: ${a.dimension_authority||"Authoritative owner/source"}<br>
+  ${a.visual_truth_note||"Public 3D context is not survey geometry."}
+ </div>`;
+}
+
+function fly(a){
+ if(!a||!isCoord(a))return;
+ map.flyTo({
+   center:[+a.longitude,+a.latitude],
+   zoom:17.2,
+   pitch:67,
+   bearing:-20,
+   speed:1.1,
+   curve:1.4
+ });
+}
+
+function rebuild(){
+ const t=typeFilter.value;
+ const list=assets.filter(a=>isCoord(a)&&(!t||a.type===t));
+ assetSelect.innerHTML="";
+ list.forEach(a=>{
+   const o=document.createElement("option");
+   o.value=a.asset_code;o.textContent=(a.name||a.asset_code)+" - "+(a.type||"asset");
+   assetSelect.appendChild(o);
+ });
+ if(list.length){showDetails(list[0]);fly(list[0]);}
+}
+
+function add3DBuildings(){
+ if(buildingLayerAdded)return;
+ const before=map.getStyle().layers.find(l=>l.type==="symbol"&&l.layout&&l.layout["text-field"])?.id;
+ try{
+   map.addLayer({
+     id:"simras-3d-buildings",
+     source:"openmaptiles",
+     "source-layer":"building",
+     type:"fill-extrusion",
+     minzoom:13,
+     paint:{
+       "fill-extrusion-color":[
+         "case",
+         ["has","colour"],["get","colour"],
+         "#c7c9cc"
+       ],
+       "fill-extrusion-height":[
+         "coalesce",
+         ["to-number",["get","render_height"]],
+         ["to-number",["get","height"]],
+         ["*",["to-number",["get","building:levels"]],3],
+         6
+       ],
+       "fill-extrusion-base":[
+         "coalesce",
+         ["to-number",["get","render_min_height"]],
+         ["to-number",["get","min_height"]],
+         0
+       ],
+       "fill-extrusion-opacity":0.9
+     }
+   },before);
+   buildingLayerAdded=true;
+ }catch(e){
+   console.warn("3D building layer unavailable:",e);
+ }
+}
+
+function addTerrain(){
+ if(map.getSource("simras-terrain"))return;
+ try{
+   map.addSource("simras-terrain",{
+     type:"raster-dem",
+     tiles:["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],
+     tileSize:256,
+     maxzoom:15,
+     encoding:"terrarium"
+   });
+   map.setTerrain({source:"simras-terrain",exaggeration:1.0});
+ }catch(e){console.warn("Terrain unavailable",e)}
+}
+
+function addAerial(){
+ if(aerialAdded)return;
+ try{
+   map.addSource("simras-aerial",{
+     type:"raster",
+     tiles:["https://global.imagery.hotosm.org/{z}/{x}/{y}.png"],
+     tileSize:256,
+     attribution:"OpenAerialMap / HOT"
+   });
+   const first=map.getStyle().layers[0]?.id;
+   map.addLayer({
+     id:"simras-aerial-layer",type:"raster",source:"simras-aerial",
+     paint:{"raster-opacity":0.82}
+   },first);
+   map.setLayoutProperty("simras-aerial-layer","visibility","none");
+   aerialAdded=true;
+ }catch(e){console.warn("Aerial layer unavailable",e)}
+}
+
+function addRoadHighlights(){
+ if(roadLayerAdded)return;
+ try{
+   map.addLayer({
+     id:"simras-major-roads",
+     type:"line",
+     source:"openmaptiles",
+     "source-layer":"transportation",
+     minzoom:6,
+     filter:["any",
+       ["in",["get","ref"],["literal",["NH 16","NH16","NH-16","NH 65","NH65","NH-65","NH 44","NH44","NH-44"]]],
+       ["in",["get","class"],["literal",["motorway","trunk","primary"]]]
+     ],
+     paint:{
+       "line-width":["interpolate",["linear"],["zoom"],6,2,12,4,17,7],
+       "line-opacity":0.75
+     }
+   });
+   roadLayerAdded=true;
+ }catch(e){console.warn("Road highlight unavailable",e)}
+}
+
+map.on("load",async()=>{
+ status.textContent="Open public 3D map ready.";
+ addTerrain();add3DBuildings();addAerial();addRoadHighlights();
+
+ try{
+   const r=await fetch("assets.json",{cache:"no-store"});
+   assets=await r.json();
+   [...new Set(assets.map(a=>a.type).filter(Boolean))].sort().forEach(t=>{
+     const o=document.createElement("option");o.value=t;o.textContent=t;typeFilter.appendChild(o);
+   });
+
+   const geo={type:"FeatureCollection",features:assets.filter(isCoord).map(a=>({
+     type:"Feature",
+     properties:{asset_code:a.asset_code,name:a.name,type:a.type},
+     geometry:{type:"Point",coordinates:[+a.longitude,+a.latitude]}
+   }))};
+
+   map.addSource("simras-assets",{type:"geojson",data:geo});
+   map.addLayer({
+     id:"simras-asset-points",type:"circle",source:"simras-assets",
+     paint:{
+       "circle-radius":["interpolate",["linear"],["zoom"],6,3,15,7,18,10],
+       "circle-stroke-width":1.5,
+       "circle-stroke-color":"#111827"
+     }
+   });
+   map.addLayer({
+     id:"simras-asset-labels",type:"symbol",source:"simras-assets",minzoom:12,
+     layout:{
+       "text-field":["get","name"],
+       "text-size":11,
+       "text-offset":[0,1.2],
+       "text-anchor":"top",
+       "text-allow-overlap":false
+     },
+     paint:{"text-halo-width":1.5,"text-halo-color":"white","text-color":"#111827"}
+   });
+
+   status.textContent=`Open public 3D ready - ${assets.length} SIMRAS assets loaded.`;
+   rebuild();
+ }catch(e){
+   status.textContent="Asset catalog error: "+e.message;
+ }
+});
+
+typeFilter.addEventListener("change",rebuild);
+assetSelect.addEventListener("change",()=>{const a=current();showDetails(a);fly(a)});
+document.getElementById("fly").addEventListener("click",()=>fly(current()));
+
+document.getElementById("toggle3d").addEventListener("click",()=>{
+ buildingsOn=!buildingsOn;
+ if(buildingLayerAdded)map.setLayoutProperty("simras-3d-buildings","visibility",buildingsOn?"visible":"none");
+ document.getElementById("toggle3d").textContent="3D Buildings: "+(buildingsOn?"ON":"OFF");
+});
+
+document.getElementById("toggleTerrain").addEventListener("click",()=>{
+ terrainOn=!terrainOn;
+ try{map.setTerrain(terrainOn?{source:"simras-terrain",exaggeration:1.0}:null)}catch(e){}
+ document.getElementById("toggleTerrain").textContent="Terrain: "+(terrainOn?"ON":"OFF");
+});
+
+document.getElementById("toggleAerial").addEventListener("click",()=>{
+ aerialOn=!aerialOn;
+ if(aerialAdded)map.setLayoutProperty("simras-aerial-layer","visibility",aerialOn?"visible":"none");
+ document.getElementById("toggleAerial").textContent="Open Aerial: "+(aerialOn?"ON":"OFF");
+});
+
+document.getElementById("toggleRoads").addEventListener("click",()=>{
+ roadsOn=!roadsOn;
+ if(roadLayerAdded)map.setLayoutProperty("simras-major-roads","visibility",roadsOn?"visible":"none");
+ document.getElementById("toggleRoads").textContent="Major Roads: "+(roadsOn?"ON":"OFF");
+});
+</script>
+</body>
+</html>

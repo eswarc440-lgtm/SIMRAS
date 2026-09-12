@@ -1,0 +1,25 @@
+﻿SIMRAS REAL TWIN FACTORY V13.1
+==============================
+Assets loaded: 194
+Valid coordinates: 194
+Invalid coordinates: 0
+Existing asset-specific models: 0
+
+ASSET TYPES
+airport      8
+barrage      10
+bridge       2
+dam          167
+temple       7
+
+PRIORITIES
+Priority 1: 21
+Priority 2: 173
+
+TOOLS
+osmium: NOT_FOUND
+PBF: D:\simras-digital-twin-repository\simras-digital-twin\data\raw\southern-zone-latest.osm.pbf
+OSM2World: FOUND: D:\simras-digital-twin-repository\simras-digital-twin\tools\osm2world\current\osm2world-windows.bat
+
+NEXT
+Run V14 to make the 194 local OSM extracts in one pass and generate detailed OSM2World GLB files where usable OSM geometry exists.

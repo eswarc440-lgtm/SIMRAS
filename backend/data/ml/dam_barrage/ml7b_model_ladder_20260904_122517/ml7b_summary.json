@@ -1,0 +1,47 @@
+{
+  "phase": "ML-7B",
+  "training_source": "USACE National Inventory of Dams",
+  "validation_design": "State-group train/validation/test split. State is not used as a prediction feature.",
+  "target_semantics": {
+    "risk": "Probability of POOR or UNSATISFACTORY condition. Not collapse probability.",
+    "health": "Research-transfer ordinal condition index. Not an official CWC Health Score."
+  },
+  "rows": 34627,
+  "best_core_risk_model": "CORE_HIST_GRADIENT",
+  "risk_test": {
+    "roc_auc": 0.6530369997724196,
+    "pr_auc": 0.3134902257354409,
+    "prevalence": 0.2375407545412203,
+    "brier": 0.17398080994182613,
+    "baseline_brier": 0.181115144473208,
+    "ece": 0.04273344925097818,
+    "gates": {
+      "roc_auc_ge_0_70": false,
+      "pr_auc_gt_prevalence": true,
+      "brier_beats_baseline": true,
+      "ece_le_0_10": true
+    },
+    "approved": false
+  },
+  "best_core_health_model": "CORE_EXTRA_TREES",
+  "health_test": {
+    "ordinal_mae": 0.7216882603557587,
+    "baseline_mae": 0.7269057599751592,
+    "improvement_fraction": 0.00717768369255835,
+    "gates": {
+      "mae_beats_baseline": true,
+      "mae_improvement_ge_05": false,
+      "ordinal_mae_le_0_80": true
+    },
+    "approved": false
+  },
+  "extended_nid_benchmark": {
+    "roc_auc": 0.5865864013425909,
+    "pr_auc": 0.30219495656573503,
+    "ap_inference_status": "NOT_AUTOMATICALLY_APPROVED"
+  },
+  "ap_predictions_written": 0,
+  "database_modified": false,
+  "confidence_policy": "WITHHELD_PENDING_AP_GROUND_TRUTH_VALIDATION",
+  "rul_policy": "WITHHELD"
+}

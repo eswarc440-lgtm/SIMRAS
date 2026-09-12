@@ -1,0 +1,63 @@
+Subject:
+Request for bridge-wise MBIU / IRC-SP 35 inspection records for
+Tada-Nellore NH-16 and Andhra Pradesh bridges — academic research
+
+Purpose:
+SIMRAS academic infrastructure digital-twin and bridge condition
+prediction research.
+
+Requested scope:
+Tada-Nellore NH-16 Km 52.800 to Km 163.600 and, if available,
+other NHAI bridges in Andhra Pradesh.
+
+Please provide bridge-wise records from Mobile Bridge Inspection
+Unit (MBIU), IRC-SP 35 inspection proforma, Monthly Progress
+Reports, or equivalent bridge condition surveys.
+
+Requested identity fields:
+- NHAI bridge ID / bridge number
+- route / NH number
+- chainage
+- bridge name
+- latitude / longitude where available
+
+Requested inspection metadata:
+- inspection date
+- inspection type
+- inspecting authority
+- Independent Engineer / consultant
+- source report / record identifier
+
+Requested condition fields:
+- Condition Approach
+- Condition Signs
+- Condition Debris
+- Condition Joint
+- Condition Deck
+- Condition Rails
+- Condition Protection
+- Condition Stream
+- Condition Superstructure
+- Condition Piers
+- Condition Abutment
+
+Requested defect observations where available:
+- cracking
+- spalling
+- corrosion
+- reinforcement exposure
+- bearing distress
+- scour
+- settlement
+- foundation distress
+- maintenance recommendation
+
+Preferred format:
+CSV / XLSX / JSON / database export.
+
+PDF inspection reports are also acceptable.
+
+Data-integrity statement:
+SIMRAS will not substitute synthetic/demo values for unavailable
+inspection observations. Inventory geometry and generic asset
+condition fields will not be treated as structural inspection labels.

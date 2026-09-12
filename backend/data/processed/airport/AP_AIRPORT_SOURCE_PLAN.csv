@@ -1,0 +1,9 @@
+asset_id,asset_code,asset_name,district,latitude,longitude,built_year,icao_code,aai_canonical_name,mapping_status,source_authority,source_system,eaip_required
+195,AP_AIR_AAI_KADAPA,Kadapa Airport,YSR Kadapa,,,,VOCP,Kadapa Airport,AUTO_NAME_MATCH,Airports Authority of India,AIM India / eAIP,YES
+196,AP_AIR_AAI_KURNOOL,Kurnool Airport,Kurnool,,,,VOKU,Kurnool Airport,AUTO_NAME_MATCH,Airports Authority of India,AIM India / eAIP,YES
+193,AP_AIR_AAI_RAJAHMUNDRY,Rajahmundry Airport,East Godavari,,,,VORY,Rajahmundry Airport,AUTO_NAME_MATCH,Airports Authority of India,AIM India / eAIP,YES
+205,AP_AIR_VOTP,Tirupati Airport,Tirupati,,,,VOTP,Tirupati Airport,AUTO_NAME_MATCH,Airports Authority of India,AIM India / eAIP,YES
+194,AP_AIR_AAI_TIRUPATI,Tirupati Airport,Tirupati,,,,VOTP,Tirupati Airport,AUTO_NAME_MATCH,Airports Authority of India,AIM India / eAIP,YES
+191,AP_AIR_AAI_VIJAYAWADA,Vijayawada Airport,Krishna,,,,VOBZ,Vijayawada Airport,AUTO_NAME_MATCH,Airports Authority of India,AIM India / eAIP,YES
+204,AP_AIR_VOBZ,Vijayawada Airport,Krishna,,,,VOBZ,Vijayawada Airport,AUTO_NAME_MATCH,Airports Authority of India,AIM India / eAIP,YES
+192,AP_AIR_AAI_VISAKHAPATNAM,Visakhapatnam Airport,Visakhapatnam,,,,VOVZ,Visakhapatnam Airport,AUTO_NAME_MATCH,Airports Authority of India,AIM India / eAIP,YES

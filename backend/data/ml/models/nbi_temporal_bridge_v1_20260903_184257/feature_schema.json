@@ -1,0 +1,24 @@
+{
+  "features": [
+    "bridge_age",
+    "years_since_reconstruction",
+    "structure_length",
+    "deck_width",
+    "log_average_daily_traffic",
+    "deck_rating_t",
+    "superstructure_rating_t",
+    "substructure_rating_t",
+    "culvert_rating_t",
+    "minimum_rating_t",
+    "component_mean_rating",
+    "component_rating_spread",
+    "components_reported_count"
+  ],
+  "target_leakage_fields": [
+    "condition_t1",
+    "target_poor_next_year",
+    "target_deteriorated_next_year",
+    "target_rating_change"
+  ],
+  "future_fields_used_as_features": false
+}

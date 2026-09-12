@@ -1,0 +1,102 @@
+{
+  "model_name": "simras_nbi_bridge_deterioration",
+  "version": "nbi_transfer_20260831_203056",
+  "stage": "RESEARCH_TRANSFER",
+  "model_validated": false,
+  "training_scope": "FHWA_NBI_US_BRIDGES_RESEARCH_TRANSFER",
+  "prediction_horizon_years": 3,
+  "feature_version": "nbi_bridge_state_v1",
+  "features": [
+    "age_years",
+    "condition_rating",
+    "material_code",
+    "design_type_code",
+    "average_daily_traffic",
+    "truck_traffic_percent",
+    "skew_deg",
+    "span_count",
+    "max_span_m",
+    "structure_length_m",
+    "inventory_rating",
+    "scour_rating",
+    "waterway_rating"
+  ],
+  "evaluation_protocol": {
+    "split_unit": "bridge_key",
+    "partition_method": "stable_hash_bridge_partition",
+    "train_rule": "partition < 70",
+    "calibration_rule": "70 <= partition < 85",
+    "test_rule": "partition >= 85",
+    "bridge_identity_leakage_control": true,
+    "test_partition_held_out": true,
+    "risk_calibration_uses_test": false,
+    "health_persistence_baseline": "current condition rating predicts next condition rating"
+  },
+  "evaluation_counts": {
+    "all_train_rows": 260701,
+    "all_calibration_rows": 55182,
+    "all_test_rows": 56000,
+    "all_train_bridges": 53925,
+    "all_calibration_bridges": 11411,
+    "all_test_bridges": 11566,
+    "risk_train_rows": 162381,
+    "risk_calibration_rows": 34381,
+    "risk_test_rows": 34831,
+    "risk_train_bridges": 52546,
+    "risk_calibration_bridges": 11112,
+    "risk_test_bridges": 11295,
+    "rul_train_rows": 21819,
+    "rul_test_rows": 4513,
+    "rul_train_bridges": 5194,
+    "rul_test_bridges": 1073
+  },
+  "training_rows": 371883,
+  "unique_bridges": 76902,
+  "training_years": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "metrics": {
+    "health_mae_rating": 0.13382287823065234,
+    "health_rmse_rating": 0.3603350229952035,
+    "health_persistence_mae_rating": 0.08607142857142858,
+    "risk_roc_auc": 0.9717783043236863,
+    "risk_brier": 0.025872697795722623,
+    "risk_f1_at_0_5": 0.875520242149073,
+    "risk_ece": 0.004081167381469027,
+    "rul_mae_years_observed_events": 0.3009084865942832,
+    "rul_interval_80_coverage_observed_events": 0.9621094615555064
+  },
+  "gates": {
+    "health_mae_le_1_0": true,
+    "risk_auc_ge_0_70": true,
+    "risk_brier_le_0_20": true,
+    "risk_ece_le_0_10": true,
+    "rul_mae_le_5_years": true
+  },
+  "health_error_quantiles_rating": {
+    "lower": -0.07335665842501804,
+    "upper": 0.10954538543104775
+  },
+  "artifact_checksums": {
+    "health.joblib": "c3da2296bd807b5f33b6b20b69decedbc6ef6f6c0d6fbcaffde57069185c6e5b",
+    "risk.joblib": "4ab71bb0f50ece7b89d5439d4242b16fd13c3ef5979f999941383ca8c55c66e8",
+    "risk_calibrator.joblib": "330a6ebbd7a12fac0f92b2ddc07348436fe49e545bd23359690768bb7d173e40",
+    "rul_lower.joblib": "7b5896cf0aa0ac82291e0401c610b10927393a648bc3ae57352cbf84778ed154",
+    "rul_median.joblib": "6db3fee850a3a0a6182d11571e9a587fa4ea7627e6d5133cc7f11a170f97afb6",
+    "rul_upper.joblib": "0636e0052118575ea011110e567bb2e409ee98d48ba204d5add777be1f69f1ee"
+  },
+  "data_source": "U.S. FHWA National Bridge Inventory annual downloads",
+  "source_url": "https://www.fhwa.dot.gov/bridge/nbi/ascii.cfm",
+  "limitations": [
+    "Not locally validated for Andhra Pradesh",
+    "RUL is conditional on observed deterioration events and is subject to censoring bias",
+    "RUL is not a structural failure-time forecast and must not independently schedule rehabilitation",
+    "Must not be the sole basis for structural or maintenance decisions",
+    "Dam and barrage predictions are outside this model's scope"
+  ],
+  "created_at": "2026-08-31T20:30:56.241110+00:00"
+}

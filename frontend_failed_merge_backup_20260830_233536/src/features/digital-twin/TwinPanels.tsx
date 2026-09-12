@@ -1,0 +1,432 @@
+import type { PredictionStatus } from "../../services/predictionStatus";
+import { predictionReasonLabel } from "../../services/predictionStatus";
+import type { TwinResponse } from "../../types/twin";
+import { riskColor } from "../../utils";
+
+function score(value?: number | null) {
+  return value != null ? `${value.toFixed(0)}/100` : "N/A";
+}
+
+function label(value?: string | null) {
+  return value ? value.replaceAll("_", " ") : "N/A";
+}
+
+const hiddenDimensionKeys = new Set([
+  "representation",
+  "template",
+  "source_basis",
+  "source_references",
+  "alignment_status",
+]);
+
+function dimensionLabel(key: string) {
+  return key
+    .replace(/_m3s$/, " (m3/s)")
+    .replace(/_mcm$/, " (MCM)")
+    .replace(/_tmc$/, " (TMC)")
+    .replace(/_m$/, " (m)")
+    .replaceAll("_", " ");
+}
+
+function dimensionValue(value: unknown) {
+  if (typeof value === "number") {
+    return Number.isInteger(value)
+      ? value.toLocaleString()
+      : value.toLocaleString(undefined, {
+          maximumFractionDigits: 3,
+        });
+  }
+
+  return String(value).replaceAll("_", " ");
+}
+
+export function TwinPanels({
+  twin,
+  predictionStatus,
+}: {
+  twin: TwinResponse;
+  predictionStatus?: PredictionStatus;
+}) {
+  const dimensions = Object.entries(
+    twin.twin.dimensions,
+  ).filter(
+    ([key, value]) =>
+      !hiddenDimensionKeys.has(key) &&
+      value !== null &&
+      value !== undefined,
+  );
+
+  const aiWithheld =
+    twin.asset.asset_type === "bridge" &&
+    predictionStatus?.prediction_available === false;
+
+  const validation =
+    predictionStatus?.governance?.ap_validation;
+
+  return (
+    <div className="clean-twin-panels">
+      {predictionStatus && (
+        <section className="clean-panel">
+          <header className="clean-panel-header">
+            <div>
+              <span className="clean-kicker">
+                AI GOVERNANCE
+              </span>
+              <h3>
+                Structural prediction status
+              </h3>
+            </div>
+          </header>
+
+          <table className="clean-data-table">
+            <tbody>
+              <tr>
+                <th>Status</th>
+                <td>
+                  {predictionStatus.status}
+                </td>
+              </tr>
+
+              <tr>
+                <th>Prediction available</th>
+                <td>
+                  {predictionStatus.prediction_available
+                    ? "YES"
+                    : "NO"}
+                </td>
+              </tr>
+
+              <tr>
+                <th>Reason</th>
+                <td>
+                  {predictionReasonLabel(
+                    predictionStatus.reason_code,
+                  )}
+                </td>
+              </tr>
+
+              <tr>
+                <th>Identity</th>
+                <td>
+                  {label(
+                    predictionStatus.asset
+                      .identity_status,
+                  )}
+                </td>
+              </tr>
+
+              <tr>
+                <th>Model stage</th>
+                <td>
+                  {predictionStatus.model?.stage ??
+                    "N/A"}
+                </td>
+              </tr>
+
+              <tr>
+                <th>Promotion</th>
+                <td>
+                  {predictionStatus.model
+                    ?.promotion_decision ??
+                    "N/A"}
+                </td>
+              </tr>
+
+              {validation && (
+                <>
+                  <tr>
+                    <th>
+                      AP candidates checked
+                    </th>
+                    <td>
+                      {validation.total_candidates ??
+                        0}
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <th>
+                      Prediction eligible
+                    </th>
+                    <td>
+                      {validation
+                        .prediction_eligible ?? 0}
+                    </td>
+                  </tr>
+                </>
+              )}
+            </tbody>
+          </table>
+
+          {aiWithheld && (
+            <p className="clean-note">
+              Structural AI values are intentionally
+              withheld until verified AP engineering
+              evidence and model validation requirements
+              are satisfied.
+            </p>
+          )}
+        </section>
+      )}
+
+      <section className="clean-score-grid">
+        <div>
+          <span>SIMRAS health</span>
+          <strong>
+            {aiWithheld
+              ? "WITHHELD"
+              : score(twin.ai.health_score)}
+          </strong>
+          <small>
+            {aiWithheld
+              ? "Insufficient validated engineering evidence"
+              : "Research decision support"}
+          </small>
+        </div>
+
+        <div>
+          <span>SIMRAS structural risk</span>
+          <strong
+            style={{
+              color: aiWithheld
+                ? undefined
+                : riskColor(
+                    twin.ai.risk_level,
+                  ),
+            }}
+          >
+            {aiWithheld
+              ? "WITHHELD"
+              : score(twin.ai.risk_score)}
+          </strong>
+          <small>
+            {aiWithheld
+              ? predictionReasonLabel(
+                  predictionStatus?.reason_code,
+                )
+              : label(twin.ai.risk_level)}
+          </small>
+        </div>
+
+        <div>
+          <span>Environmental hazard</span>
+          <strong
+            style={{
+              color: riskColor(
+                twin.ai.hazard_level,
+              ),
+            }}
+          >
+            {score(twin.ai.hazard_score)}
+          </strong>
+          <small>
+            {label(twin.ai.hazard_level)}
+          </small>
+        </div>
+
+        <div>
+          <span>Prediction confidence</span>
+          <strong>
+            {aiWithheld
+              ? "N/A"
+              : twin.ai.confidence != null
+                ? `${Math.round(
+                    twin.ai.confidence * 100,
+                  )}%`
+                : "N/A"}
+          </strong>
+          <small>
+            {aiWithheld
+              ? "Prediction not released"
+              : "Not an official rating"}
+          </small>
+        </div>
+      </section>
+
+      <section className="clean-panel">
+        <header className="clean-panel-header">
+          <div>
+            <span className="clean-kicker">
+              {aiWithheld
+                ? "WITHHELD"
+                : "EXPERIMENTAL"}
+            </span>
+            <h3>
+              Remaining useful life
+            </h3>
+          </div>
+        </header>
+
+        {aiWithheld ? (
+          <>
+            <table className="clean-data-table">
+              <tbody>
+                <tr>
+                  <th>Estimated remaining life</th>
+                  <td>WITHHELD</td>
+                </tr>
+                <tr>
+                  <th>Status</th>
+                  <td>
+                    AP LOCAL VALIDATION REQUIRED
+                  </td>
+                </tr>
+                <tr>
+                  <th>Reason</th>
+                  <td>
+                    {predictionReasonLabel(
+                      predictionStatus?.reason_code,
+                    )}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p className="clean-note">
+              SIMRAS does not fabricate a structural
+              remaining-life value when sufficient
+              verified engineering evidence is unavailable.
+            </p>
+          </>
+        ) : (
+          <>
+            <table className="clean-data-table">
+              <tbody>
+                <tr>
+                  <th>
+                    Estimated remaining life
+                  </th>
+                  <td>
+                    {twin.ai.remaining_life_years !=
+                    null
+                      ? `${twin.ai.remaining_life_years.toFixed(
+                          1,
+                        )} years`
+                      : "N/A"}
+                  </td>
+                </tr>
+
+                <tr>
+                  <th>Estimated range</th>
+                  <td>
+                    {twin.ai.rul_lower_bound !=
+                      null &&
+                    twin.ai.rul_upper_bound != null
+                      ? `${twin.ai.rul_lower_bound.toFixed(
+                          1,
+                        )} - ${twin.ai.rul_upper_bound.toFixed(
+                          1,
+                        )} years`
+                      : "N/A"}
+                  </td>
+                </tr>
+
+                <tr>
+                  <th>Basis</th>
+                  <td>
+                    {twin.ai.rul_basis_url ? (
+                      <a
+                        href={
+                          twin.ai.rul_basis_url
+                        }
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {twin.ai.rul_basis ??
+                          "Open basis source"}
+                      </a>
+                    ) : (
+                      twin.ai.rul_basis ?? "N/A"
+                    )}
+                  </td>
+                </tr>
+
+                <tr>
+                  <th>Status</th>
+                  <td>
+                    {label(
+                      twin.ai.rul_status,
+                    )}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p className="clean-note">
+              Experimental planning-life proxy only;
+              not an official structural remaining-life
+              or dam-safety rating.
+            </p>
+          </>
+        )}
+      </section>
+
+      <section className="clean-panel">
+        <header className="clean-panel-header">
+          <div>
+            <span className="clean-kicker">
+              SOURCE BACKED
+            </span>
+            <h3>
+              Dimensions & characteristics
+            </h3>
+          </div>
+        </header>
+
+        <table className="clean-data-table">
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {dimensions.map(
+              ([key, value]) => (
+                <tr key={key}>
+                  <td>
+                    {dimensionLabel(key)}
+                  </td>
+                  <td>
+                    {dimensionValue(value)}
+                  </td>
+                </tr>
+              ),
+            )}
+          </tbody>
+        </table>
+
+        <p className="clean-note">
+          Dimensions follow linked records.
+          Unprovided geometry remains parametric or
+          approximate unless measured geometry is linked.
+        </p>
+      </section>
+
+      {!aiWithheld && (
+        <section className="clean-two-column">
+          <article className="clean-panel">
+            <h3>Recommendations</h3>
+            <ul className="clean-list">
+              {(twin.ai.recommendations ?? []).map(
+                (item) => (
+                  <li key={item}>{item}</li>
+                ),
+              )}
+            </ul>
+          </article>
+
+          <article className="clean-panel">
+            <h3>Why this prediction?</h3>
+            <ul className="clean-list">
+              {twin.ai.factors.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
+        </section>
+      )}
+    </div>
+  );
+}

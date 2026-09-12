@@ -1,0 +1,62 @@
+﻿[
+    {
+        "source_id":  "IR_IRBM_2024",
+        "authority":  "Indian Railways / IRICEN",
+        "document_name":  "Indian Railway Bridge Manual 2024",
+        "source_url":  "https://www.iricen.gov.in/iricen/Bridge_Manuals/IRBM%2024.pdf",
+        "evidence_role":  "INSPECTION_STANDARD",
+        "training_label_policy":  "NO",
+        "downloaded":  true,
+        "local_file":  "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\bridge_inspections\\official_sources\\documents\\Indian_Railway_Bridge_Manual_2024.pdf",
+        "file_size_bytes":  9268182,
+        "sha256":  "61CB5D43E4D2ED88A3443AA8B1DD2ED9E01C96162A4F471AE63F33933054C22F",
+        "reviewed":  false,
+        "bridge_level_labels_found":  false,
+        "promoted_to_ml":  false
+    },
+    {
+        "source_id":  "NHAI_AP_TADA_NELLORE",
+        "authority":  "National Highways Authority of India",
+        "document_name":  "Tada to Nellore NH-5 Volume II",
+        "source_url":  "https://nhai.gov.in/nhai/sites/default/files/concession_files/TADA%20TO%20NELLORE%20(NH%20-%205)%20%20VOL%20-%20II.pdf",
+        "evidence_role":  "HISTORICAL_CONDITION_SURVEY",
+        "training_label_policy":  "REQUIRES_BRIDGE_LEVEL_APPENDIX",
+        "downloaded":  true,
+        "local_file":  "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\bridge_inspections\\official_sources\\documents\\NHAI_Tada_Nellore_NH5_Vol_II.pdf",
+        "file_size_bytes":  3147161,
+        "sha256":  "D7D4AE7A23F574367D972FFD83397FE1832B1A0988D14C143CA87B983DF0DB5E",
+        "reviewed":  false,
+        "bridge_level_labels_found":  false,
+        "promoted_to_ml":  false
+    },
+    {
+        "source_id":  "NHAI_AP_GIDDALUR_VINUKONDA",
+        "authority":  "National Highways Authority of India",
+        "document_name":  "Giddalur Vinukonda NH-544D Project Agreement",
+        "source_url":  "https://nhai.gov.in/nhai/sites/default/files/project_agreement/N0800602001AP.pdf",
+        "evidence_role":  "REHABILITATION_ENGINEERING_EVIDENCE",
+        "training_label_policy":  "NO_UNLESS_EXPLICIT_CONDITION_RATING",
+        "downloaded":  true,
+        "local_file":  "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\bridge_inspections\\official_sources\\documents\\NHAI_Giddalur_Vinukonda_NH544D.pdf",
+        "file_size_bytes":  60633966,
+        "sha256":  "0456469DF3BD642737FD1DD9C7F6E4EDC7AD1A5728DC382A9ADDF73028DA4F20",
+        "reviewed":  false,
+        "bridge_level_labels_found":  false,
+        "promoted_to_ml":  false
+    },
+    {
+        "source_id":  "MORTH_IBMS_2026",
+        "authority":  "Government of India / Ministry of Road Transport and Highways",
+        "document_name":  "Indian Bridge Management System 2026",
+        "source_url":  "https://morth.gov.in/",
+        "evidence_role":  "CURRENT_NH_CONDITION_SURVEY_SYSTEM",
+        "training_label_policy":  "AUTHORIZED_EXPORT_REQUIRED",
+        "downloaded":  false,
+        "local_file":  null,
+        "file_size_bytes":  0,
+        "sha256":  null,
+        "reviewed":  true,
+        "bridge_level_labels_found":  false,
+        "promoted_to_ml":  false
+    }
+]

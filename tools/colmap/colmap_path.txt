@@ -1,0 +1,1 @@
+﻿D:\simras-digital-twin-repository\simras-digital-twin\tools\colmap\current\COLMAP.bat

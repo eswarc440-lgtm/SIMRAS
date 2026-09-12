@@ -1,0 +1,35 @@
+{
+    "directory":  "/work/data/reality_twin/factory/osm_extracts",
+    "extracts":  [
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0096.osm.pbf",
+                         "description":  "Haresamudram Big Dam / dam",
+                         "bbox":  [
+                                      77.283473329999993,
+                                      13.89217929,
+                                      77.31347333,
+                                      13.92217929
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0099.osm.pbf",
+                         "description":  "Koduru Reservoir / dam",
+                         "bbox":  [
+                                      77.71111111,
+                                      13.84972222,
+                                      77.74111111,
+                                      13.879722220000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0102.osm.pbf",
+                         "description":  "Madakasira Dam / dam",
+                         "bbox":  [
+                                      77.232302199999992,
+                                      13.91255361,
+                                      77.2623022,
+                                      13.942553610000001
+                                  ]
+                     }
+                 ]
+}

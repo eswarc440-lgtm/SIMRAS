@@ -1,0 +1,14 @@
+{
+  "ML6A_predictions": 6,
+  "approved_for_persistence": 2,
+  "held_for_review": 4,
+  "decision_counts": {
+    "APPROVED_FOR_PERSISTENCE": 2,
+    "HOLD_POSSIBLE_MULTI_SEGMENT_STRUCTURE": 4
+  },
+  "PostgreSQL_written": false,
+  "Health": "WITHHELD",
+  "RUL": "WITHHELD",
+  "Confidence": "WITHHELD_AP_VALIDATION_PENDING",
+  "next_phase": "ML-6C persist only APPROVED_FOR_PERSISTENCE rows."
+}

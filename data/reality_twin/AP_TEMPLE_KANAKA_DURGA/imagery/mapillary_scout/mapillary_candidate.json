@@ -1,0 +1,16 @@
+﻿{
+    "asset_code":  "AP_TEMPLE_KANAKA_DURGA",
+    "latitude":  16.5154,
+    "longitude":  80.6059,
+    "coverage_found":  false,
+    "selected_url":  "https://www.mapillary.com/app/?lat=16.5154\u0026lng=80.6059\u0026z=18",
+    "image_key":  "",
+    "sequence_key":  "",
+    "approximate_sequence_images":  0,
+    "same_structure_repeated":  false,
+    "reported_360":  "",
+    "reconstruction_priority":  "UNSUITABLE",
+    "next_step":  "OWN_CONTROLLED_CAPTURE_30_TO_60_IMAGES",
+    "dimensions_verified":  false,
+    "survey_grade_claim":  false
+}

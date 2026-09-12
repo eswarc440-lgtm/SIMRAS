@@ -1,0 +1,67 @@
+{
+  "bridge_age": {
+    "median": 45.0,
+    "p10": 12.0,
+    "p90": 84.0
+  },
+  "years_since_reconstruction": {
+    "median": 28.0,
+    "p10": 7.0,
+    "p90": 57.0
+  },
+  "structure_length": {
+    "median": 20.0,
+    "p10": 7.6,
+    "p90": 85.6
+  },
+  "deck_width": {
+    "median": 9.1,
+    "p10": 0.0,
+    "p90": 18.9
+  },
+  "log_average_daily_traffic": {
+    "median": 6.836259277277067,
+    "p10": 3.713572066704308,
+    "p90": 9.880935148065616
+  },
+  "deck_rating_t": {
+    "median": 7.0,
+    "p10": 5.0,
+    "p90": 8.0
+  },
+  "superstructure_rating_t": {
+    "median": 7.0,
+    "p10": 5.0,
+    "p90": 8.0
+  },
+  "substructure_rating_t": {
+    "median": 7.0,
+    "p10": 5.0,
+    "p90": 8.0
+  },
+  "culvert_rating_t": {
+    "median": 7.0,
+    "p10": 5.0,
+    "p90": 8.0
+  },
+  "minimum_rating_t": {
+    "median": 6.0,
+    "p10": 5.0,
+    "p90": 7.0
+  },
+  "component_mean_rating": {
+    "median": 6.666666507720947,
+    "p10": 5.333333492279053,
+    "p90": 8.0
+  },
+  "component_rating_spread": {
+    "median": 0.0,
+    "p10": 0.0,
+    "p90": 2.0
+  },
+  "components_reported_count": {
+    "median": 3.0,
+    "p10": 1.0,
+    "p90": 3.0
+  }
+}

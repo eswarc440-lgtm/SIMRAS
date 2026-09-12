@@ -1,0 +1,14 @@
+==========================================================================================
+SIMRAS STEP 2B - HYDROLOGY MATCH RECOVERY
+==========================================================================================
+Previous unmatched entities : 76
+High recoverable            : 0
+Review recoverable          : 1
+Still unmatched             : 75
+
+Previous matched assets     : 11
+Potential combined assets   : 12
+Potential asset coverage    : 6.78%
+
+Report CSV                  : /app/data/processed/dam_barrage/AP_HYDROLOGY_MATCH_RECOVERY.csv
+==========================================================================================

@@ -1,0 +1,135 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SIMRAS Fast Reality Twin Viewer</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.133/Build/Cesium/Widgets/widgets.css"/>
+<script src="https://cdn.jsdelivr.net/npm/cesium@1.133/Build/Cesium/Cesium.js"></script>
+<style>
+html,body,#cesiumContainer{width:100%;height:100%;margin:0;padding:0;overflow:hidden;font-family:Inter,Arial,sans-serif}
+#panel{position:absolute;z-index:10;top:12px;left:12px;width:360px;max-height:calc(100% - 24px);overflow:auto;background:rgba(15,23,42,.94);color:white;border-radius:12px;padding:14px;box-shadow:0 10px 35px rgba(0,0,0,.35)}
+h1{font-size:16px;margin:0 0 8px}.muted{font-size:12px;color:#cbd5e1;line-height:1.4}.warn{font-size:12px;color:#fde68a;line-height:1.4}
+select,input,button{width:100%;box-sizing:border-box;margin-top:8px;padding:9px;border-radius:7px;border:1px solid #475569;background:#0f172a;color:white}
+button{cursor:pointer;background:#1d4ed8;border:0;font-weight:600}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}.card{background:#1e293b;padding:8px;border-radius:8px;font-size:12px}
+.badge{display:inline-block;padding:3px 7px;border-radius:999px;background:#334155;font-size:11px;margin-top:6px}
+#status{margin-top:8px;font-size:12px}
+</style>
+</head>
+<body>
+<div id="cesiumContainer"></div>
+<div id="panel">
+  <h1>SIMRAS â€” Fast Reality Twin</h1>
+  <div class="muted">Real geospatial/photorealistic context + source-backed engineering dimensions.</div>
+  <div class="warn">Photorealistic tiles are visual evidence only. Never derive or claim engineering dimensions from them.</div>
+  <select id="typeFilter"><option value="">All asset types</option></select>
+  <select id="assetSelect"></select>
+  <input id="googleKey" type="password" placeholder="Google Map Tiles API key (optional)"/>
+  <button id="load3d">Enable Photorealistic 3D</button>
+  <button id="fly">Fly to selected asset</button>
+  <div id="status">Loading catalogâ€¦</div>
+  <div id="details"></div>
+</div>
+<script>
+const viewer = new Cesium.Viewer("cesiumContainer", {
+  animation:false, timeline:false, geocoder:false, homeButton:true,
+  sceneModePicker:true, baseLayerPicker:false,
+  baseLayer: new Cesium.ImageryLayer(new Cesium.OpenStreetMapImageryProvider({
+    url:"https://tile.openstreetmap.org/"
+  }))
+});
+viewer.scene.globe.depthTestAgainstTerrain = true;
+
+let assets=[], filtered=[], tileset=null;
+const typeFilter=document.getElementById("typeFilter");
+const assetSelect=document.getElementById("assetSelect");
+const details=document.getElementById("details");
+const status=document.getElementById("status");
+const keyInput=document.getElementById("googleKey");
+keyInput.value=localStorage.getItem("SIMRAS_GOOGLE_3D_KEY")||"";
+
+function validCoord(a){return Number.isFinite(+a.latitude)&&Number.isFinite(+a.longitude)}
+function current(){return filtered.find(a=>a.asset_code===assetSelect.value)}
+
+function renderDetails(a){
+ if(!a){details.innerHTML="";return}
+ details.innerHTML=`
+ <div class="grid">
+  <div class="card"><b>${a.type||"asset"}</b><br>${a.asset_code}</div>
+  <div class="card"><b>Fidelity</b><br>${a.fidelity_status}</div>
+  <div class="card"><b>District</b><br>${a.district||"N/A"}</div>
+  <div class="card"><b>Dimensions</b><br>${a.dimension_status}</div>
+ </div>
+ <div class="badge">${a.visual_strategy}</div>
+ <div class="muted" style="margin-top:8px"><b>${a.name}</b><br>
+ ${a.latitude ?? "?"}, ${a.longitude ?? "?"}<br><br>
+ Dimension authority: ${a.dimension_authority}<br>
+ ${a.visual_truth_note}</div>`;
+}
+
+function rebuild(){
+ const t=typeFilter.value;
+ filtered=assets.filter(a=>(!t||a.type===t)&&validCoord(a));
+ assetSelect.innerHTML="";
+ filtered.forEach(a=>{
+   const o=document.createElement("option");
+   o.value=a.asset_code;
+   o.textContent=`${a.name} â€” ${a.type}`;
+   assetSelect.appendChild(o);
+ });
+ if(filtered.length){ renderDetails(filtered[0]); flyTo(filtered[0]); }
+}
+
+function flyTo(a){
+ if(!a||!validCoord(a))return;
+ viewer.camera.flyTo({
+   destination:Cesium.Cartesian3.fromDegrees(+a.longitude,+a.latitude,650),
+   orientation:{heading:Cesium.Math.toRadians(0),pitch:Cesium.Math.toRadians(-55),roll:0},
+   duration:1.5
+ });
+}
+
+fetch("assets.json").then(r=>r.json()).then(data=>{
+ assets=data;
+ [...new Set(assets.map(a=>a.type).filter(Boolean))].sort().forEach(t=>{
+   const o=document.createElement("option");o.value=t;o.textContent=t;typeFilter.appendChild(o);
+ });
+ assets.filter(validCoord).forEach(a=>{
+   viewer.entities.add({
+     position:Cesium.Cartesian3.fromDegrees(+a.longitude,+a.latitude,20),
+     point:{pixelSize:a.priority===1?10:6,outlineWidth:1},
+     label:{text:a.priority===1?a.name:"",font:"12px sans-serif",
+       pixelOffset:new Cesium.Cartesian2(0,-18),showBackground:true}
+   });
+ });
+ status.textContent=`${assets.length} SIMRAS assets loaded`;
+ rebuild();
+}).catch(e=>status.textContent="Catalog load failed: "+e.message);
+
+typeFilter.addEventListener("change",rebuild);
+assetSelect.addEventListener("change",()=>{const a=current();renderDetails(a);flyTo(a)});
+document.getElementById("fly").addEventListener("click",()=>flyTo(current()));
+
+document.getElementById("load3d").addEventListener("click",async()=>{
+ const key=keyInput.value.trim();
+ if(!key){status.textContent="Enter a Google Map Tiles API key first.";return}
+ localStorage.setItem("SIMRAS_GOOGLE_3D_KEY",key);
+ status.textContent="Loading Photorealistic 3D Tilesâ€¦";
+ try{
+   if(tileset){viewer.scene.primitives.remove(tileset);tileset=null}
+   tileset=await Cesium.Cesium3DTileset.fromUrl(
+     `https://tile.googleapis.com/v1/3dtiles/root.json?key=${encodeURIComponent(key)}`,
+     {showCreditsOnScreen:true}
+   );
+   viewer.scene.primitives.add(tileset);
+   viewer.scene.globe.show=false;
+   status.textContent="Photorealistic 3D enabled. Coverage varies by location.";
+   flyTo(current());
+ }catch(e){
+   status.textContent="3D Tiles failed: "+e.message;
+ }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+﻿SIMRAS ALL-ASSET REAL TWIN FACTORY V13
+======================================
+Assets registered: 194
+Priority 1: 16
+Priority 2: 15
+Existing asset-specific model candidates: 0
+
+REALITY HIERARCHY
+-----------------
+L1 = public geospatial context only
+L2 = detailed public/source-backed geometry or model pending provenance
+L3 = verified photogrammetry/BIM/survey-backed model
+L4 = L3 + live sensors / telemetry / AI state
+
+NEXT IMPLEMENTATION
+-------------------
+1. Install/use OSM2World for source-backed detailed OSM models.
+2. Batch-generate GLB only where OSM has useful geometry/tags.
+3. For priority assets, search official/public exact models and imagery.
+4. Use COLMAP/ODM only when sufficient controlled imagery exists.
+5. Keep dimensions from authoritative engineering sources.
+6. Never label generic geometry as the real structure.
+
+FILES
+-----
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\factory\all_asset_real_twin_manifest.csv
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\factory\real_twin_priority_queue.csv
+D:\simras-digital-twin-repository\simras-digital-twin\frontend\public\reality-twin\model-manifest.json
+D:\simras-digital-twin-repository\simras-digital-twin\data\reality_twin\factory\OSM2WORLD_BATCH_PLAN.csv

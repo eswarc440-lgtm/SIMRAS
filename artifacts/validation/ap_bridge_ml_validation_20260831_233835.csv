@@ -1,0 +1,3 @@
+﻿"asset_code","name","district","asset_type","prediction_kind","prediction_method","status","health_score","risk_score","confidence","remaining_life_years","health_range_valid","risk_range_valid","confidence_range_valid","sparse_rul_withheld"
+"AP_BR_00001","Godavari Arch Bridge","East Godavari","bridge","FULL_ML","live_unpersisted_bridge_ml","RESEARCH_TRANSFER","77","0.4","0.42","1","True","True","True","True"
+"AP_BR_00002","Kanaka Durga Flyover","NTR","bridge","FULL_ML","live_unpersisted_bridge_ml","RESEARCH_TRANSFER","90.2","0.4","0.55",,"True","True","True","True"

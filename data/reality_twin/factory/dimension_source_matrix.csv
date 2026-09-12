@@ -1,0 +1,6 @@
+﻿"asset_type","authority","geometry","dimensions","visual","claim_rule"
+"dam/barrage","Central Water Commission / NRLD / India-WRIS / AP WRD","dam location + reservoir/water context","height, length, storage, spillway where officially published","Cesium 3D context; asset model only when source-backed","Never infer dam dimensions from visual tiles."
+"airport","Airports Authority of India / AIS AIP","airport/runway geolocation","runway length/width, terminal/apron where officially published","Cesium photorealistic context if coverage","AIP/AAI values override visual estimates."
+"bridge","APRDC / MoRTH / NHAI / Indian Railways / DPR","OSM/PostGIS alignment + owner documents","span/length/width/clearance only from source or survey","photorealistic context or GLB","OSM geometry alone is not engineering dimension evidence."
+"road","MoRTH / NHAI / APRDC","OSM/PostGIS centerline/corridor","carriageway/ROW/lane width only when source-backed","terrain + corridor extrusion","Estimated width must be labeled ESTIMATED."
+"temple","Official Devasthanam / AP government heritage source / survey","official location + building footprint where available","official complex/building dimensions or survey","photorealistic context / controlled photogrammetry","Do not infer architectural dimensions from Google imagery."

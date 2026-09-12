@@ -1,0 +1,12 @@
+{
+  "variant": "LANES",
+  "features": [
+    "log_structure_length",
+    "lanes_count",
+    "route_HIGH_CAPACITY",
+    "route_ARTERIAL",
+    "route_COLLECTOR",
+    "route_LOCAL",
+    "route_OTHER"
+  ]
+}

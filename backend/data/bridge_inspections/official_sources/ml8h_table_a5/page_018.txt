@@ -1,0 +1,60 @@
+The recommended designs (values rounded to nearest cm) are shown in Table B-4. 
+Table B-4 Recommended Overlay Design 
+The section krn 110- 120 is presently being strengthened. According to the Specification the 
+strengthening is based on Benkelman Deflections and a projected traffic of 168 million 
+ESALs, using IRC 81. As the traffic projection is higher than our projection, there is no need 
+for additional strengthening. 
+From 
+km 
+52.8 
+66.1 
+120.0 
+134.4 
+The methodology adopted for the pavement design can be obtained from the PPR report 
+submitted by the Consultants (SWK). 
+2.3.4 Rigid Pavement Design 
+To 
+km 
+66.1 
+110.0 
+134.4 
+163.6 
+The design for rigid pavement was based on various methods and the recommended design to 
+be adopted at the Toll areas, Check post and the Truck lay bys are as indicated in Table B-5. 
+Table B-5 Rigid Pavement Composition for Project Highway 
+Length 
+km 
+13.3 
+37.8 
+14.4 
+29.2 
+Required overlay 
+mm 
+130 
+140 
+160 
+170 
+2.3.5 Joints 
+Designation of Pavement Layer 
+Dowelled PCC 
+Lean concrete sub-base 
+Subgrade (CBR > 6%) 
+Contraction joints with dowel bars shall be provided. 
+2.4 Geometric Improvements 
+Check Post, Toll Area & Truck Layby 
+2.4.1 Complete geometric improvement must be carried out and the horizontal and vertical 
+alignments shall conform to IRC and MOST specifications and requirements. 
+Km 52.8 - 110 
+270 mm 
+100 mm 
+500 mm 
+2.4.2 Trees with large girth and of high social significance, which are being affected due to the 
+improvement of road, should be considered for transplantation and transplantation will be the 
+responsibility of NHAI. 
+Km 110 - 163.6 
+280 mm 
+100 mm 
+500 mm 
+2.5 Slope Protection and Drainage 
+The improvements in the drainage and the slope erosion shall be made as per the requirements 
+of IRC and MOST specifications. 

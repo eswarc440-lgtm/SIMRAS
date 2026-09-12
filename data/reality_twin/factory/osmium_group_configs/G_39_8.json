@@ -1,0 +1,65 @@
+{
+    "directory":  "/work/data/reality_twin/factory/osm_extracts",
+    "extracts":  [
+                     {
+                         "output":  "AP_DAM_WRIS_AP01HH0019.osm.pbf",
+                         "description":  "Buggavagu Dam / dam",
+                         "bbox":  [
+                                      79.51624211,
+                                      16.46699115,
+                                      79.54624211,
+                                      16.49699115
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0092.osm.pbf",
+                         "description":  "Gandicheruvu (Dist-Prakasam) Dam / dam",
+                         "bbox":  [
+                                      79.17897414,
+                                      16.064754909999998,
+                                      79.20897414,
+                                      16.09475491
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0036.osm.pbf",
+                         "description":  "Muraripalli / Mararipalli Dam / dam",
+                         "bbox":  [
+                                      79.32138759,
+                                      16.039341569999998,
+                                      79.35138759,
+                                      16.06934157
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0117.osm.pbf",
+                         "description":  "Seethai Cheru, Seethaipally Dam / dam",
+                         "bbox":  [
+                                      79.86126839,
+                                      16.004458669999998,
+                                      79.891268390000008,
+                                      16.03445867
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_NWDP_AP01VH0059.osm.pbf",
+                         "description":  "Srisailam Project (N.S.R.S.P) / dam",
+                         "bbox":  [
+                                      78.8817766,
+                                      16.0716523,
+                                      78.9117766,
+                                      16.1016523
+                                  ]
+                     },
+                     {
+                         "output":  "AP_TEMPLE_SRISAILAM.osm.pbf",
+                         "description":  "Sri Mallikarjuna Swamy Temple, Srisailam / temple",
+                         "bbox":  [
+                                      78.8607,
+                                      16.0773,
+                                      78.8727,
+                                      16.0893
+                                  ]
+                     }
+                 ]
+}

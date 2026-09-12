@@ -1,0 +1,4 @@
+services:
+  frontend:
+    environment:
+      VITE_CESIUM_ION_TOKEN: "${VITE_CESIUM_ION_TOKEN}"

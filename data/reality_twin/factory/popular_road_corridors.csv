@@ -1,0 +1,4 @@
+﻿"corridor","source","twin_method","dimension_rule"
+"NH16","OSM + MoRTH/NHAI/APRDC","POSTGIS_LINESTRING + terrain + road-width evidence","Use official carriageway/right-of-way values when sourced; otherwise mark estimated/unknown."
+"NH65","OSM + MoRTH/NHAI/APRDC","POSTGIS_LINESTRING + terrain + road-width evidence","Use official carriageway/right-of-way values when sourced; otherwise mark estimated/unknown."
+"NH44","OSM + MoRTH/NHAI/APRDC","POSTGIS_LINESTRING + terrain + road-width evidence","Use official carriageway/right-of-way values when sourced; otherwise mark estimated/unknown."

@@ -1,0 +1,515 @@
+﻿===== BACKEND =====
+
+  backend\app\api\routes\assets.py:20:
+  backend\app\api\routes\assets.py:21:
+> backend\app\api\routes\assets.py:22:@router.get("", response_model=AssetListResponse)
+  backend\app\api\routes\assets.py:23:async def list_assets(
+  backend\app\api\routes\assets.py:24:    asset_type: str | None = Query(
+  backend\app\api\routes\assets.py:25:        default=None,
+  backend\app\api\routes\assets.py:26:        pattern="^(bridge|dam|barrage|airport|temple)$",
+  backend\app\api\routes\assets.py:27:    ),
+  backend\app\api\routes\assets.py:89:
+  backend\app\api\routes\assets.py:90:
+> backend\app\api\routes\assets.py:91:@router.get("/high-risk", response_model=list[AssetSummary])
+> backend\app\api\routes\assets.py:92:async def high_risk_assets(
+  backend\app\api\routes\assets.py:93:    limit: int = Query(default=10, ge=1, le=100),
+  backend\app\api\routes\assets.py:94:    session: AsyncSession = Depends(get_db),
+  backend\app\api\routes\assets.py:95:) -> list[AssetSummary]:
+  backend\app\api\routes\assets.py:96:    response = await list_assets(
+  backend\app\api\routes\assets.py:97:        asset_type=None,
+  backend\app\api\routes\assets.py:102:        session=session,
+  backend\app\api\routes\assets.py:103:    )
+> backend\app\api\routes\assets.py:104:    ranked = sorted(response.items, key=lambda item: item.risk_score or -1, 
+reverse=True)
+  backend\app\api\routes\assets.py:105:    return ranked[:limit]
+  backend\app\api\routes\assets.py:106:
+  backend\app\api\routes\assets.py:107:
+> backend\app\api\routes\assets.py:108:@router.get("/geojson", response_model=GeoJSONFeatureCollection)
+  backend\app\api\routes\assets.py:109:async def assets_geojson(
+  backend\app\api\routes\assets.py:110:    asset_type: str | None = None,
+  backend\app\api\routes\assets.py:111:    session: AsyncSession = Depends(get_db),
+  backend\app\api\routes\assets.py:112:) -> GeoJSONFeatureCollection:
+  backend\app\api\routes\assets.py:113:    response = await list_assets(
+  backend\app\api\routes\assets.py:133:
+  backend\app\api\routes\assets.py:134:
+> backend\app\api\routes\assets.py:135:@router.get("/{asset_code}/bridge-profile")
+  backend\app\api\routes\assets.py:136:async def get_bridge_profile(
+  backend\app\api\routes\assets.py:137:    asset_code: str,
+  backend\app\api\routes\assets.py:138:    session: AsyncSession = Depends(get_db),
+  backend\app\api\routes\assets.py:139:):
+  backend\app\api\routes\assets.py:140:    asset = (
+  backend\app\api\routes\assets.py:219:
+  backend\app\api\routes\assets.py:220:
+> backend\app\api\routes\assets.py:221:@router.get("/{asset_code}", response_model=AssetSummary)
+  backend\app\api\routes\assets.py:222:async def get_asset(
+  backend\app\api\routes\assets.py:223:    asset_code: str,
+  backend\app\api\routes\assets.py:224:    session: AsyncSession = Depends(get_db),
+  backend\app\api\routes\assets.py:225:) -> AssetSummary:
+  backend\app\api\routes\assets.py:226:    return AssetSummary.model_validate(
+  backend\app\api\routes\assets.py:229:
+  backend\app\api\routes\assets.py:230:
+> backend\app\api\routes\assets.py:231:@router.get("/{asset_code}/twin", response_model=TwinResponse)
+  backend\app\api\routes\assets.py:232:async def get_twin(
+  backend\app\api\routes\assets.py:233:    asset_code: str,
+  backend\app\api\routes\assets.py:234:    session: AsyncSession = Depends(get_db),
+  backend\app\api\routes\assets.py:235:) -> TwinResponse:
+  backend\app\api\routes\assets.py:236:    return TwinResponse.model_validate(await build_twin(session, asset_code))
+
+
+
+===== FRONTEND API =====
+
+  frontend\src\services\simrasTwinApi.ts:33:export const api = {
+  frontend\src\services\simrasTwinApi.ts:34:  twinCatalog: () => request<TwinCatalogResponse>("/twin-catalog"),
+> frontend\src\services\simrasTwinApi.ts:35:  assets: (options?: {
+  frontend\src\services\simrasTwinApi.ts:36:    assetType?: string;
+  frontend\src\services\simrasTwinApi.ts:37:    district?: string;
+  frontend\src\services\simrasTwinApi.ts:38:    search?: string;
+  frontend\src\services\simrasTwinApi.ts:39:    limit?: number;
+  frontend\src\services\simrasTwinApi.ts:40:    offset?: number;
+  frontend\src\services\simrasTwinApi.ts:41:  }) => {
+
+
+
+===== REPORT KPI =====
+
+  frontend\src\features\reports\SelectedAssetReports.tsx:600:  // IMPORTANT:
+  frontend\src\features\reports\SelectedAssetReports.tsx:601:  //
+  frontend\src\features\reports\SelectedAssetReports.tsx:602:  // Morning DB audit confirmed:
+  frontend\src\features\reports\SelectedAssetReports.tsx:603:  //
+> frontend\src\features\reports\SelectedAssetReports.tsx:604:  // health predictions = 0
+> frontend\src\features\reports\SelectedAssetReports.tsx:605:  // risk predictions   = 0
+> frontend\src\features\reports\SelectedAssetReports.tsx:606:  // RUL predictions    = 192 experimental
+  frontend\src\features\reports\SelectedAssetReports.tsx:607:  // inspections        = 1
+  frontend\src\features\reports\SelectedAssetReports.tsx:608:  //
+  frontend\src\features\reports\SelectedAssetReports.tsx:609:  // Therefore the production report MUST NOT promote
+> frontend\src\features\reports\SelectedAssetReports.tsx:610:  // numeric health/risk/RUL values as validated 
+predictions.
+  frontend\src\features\reports\SelectedAssetReports.tsx:611:  // 
+=========================================================
+  frontend\src\features\reports\SelectedAssetReports.tsx:612:
+  frontend\src\features\reports\SelectedAssetReports.tsx:613:
+  frontend\src\features\reports\SelectedAssetReports.tsx:614:
+  frontend\src\features\reports\SelectedAssetReports.tsx:615:  const reportAssetType =
+  frontend\src\features\reports\SelectedAssetReports.tsx:616:    assetType.toLowerCase();
+  frontend\src\features\reports\SelectedAssetReports.tsx:617:
+  frontend\src\features\reports\SelectedAssetReports.tsx:618:
+  frontend\src\features\reports\SelectedAssetReports.tsx:914:
+  frontend\src\features\reports\SelectedAssetReports.tsx:915:
+  frontend\src\features\reports\SelectedAssetReports.tsx:916:
+  frontend\src\features\reports\SelectedAssetReports.tsx:917:  // 
+=========================================================
+> frontend\src\features\reports\SelectedAssetReports.tsx:918:  // PREDICTION EXPLANATION / RISK ASSESSMENT
+  frontend\src\features\reports\SelectedAssetReports.tsx:919:  //
+> frontend\src\features\reports\SelectedAssetReports.tsx:920:  // Only validated structural predictions may be promoted
+  frontend\src\features\reports\SelectedAssetReports.tsx:921:  // as report risk results.
+  frontend\src\features\reports\SelectedAssetReports.tsx:922:  // 
+=========================================================
+  frontend\src\features\reports\SelectedAssetReports.tsx:923:
+> frontend\src\features\reports\SelectedAssetReports.tsx:924:  const riskPredictionStatus =
+  frontend\src\features\reports\SelectedAssetReports.tsx:925:    textValue(
+  frontend\src\features\reports\SelectedAssetReports.tsx:926:      source,
+  frontend\src\features\reports\SelectedAssetReports.tsx:927:      [
+> frontend\src\features\reports\SelectedAssetReports.tsx:928:        "risk_prediction_status",
+  frontend\src\features\reports\SelectedAssetReports.tsx:929:        "risk_model_status",
+  frontend\src\features\reports\SelectedAssetReports.tsx:930:        "risk_validation_status",
+  frontend\src\features\reports\SelectedAssetReports.tsx:931:      ],
+  frontend\src\features\reports\SelectedAssetReports.tsx:932:    );
+  frontend\src\features\reports\SelectedAssetReports.tsx:933:
+  frontend\src\features\reports\SelectedAssetReports.tsx:934:
+> frontend\src\features\reports\SelectedAssetReports.tsx:935:  const healthPredictionStatus =
+  frontend\src\features\reports\SelectedAssetReports.tsx:936:    textValue(
+  frontend\src\features\reports\SelectedAssetReports.tsx:937:      source,
+  frontend\src\features\reports\SelectedAssetReports.tsx:938:      [
+> frontend\src\features\reports\SelectedAssetReports.tsx:939:        "health_prediction_status",
+  frontend\src\features\reports\SelectedAssetReports.tsx:940:        "health_model_status",
+  frontend\src\features\reports\SelectedAssetReports.tsx:941:        "health_validation_status",
+  frontend\src\features\reports\SelectedAssetReports.tsx:942:      ],
+  frontend\src\features\reports\SelectedAssetReports.tsx:943:    );
+  frontend\src\features\reports\SelectedAssetReports.tsx:944:
+  frontend\src\features\reports\SelectedAssetReports.tsx:945:
+  frontend\src\features\reports\SelectedAssetReports.tsx:946:  const reportedRiskScore =
+  frontend\src\features\reports\SelectedAssetReports.tsx:947:    numberValue(
+  frontend\src\features\reports\SelectedAssetReports.tsx:962:      ],
+  frontend\src\features\reports\SelectedAssetReports.tsx:963:    );
+  frontend\src\features\reports\SelectedAssetReports.tsx:964:
+  frontend\src\features\reports\SelectedAssetReports.tsx:965:
+> frontend\src\features\reports\SelectedAssetReports.tsx:966:  const predictionFactors =
+  frontend\src\features\reports\SelectedAssetReports.tsx:967:    stringListValue(
+  frontend\src\features\reports\SelectedAssetReports.tsx:968:      source,
+  frontend\src\features\reports\SelectedAssetReports.tsx:969:      [
+> frontend\src\features\reports\SelectedAssetReports.tsx:970:        "prediction_factors",
+  frontend\src\features\reports\SelectedAssetReports.tsx:971:        "risk_factors",
+  frontend\src\features\reports\SelectedAssetReports.tsx:972:        "contributing_factors",
+  frontend\src\features\reports\SelectedAssetReports.tsx:973:        "feature_contributions",
+> frontend\src\features\reports\SelectedAssetReports.tsx:974:        "prediction_explanation",
+  frontend\src\features\reports\SelectedAssetReports.tsx:975:      ],
+  frontend\src\features\reports\SelectedAssetReports.tsx:976:    );
+  frontend\src\features\reports\SelectedAssetReports.tsx:977:
+  frontend\src\features\reports\SelectedAssetReports.tsx:978:
+  frontend\src\features\reports\SelectedAssetReports.tsx:979:  const normalizedRiskStatus =
+  frontend\src\features\reports\SelectedAssetReports.tsx:980:    (
+> frontend\src\features\reports\SelectedAssetReports.tsx:981:      riskPredictionStatus ??
+  frontend\src\features\reports\SelectedAssetReports.tsx:982:      ""
+  frontend\src\features\reports\SelectedAssetReports.tsx:983:    ).toUpperCase();
+  frontend\src\features\reports\SelectedAssetReports.tsx:984:
+  frontend\src\features\reports\SelectedAssetReports.tsx:985:
+  frontend\src\features\reports\SelectedAssetReports.tsx:986:  const structuralRiskValidated =
+  frontend\src\features\reports\SelectedAssetReports.tsx:987:    normalizedRiskStatus.includes(
+  frontend\src\features\reports\SelectedAssetReports.tsx:988:      "VALIDATED",
+  frontend\src\features\reports\SelectedAssetReports.tsx:989:    );
+  frontend\src\features\reports\SelectedAssetReports.tsx:990:
+  frontend\src\features\reports\SelectedAssetReports.tsx:991:
+  frontend\src\features\reports\SelectedAssetReports.tsx:992:  const normalizedHealthStatus =
+  frontend\src\features\reports\SelectedAssetReports.tsx:993:    (
+> frontend\src\features\reports\SelectedAssetReports.tsx:994:      healthPredictionStatus ??
+  frontend\src\features\reports\SelectedAssetReports.tsx:995:      ""
+  frontend\src\features\reports\SelectedAssetReports.tsx:996:    ).toUpperCase();
+  frontend\src\features\reports\SelectedAssetReports.tsx:997:
+  frontend\src\features\reports\SelectedAssetReports.tsx:998:
+  frontend\src\features\reports\SelectedAssetReports.tsx:999:  const structuralHealthValidated =
+  frontend\src\features\reports\SelectedAssetReports.tsx:1000:    normalizedHealthStatus.includes(
+  frontend\src\features\reports\SelectedAssetReports.tsx:1001:      "VALIDATED",
+  frontend\src\features\reports\SelectedAssetReports.tsx:1002:    );
+  frontend\src\features\reports\SelectedAssetReports.tsx:1003:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1004:
+> frontend\src\features\reports\SelectedAssetReports.tsx:1005:  const recommendations: string[] = [];
+  frontend\src\features\reports\SelectedAssetReports.tsx:1006:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1007:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1008:  if (
+  frontend\src\features\reports\SelectedAssetReports.tsx:1009:    !structuralHealthValidated ||
+  frontend\src\features\reports\SelectedAssetReports.tsx:1010:    !structuralRiskValidated
+  frontend\src\features\reports\SelectedAssetReports.tsx:1011:  ) {
+  frontend\src\features\reports\SelectedAssetReports.tsx:1012:
+> frontend\src\features\reports\SelectedAssetReports.tsx:1013:    recommendations.push(
+  frontend\src\features\reports\SelectedAssetReports.tsx:1014:      "Obtain or ingest a current structural inspection 
+before using Health or structural Risk for engineering decisions.",
+  frontend\src\features\reports\SelectedAssetReports.tsx:1015:    );
+  frontend\src\features\reports\SelectedAssetReports.tsx:1016:  }
+  frontend\src\features\reports\SelectedAssetReports.tsx:1017:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1018:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1019:  if (reportAssetType === "bridge") {
+  frontend\src\features\reports\SelectedAssetReports.tsx:1020:
+> frontend\src\features\reports\SelectedAssetReports.tsx:1021:    recommendations.push(
+  frontend\src\features\reports\SelectedAssetReports.tsx:1022:      "Verify deck, bearings, joints, piers, abutments 
+and visible deterioration through a field bridge inspection.",
+  frontend\src\features\reports\SelectedAssetReports.tsx:1023:    );
+  frontend\src\features\reports\SelectedAssetReports.tsx:1024:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1025:    if (
+  frontend\src\features\reports\SelectedAssetReports.tsx:1026:      widthM === undefined ||
+  frontend\src\features\reports\SelectedAssetReports.tsx:1027:      spans === undefined ||
+  frontend\src\features\reports\SelectedAssetReports.tsx:1028:      piers === undefined
+  frontend\src\features\reports\SelectedAssetReports.tsx:1029:    ) {
+> frontend\src\features\reports\SelectedAssetReports.tsx:1030:      recommendations.push(
+  frontend\src\features\reports\SelectedAssetReports.tsx:1031:        "Complete missing bridge inventory dimensions 
+and support counts using authoritative engineering records or field verification.",
+  frontend\src\features\reports\SelectedAssetReports.tsx:1032:      );
+  frontend\src\features\reports\SelectedAssetReports.tsx:1033:    }
+  frontend\src\features\reports\SelectedAssetReports.tsx:1034:  }
+  frontend\src\features\reports\SelectedAssetReports.tsx:1035:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1036:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1037:  if (
+  frontend\src\features\reports\SelectedAssetReports.tsx:1038:    reportAssetType === "dam" ||
+  frontend\src\features\reports\SelectedAssetReports.tsx:1039:    reportAssetType === "barrage"
+  frontend\src\features\reports\SelectedAssetReports.tsx:1040:  ) {
+  frontend\src\features\reports\SelectedAssetReports.tsx:1041:
+> frontend\src\features\reports\SelectedAssetReports.tsx:1042:    recommendations.push(
+  frontend\src\features\reports\SelectedAssetReports.tsx:1043:      "Continue monitoring reservoir level, discharge 
+and hydrology trends independently from structural condition assessment.",
+  frontend\src\features\reports\SelectedAssetReports.tsx:1044:    );
+  frontend\src\features\reports\SelectedAssetReports.tsx:1045:
+> frontend\src\features\reports\SelectedAssetReports.tsx:1046:    recommendations.push(
+  frontend\src\features\reports\SelectedAssetReports.tsx:1047:      "Use an engineering safety inspection before 
+interpreting hydrology anomalies as evidence of structural deterioration.",
+  frontend\src\features\reports\SelectedAssetReports.tsx:1048:    );
+  frontend\src\features\reports\SelectedAssetReports.tsx:1049:  }
+  frontend\src\features\reports\SelectedAssetReports.tsx:1050:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1051:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1052:  if (reportAssetType === "airport") {
+  frontend\src\features\reports\SelectedAssetReports.tsx:1053:
+> frontend\src\features\reports\SelectedAssetReports.tsx:1054:    recommendations.push(
+> frontend\src\features\reports\SelectedAssetReports.tsx:1055:      "Obtain recent pavement condition or PCI 
+inspection evidence before assigning runway or pavement Health and Remaining Useful Life.",
+  frontend\src\features\reports\SelectedAssetReports.tsx:1056:    );
+  frontend\src\features\reports\SelectedAssetReports.tsx:1057:  }
+  frontend\src\features\reports\SelectedAssetReports.tsx:1058:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1059:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1060:  if (reportAssetType === "temple") {
+  frontend\src\features\reports\SelectedAssetReports.tsx:1061:
+> frontend\src\features\reports\SelectedAssetReports.tsx:1062:    recommendations.push(
+  frontend\src\features\reports\SelectedAssetReports.tsx:1063:      "Conduct a documented structural condition survey 
+covering cracks, settlement, moisture deterioration and material condition.",
+  frontend\src\features\reports\SelectedAssetReports.tsx:1064:    );
+  frontend\src\features\reports\SelectedAssetReports.tsx:1065:  }
+  frontend\src\features\reports\SelectedAssetReports.tsx:1066:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1067:
+> frontend\src\features\reports\SelectedAssetReports.tsx:1068:  recommendations.push(
+  frontend\src\features\reports\SelectedAssetReports.tsx:1069:    "Preserve source authority, observation date and 
+evidence quality with every value included in future assessments.",
+  frontend\src\features\reports\SelectedAssetReports.tsx:1070:  );
+  frontend\src\features\reports\SelectedAssetReports.tsx:1071:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1072:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1073:  const experimentalRul =
+  frontend\src\features\reports\SelectedAssetReports.tsx:1074:    numberValue(
+  frontend\src\features\reports\SelectedAssetReports.tsx:1075:      source,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1076:      [
+  frontend\src\features\reports\SelectedAssetReports.tsx:1156:            gap: 12,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1157:          }}
+  frontend\src\features\reports\SelectedAssetReports.tsx:1158:        >
+  frontend\src\features\reports\SelectedAssetReports.tsx:1159:          <ReportCard
+> frontend\src\features\reports\SelectedAssetReports.tsx:1160:            title="Health Score"
+  frontend\src\features\reports\SelectedAssetReports.tsx:1161:            value="WITHHELD"
+  frontend\src\features\reports\SelectedAssetReports.tsx:1162:            status="WITHHELD"
+> frontend\src\features\reports\SelectedAssetReports.tsx:1163:            explanation="No stored validated Health ML 
+prediction is currently available."
+  frontend\src\features\reports\SelectedAssetReports.tsx:1164:          />
+  frontend\src\features\reports\SelectedAssetReports.tsx:1165:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1166:          <ReportCard
+> frontend\src\features\reports\SelectedAssetReports.tsx:1167:            title="Risk Level"
+  frontend\src\features\reports\SelectedAssetReports.tsx:1168:            value="WITHHELD"
+  frontend\src\features\reports\SelectedAssetReports.tsx:1169:            status="WITHHELD"
+> frontend\src\features\reports\SelectedAssetReports.tsx:1170:            explanation="Risk classification is withheld 
+because no validated structural Risk ML prediction is stored."
+  frontend\src\features\reports\SelectedAssetReports.tsx:1171:          />
+  frontend\src\features\reports\SelectedAssetReports.tsx:1172:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1173:          <ReportCard
+> frontend\src\features\reports\SelectedAssetReports.tsx:1174:            title="Risk Score"
+  frontend\src\features\reports\SelectedAssetReports.tsx:1175:            value="WITHHELD"
+  frontend\src\features\reports\SelectedAssetReports.tsx:1176:            status="WITHHELD"
+> frontend\src\features\reports\SelectedAssetReports.tsx:1177:            explanation="No production-validated 
+structural risk score is available for reporting."
+  frontend\src\features\reports\SelectedAssetReports.tsx:1178:          />
+  frontend\src\features\reports\SelectedAssetReports.tsx:1179:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1180:          <ReportCard
+> frontend\src\features\reports\SelectedAssetReports.tsx:1181:            title="Confidence"
+  frontend\src\features\reports\SelectedAssetReports.tsx:1182:            value="WITHHELD"
+  frontend\src\features\reports\SelectedAssetReports.tsx:1183:            status="WITHHELD"
+> frontend\src\features\reports\SelectedAssetReports.tsx:1184:            explanation="Confidence is not reported when 
+the corresponding production prediction is unavailable."
+  frontend\src\features\reports\SelectedAssetReports.tsx:1185:          />
+  frontend\src\features\reports\SelectedAssetReports.tsx:1186:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1187:          <ReportCard
+> frontend\src\features\reports\SelectedAssetReports.tsx:1188:            title="Remaining Useful Life"
+  frontend\src\features\reports\SelectedAssetReports.tsx:1189:            value="WITHHELD"
+  frontend\src\features\reports\SelectedAssetReports.tsx:1190:            status={
+  frontend\src\features\reports\SelectedAssetReports.tsx:1191:              experimentalRul !== undefined
+  frontend\src\features\reports\SelectedAssetReports.tsx:1192:                ? "EXPERIMENTAL"
+  frontend\src\features\reports\SelectedAssetReports.tsx:1193:                : "WITHHELD"
+  frontend\src\features\reports\SelectedAssetReports.tsx:1194:            }
+  frontend\src\features\reports\SelectedAssetReports.tsx:1195:            explanation={
+  frontend\src\features\reports\SelectedAssetReports.tsx:1196:              experimentalRul !== undefined
+  frontend\src\features\reports\SelectedAssetReports.tsx:1792:            fontSize: 14,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1793:            fontWeight: 800,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1794:          }}
+  frontend\src\features\reports\SelectedAssetReports.tsx:1795:        >
+> frontend\src\features\reports\SelectedAssetReports.tsx:1796:          Why the Model Predicted This Result
+  frontend\src\features\reports\SelectedAssetReports.tsx:1797:        </div>
+  frontend\src\features\reports\SelectedAssetReports.tsx:1798:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1799:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1800:        {structuralRiskValidated ? (
+  frontend\src\features\reports\SelectedAssetReports.tsx:1801:          <>
+  frontend\src\features\reports\SelectedAssetReports.tsx:1802:            <p
+  frontend\src\features\reports\SelectedAssetReports.tsx:1803:              style={{
+  frontend\src\features\reports\SelectedAssetReports.tsx:1804:                margin:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1813:              condition and engineering features shown
+  frontend\src\features\reports\SelectedAssetReports.tsx:1814:              below.
+  frontend\src\features\reports\SelectedAssetReports.tsx:1815:            </p>
+  frontend\src\features\reports\SelectedAssetReports.tsx:1816:
+> frontend\src\features\reports\SelectedAssetReports.tsx:1817:            {predictionFactors.length > 0 ? (
+  frontend\src\features\reports\SelectedAssetReports.tsx:1818:              <ul
+  frontend\src\features\reports\SelectedAssetReports.tsx:1819:                style={{
+  frontend\src\features\reports\SelectedAssetReports.tsx:1820:                  margin:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1821:                    "8px 0 0 18px",
+  frontend\src\features\reports\SelectedAssetReports.tsx:1822:                  padding: 0,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1823:                  color: "#dbeafe",
+  frontend\src\features\reports\SelectedAssetReports.tsx:1824:                  fontSize: 12,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1825:                  lineHeight: 1.7,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1826:                }}
+  frontend\src\features\reports\SelectedAssetReports.tsx:1827:              >
+> frontend\src\features\reports\SelectedAssetReports.tsx:1828:                {predictionFactors.map(
+  frontend\src\features\reports\SelectedAssetReports.tsx:1829:                  (factor, index) => (
+  frontend\src\features\reports\SelectedAssetReports.tsx:1830:                    <li
+  frontend\src\features\reports\SelectedAssetReports.tsx:1831:                      key={`${factor}-${index}`}
+  frontend\src\features\reports\SelectedAssetReports.tsx:1832:                    >
+  frontend\src\features\reports\SelectedAssetReports.tsx:1833:                      {factor}
+  frontend\src\features\reports\SelectedAssetReports.tsx:1834:                    </li>
+  frontend\src\features\reports\SelectedAssetReports.tsx:1835:                  ),
+  frontend\src\features\reports\SelectedAssetReports.tsx:1836:                )}
+  frontend\src\features\reports\SelectedAssetReports.tsx:1842:                  fontSize: 12,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1843:                }}
+  frontend\src\features\reports\SelectedAssetReports.tsx:1844:              >
+  frontend\src\features\reports\SelectedAssetReports.tsx:1845:                No feature-level explanation was stored
+> frontend\src\features\reports\SelectedAssetReports.tsx:1846:                with this validated prediction.
+  frontend\src\features\reports\SelectedAssetReports.tsx:1847:              </p>
+  frontend\src\features\reports\SelectedAssetReports.tsx:1848:            )}
+  frontend\src\features\reports\SelectedAssetReports.tsx:1849:          </>
+  frontend\src\features\reports\SelectedAssetReports.tsx:1850:        ) : (
+  frontend\src\features\reports\SelectedAssetReports.tsx:1851:          <>
+  frontend\src\features\reports\SelectedAssetReports.tsx:1852:            <p
+  frontend\src\features\reports\SelectedAssetReports.tsx:1853:              style={{
+  frontend\src\features\reports\SelectedAssetReports.tsx:1854:                margin:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1858:                lineHeight: 1.65,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1859:              }}
+  frontend\src\features\reports\SelectedAssetReports.tsx:1860:            >
+  frontend\src\features\reports\SelectedAssetReports.tsx:1861:              No production-validated structural Risk
+> frontend\src\features\reports\SelectedAssetReports.tsx:1862:              prediction exists for this asset, so SIMRAS
+  frontend\src\features\reports\SelectedAssetReports.tsx:1863:              does not present a fabricated explanation
+> frontend\src\features\reports\SelectedAssetReports.tsx:1864:              for a prediction that has not been 
+validated.
+  frontend\src\features\reports\SelectedAssetReports.tsx:1865:            </p>
+  frontend\src\features\reports\SelectedAssetReports.tsx:1866:
+> frontend\src\features\reports\SelectedAssetReports.tsx:1867:            {predictionFactors.length > 0 && (
+  frontend\src\features\reports\SelectedAssetReports.tsx:1868:              <>
+  frontend\src\features\reports\SelectedAssetReports.tsx:1869:                <div
+  frontend\src\features\reports\SelectedAssetReports.tsx:1870:                  style={{
+  frontend\src\features\reports\SelectedAssetReports.tsx:1871:                    marginTop: 12,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1872:                    color: "#fbbf24",
+  frontend\src\features\reports\SelectedAssetReports.tsx:1873:                    fontSize: 11,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1874:                    fontWeight: 800,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1875:                  }}
+  frontend\src\features\reports\SelectedAssetReports.tsx:1886:                    fontSize: 12,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1887:                    lineHeight: 1.7,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1888:                  }}
+  frontend\src\features\reports\SelectedAssetReports.tsx:1889:                >
+> frontend\src\features\reports\SelectedAssetReports.tsx:1890:                  {predictionFactors.map(
+  frontend\src\features\reports\SelectedAssetReports.tsx:1891:                    (factor, index) => (
+  frontend\src\features\reports\SelectedAssetReports.tsx:1892:                      <li
+  frontend\src\features\reports\SelectedAssetReports.tsx:1893:                        key={`${factor}-${index}`}
+  frontend\src\features\reports\SelectedAssetReports.tsx:1894:                      >
+  frontend\src\features\reports\SelectedAssetReports.tsx:1895:                        {factor}
+  frontend\src\features\reports\SelectedAssetReports.tsx:1896:                      </li>
+  frontend\src\features\reports\SelectedAssetReports.tsx:1897:                    ),
+  frontend\src\features\reports\SelectedAssetReports.tsx:1898:                  )}
+  frontend\src\features\reports\SelectedAssetReports.tsx:1982:                fontSize: 10,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1983:                fontWeight: 800,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1984:              }}
+  frontend\src\features\reports\SelectedAssetReports.tsx:1985:            >
+> frontend\src\features\reports\SelectedAssetReports.tsx:1986:              RISK LEVEL
+  frontend\src\features\reports\SelectedAssetReports.tsx:1987:            </div>
+  frontend\src\features\reports\SelectedAssetReports.tsx:1988:
+  frontend\src\features\reports\SelectedAssetReports.tsx:1989:            <div
+  frontend\src\features\reports\SelectedAssetReports.tsx:1990:              style={{
+  frontend\src\features\reports\SelectedAssetReports.tsx:1991:                marginTop: 5,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1992:                color: "#f8fafc",
+  frontend\src\features\reports\SelectedAssetReports.tsx:1993:                fontSize: 18,
+  frontend\src\features\reports\SelectedAssetReports.tsx:1994:                fontWeight: 800,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2009:                fontSize: 10,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2010:                fontWeight: 800,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2011:              }}
+  frontend\src\features\reports\SelectedAssetReports.tsx:2012:            >
+> frontend\src\features\reports\SelectedAssetReports.tsx:2013:              RISK SCORE
+  frontend\src\features\reports\SelectedAssetReports.tsx:2014:            </div>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2015:
+  frontend\src\features\reports\SelectedAssetReports.tsx:2016:            <div
+  frontend\src\features\reports\SelectedAssetReports.tsx:2017:              style={{
+  frontend\src\features\reports\SelectedAssetReports.tsx:2018:                marginTop: 5,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2019:                color: "#f8fafc",
+  frontend\src\features\reports\SelectedAssetReports.tsx:2020:                fontSize: 18,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2021:                fontWeight: 800,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2065:            fontSize: 14,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2066:            fontWeight: 800,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2067:          }}
+  frontend\src\features\reports\SelectedAssetReports.tsx:2068:        >
+> frontend\src\features\reports\SelectedAssetReports.tsx:2069:          Recommendations
+  frontend\src\features\reports\SelectedAssetReports.tsx:2070:        </div>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2071:
+  frontend\src\features\reports\SelectedAssetReports.tsx:2072:        <ul
+  frontend\src\features\reports\SelectedAssetReports.tsx:2073:          style={{
+  frontend\src\features\reports\SelectedAssetReports.tsx:2074:            margin:
+  frontend\src\features\reports\SelectedAssetReports.tsx:2075:              "12px 0 0 18px",
+  frontend\src\features\reports\SelectedAssetReports.tsx:2076:            padding: 0,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2077:            color: "#d1fae5",
+  frontend\src\features\reports\SelectedAssetReports.tsx:2078:            fontSize: 12,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2079:            lineHeight: 1.75,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2080:          }}
+  frontend\src\features\reports\SelectedAssetReports.tsx:2081:        >
+> frontend\src\features\reports\SelectedAssetReports.tsx:2082:          {recommendations.map(
+  frontend\src\features\reports\SelectedAssetReports.tsx:2083:            (
+  frontend\src\features\reports\SelectedAssetReports.tsx:2084:              recommendation,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2085:              index,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2086:            ) => (
+  frontend\src\features\reports\SelectedAssetReports.tsx:2087:              <li
+  frontend\src\features\reports\SelectedAssetReports.tsx:2088:                key={`${recommendation}-${index}`}
+  frontend\src\features\reports\SelectedAssetReports.tsx:2089:                style={{
+  frontend\src\features\reports\SelectedAssetReports.tsx:2090:                  marginBottom: 5,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2104:            fontSize: 11,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2105:            lineHeight: 1.55,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2106:          }}
+  frontend\src\features\reports\SelectedAssetReports.tsx:2107:        >
+> frontend\src\features\reports\SelectedAssetReports.tsx:2108:          Recommendations are evidence-driven follow-up
+  frontend\src\features\reports\SelectedAssetReports.tsx:2109:          actions. They are not a substitute for 
+inspection
+  frontend\src\features\reports\SelectedAssetReports.tsx:2110:          or professional structural engineering 
+judgment.
+  frontend\src\features\reports\SelectedAssetReports.tsx:2111:        </p>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2112:      </section>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2113:
+  frontend\src\features\reports\SelectedAssetReports.tsx:2114:
+  frontend\src\features\reports\SelectedAssetReports.tsx:2115:      <section
+  frontend\src\features\reports\SelectedAssetReports.tsx:2116:        style={{
+  frontend\src\features\reports\SelectedAssetReports.tsx:2128:            fontSize: 13,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2129:            fontWeight: 800,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2130:          }}
+  frontend\src\features\reports\SelectedAssetReports.tsx:2131:        >
+> frontend\src\features\reports\SelectedAssetReports.tsx:2132:          Prediction Evidence Status
+  frontend\src\features\reports\SelectedAssetReports.tsx:2133:        </div>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2134:
+  frontend\src\features\reports\SelectedAssetReports.tsx:2135:        <div
+  frontend\src\features\reports\SelectedAssetReports.tsx:2136:          style={{
+  frontend\src\features\reports\SelectedAssetReports.tsx:2137:            marginTop: 10,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2138:            display: "grid",
+  frontend\src\features\reports\SelectedAssetReports.tsx:2139:            gap: 6,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2140:            color: "#cbd5e1",
+  frontend\src\features\reports\SelectedAssetReports.tsx:2146:            Health model:
+  frontend\src\features\reports\SelectedAssetReports.tsx:2147:            {" "}
+  frontend\src\features\reports\SelectedAssetReports.tsx:2148:            <strong>WITHHELD</strong>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2149:            {" — "}
+> frontend\src\features\reports\SelectedAssetReports.tsx:2150:            no stored validated Health prediction.
+  frontend\src\features\reports\SelectedAssetReports.tsx:2151:          </div>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2152:
+  frontend\src\features\reports\SelectedAssetReports.tsx:2153:          <div>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2154:            Structural Risk model:
+  frontend\src\features\reports\SelectedAssetReports.tsx:2155:            {" "}
+  frontend\src\features\reports\SelectedAssetReports.tsx:2156:            <strong>WITHHELD</strong>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2157:            {" — "}
+> frontend\src\features\reports\SelectedAssetReports.tsx:2158:            no stored validated Risk prediction.
+  frontend\src\features\reports\SelectedAssetReports.tsx:2159:          </div>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2160:
+  frontend\src\features\reports\SelectedAssetReports.tsx:2161:          <div>
+> frontend\src\features\reports\SelectedAssetReports.tsx:2162:            Remaining Useful Life:
+  frontend\src\features\reports\SelectedAssetReports.tsx:2163:            {" "}
+  frontend\src\features\reports\SelectedAssetReports.tsx:2164:            <strong>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2165:              EXPERIMENTAL / WITHHELD
+  frontend\src\features\reports\SelectedAssetReports.tsx:2166:            </strong>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2167:            {" — "}
+> frontend\src\features\reports\SelectedAssetReports.tsx:2168:            existing experimental predictions are not 
+considered production-valid RUL.
+  frontend\src\features\reports\SelectedAssetReports.tsx:2169:          </div>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2170:
+  frontend\src\features\reports\SelectedAssetReports.tsx:2171:          <div>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2172:            Inspection evidence:
+  frontend\src\features\reports\SelectedAssetReports.tsx:2173:            {" "}
+  frontend\src\features\reports\SelectedAssetReports.tsx:2174:            <strong>INSUFFICIENT</strong>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2175:            {" — "}
+  frontend\src\features\reports\SelectedAssetReports.tsx:2176:            current database contains only one 
+inspection record across the inspection evidence table.
+  frontend\src\features\reports\SelectedAssetReports.tsx:2212:          specifications may originate from government,
+  frontend\src\features\reports\SelectedAssetReports.tsx:2213:          official engineering or open-source mapping 
+evidence.
+  frontend\src\features\reports\SelectedAssetReports.tsx:2214:          These facts are not automatically treated as 
+structural
+  frontend\src\features\reports\SelectedAssetReports.tsx:2215:          condition observations. Health, structural 
+Risk,
+> frontend\src\features\reports\SelectedAssetReports.tsx:2216:          Confidence and Remaining Useful Life remain 
+withheld
+  frontend\src\features\reports\SelectedAssetReports.tsx:2217:          unless the required validated inspection and ML
+  frontend\src\features\reports\SelectedAssetReports.tsx:2218:          evidence is available.
+  frontend\src\features\reports\SelectedAssetReports.tsx:2219:        </p>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2220:      </section>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2221:
+  frontend\src\features\reports\SelectedAssetReports.tsx:2222:    </section>
+  frontend\src\features\reports\SelectedAssetReports.tsx:2223:  );
+  frontend\src\features\reports\SelectedAssetReports.tsx:2224:}
+
+
+

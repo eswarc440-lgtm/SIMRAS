@@ -1,0 +1,26 @@
+{
+  "generated_at": "2026-09-03T14:17:36.870965+00:00",
+  "geojson_line_bridge_ways": 23121,
+  "skipped_non_line_features": 154,
+  "skipped_missing_way_id": 0,
+  "duplicate_way_ids_removed": 0,
+  "named_osm_bridge_ways": 4384,
+  "road_bridge_ways": 21016,
+  "rail_bridge_ways": 1425,
+  "pedestrian_bridge_ways": 305,
+  "width_reported": 14,
+  "material_reported": 0,
+  "start_year_reported": 62,
+  "new_assets_inserted": 23117,
+  "existing_assets_reused": 0,
+  "anchor_osm_rows": 4,
+  "anchor_assets_linked": [
+    "AP_BR_00002"
+  ],
+  "canonical_bridge_assets": 23119,
+  "canonical_named_bridge_assets": 4382,
+  "digital_twin_profiles": 23118,
+  "report_readiness_rows": 23118,
+  "structure_groups": 15120,
+  "multi_way_groups_for_review": 946
+}

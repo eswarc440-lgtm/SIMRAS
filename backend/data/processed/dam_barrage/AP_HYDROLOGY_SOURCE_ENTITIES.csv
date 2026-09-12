@@ -1,0 +1,112 @@
+dataset,source_name,normalized_name,source_code,parameter,latitude,longitude,row_count
+ap_reservoir_level_1970_2025.csv,ADINIMMAYA PALLI,adinimmaya palli,78.735,,28.0,14.60138889,6243
+ap_reservoir_level_1970_2025.csv,ARNIOR,arnior,79.7375,,28.0,13.395,6403
+ap_reservoir_level_1970_2025.csv,BAHUDA,bahuda,78.62777778,,28.0,13.56388889,6309
+ap_reservoir_level_1970_2025.csv,BHAIRAVANITIPPA PROJECT,bhairavanitippa,76.88305556,,28.0,14.53305556,6870
+ap_reservoir_level_1970_2025.csv,CHENNARAJASWAMY GUDI,chennarajaswamy gudi,78.17944444,,28.0,13.86111111,6818
+ap_reservoir_level_1970_2025.csv,KALANGI,kalangi,79.7925,,28.0,13.60805556,6621
+ap_reservoir_level_1970_2025.csv,KALYANI DAM,kalyani,79.27,,28.0,13.64833333,6733
+ap_reservoir_level_1970_2025.csv,KRISHNAPURAM.,krishnapuram,79.35777778,,28.0,13.36888889,6689
+ap_reservoir_level_1970_2025.csv,MALLI MADUGU.,malli madugu,79.52166667,,28.0,13.67666667,6746
+ap_reservoir_level_1970_2025.csv,MID PENNAR,mid pennar,77.40833333,,28.0,14.875,6876
+ap_reservoir_level_1970_2025.csv,PEDDERU,pedderu,78.37583333,,28.0,13.89027778,8580
+ap_reservoir_level_1970_2025.csv,PENNAR KUMUDVATHY,pennar kumudvathy,77.41666667,,28.0,13.95,6878
+ap_reservoir_level_1970_2025.csv,SRI SAILAM PROJECT,sri sailam,78.89972222,,28.0,16.08305556,6721
+ap_reservoir_level_1970_2025.csv,SUNKESULA,sunkesula,77.83305556,,28.0,15.87583333,6753
+ap_reservoir_level_1970_2025.csv,SURATAPALLI.,suratapalli,79.87361111,,28.0,13.33472222,5384
+ap_reservoir_level_1970_2025.csv,SWARNAMUKHI.,swarnamukhi,79.70111111,,28.0,13.75722222,6311
+ap_reservoir_level_1970_2025.csv,TBP HLC   104.775 KM,tbp hlc 104 775 km,76.97916667,,28.0,14.99972222,6269
+ap_reservoir_level_1970_2025.csv,UPPER PENNAR PROJECT,upper pennar,77.355,,28.0,14.33694444,6838
+ap_reservoir_level_1970_2025.csv,U/S of Somasila Project,u s of somasila,79.30722222,,28.0,14.48833333,1
+ap_reservoir_level_1970_2025.csv,YOGIVEMANA RESERVOIR PROJECT,yogivemana,78.05111111,,28.0,14.35777778,2190
+ap_reservoir_level_1970_2025.csv,Zurreru Reservoir,zurreru,78.12583333,,28.0,15.3275,4412
+ap_reservoir_level_2026_2030.csv,ADINIMMAYA PALLI,adinimmaya palli,78.735,,28.0,14.60138889,80
+ap_reservoir_level_2026_2030.csv,BAHUDA,bahuda,78.62777778,,28.0,13.56388889,82
+ap_reservoir_level_2026_2030.csv,BHAIRAVANITIPPA PROJECT,bhairavanitippa,76.88305556,,28.0,14.53305556,23
+ap_reservoir_level_2026_2030.csv,KALYANI DAM,kalyani,79.27,,28.0,13.64833333,44
+ap_reservoir_level_2026_2030.csv,MALLI MADUGU.,malli madugu,79.52166667,,28.0,13.67666667,55
+ap_reservoir_level_2026_2030.csv,PEDDERU,pedderu,78.37583333,,28.0,13.89027778,79
+ap_reservoir_level_2026_2030.csv,PENNAR KUMUDVATHY,pennar kumudvathy,77.41666667,,28.0,13.95,46
+ap_reservoir_level_2026_2030.csv,SRI SAILAM PROJECT,sri sailam,78.89972222,,28.0,16.08305556,181
+ap_reservoir_level_2026_2030.csv,SWARNAMUKHI.,swarnamukhi,79.70111111,,28.0,13.75722222,58
+ap_reservoir_level_2026_2030.csv,YOGIVEMANA RESERVOIR PROJECT,yogivemana,78.05111111,,28.0,14.35777778,151
+ap_reservoir_storage_1970_2025.csv,ARNIOR,arnior,79.7375,,28.0,13.395,6343
+ap_reservoir_storage_1970_2025.csv,BAHUDA,bahuda,78.62777778,,28.0,13.56388889,6995
+ap_reservoir_storage_1970_2025.csv,BHAIRAVANITIPPA PROJECT,bhairavanitippa,76.88305556,,28.0,14.53305556,6872
+ap_reservoir_storage_1970_2025.csv,CHENNARAJASWAMY GUDI,chennarajaswamy gudi,78.17944444,,28.0,13.86111111,6818
+ap_reservoir_storage_1970_2025.csv,KALANGI,kalangi,79.7925,,28.0,13.60805556,6588
+ap_reservoir_storage_1970_2025.csv,KALYANI DAM,kalyani,79.27,,28.0,13.64833333,6731
+ap_reservoir_storage_1970_2025.csv,KRISHNAPURAM.,krishnapuram,79.35777778,,28.0,13.36888889,6650
+ap_reservoir_storage_1970_2025.csv,MALLI MADUGU.,malli madugu,79.52166667,,28.0,13.67666667,6738
+ap_reservoir_storage_1970_2025.csv,MID PENNAR,mid pennar,77.40833333,,28.0,14.875,6603
+ap_reservoir_storage_1970_2025.csv,PEDDERU,pedderu,78.37583333,,28.0,13.89027778,6774
+ap_reservoir_storage_1970_2025.csv,PENNAR KUMUDVATHY,pennar kumudvathy,77.41666667,,28.0,13.95,6728
+ap_reservoir_storage_1970_2025.csv,SRI SAILAM PROJECT,sri sailam,78.89972222,,28.0,16.08305556,6735
+ap_reservoir_storage_1970_2025.csv,SUNKESULA,sunkesula,77.83305556,,28.0,15.87583333,6756
+ap_reservoir_storage_1970_2025.csv,UPPER PENNAR PROJECT,upper pennar,77.355,,28.0,14.33694444,6807
+ap_reservoir_storage_1970_2025.csv,YOGIVEMANA RESERVOIR PROJECT,yogivemana,78.05111111,,28.0,14.35777778,2102
+ap_reservoir_storage_1970_2025.csv,Zurreru Reservoir,zurreru,78.12583333,,28.0,15.3275,2648
+ap_reservoir_storage_2026_2030.csv,BAHUDA,bahuda,78.62777778,,28.0,13.56388889,81
+ap_reservoir_storage_2026_2030.csv,BHAIRAVANITIPPA PROJECT,bhairavanitippa,76.88305556,,28.0,14.53305556,23
+ap_reservoir_storage_2026_2030.csv,KALYANI DAM,kalyani,79.27,,28.0,13.64833333,45
+ap_reservoir_storage_2026_2030.csv,MALLI MADUGU.,malli madugu,79.52166667,,28.0,13.67666667,59
+ap_reservoir_storage_2026_2030.csv,PEDDERU,pedderu,78.37583333,,28.0,13.89027778,81
+ap_reservoir_storage_2026_2030.csv,PENNAR KUMUDVATHY,pennar kumudvathy,77.41666667,,28.0,13.95,32
+ap_reservoir_storage_2026_2030.csv,SRI SAILAM PROJECT,sri sailam,78.89972222,,28.0,16.08305556,181
+ap_reservoir_storage_2026_2030.csv,UPPER PENNAR PROJECT,upper pennar,77.355,,28.0,14.33694444,31
+ap_reservoir_storage_2026_2030.csv,YOGIVEMANA RESERVOIR PROJECT,yogivemana,78.05111111,,28.0,14.35777778,151
+ap_river_discharge_2001_2025.csv,BENDI,bendi,84.38777778,,28.0,18.725,491
+ap_river_discharge_2001_2025.csv,Bifercation of E&W Tammileru,bifercation of e and w tammileru,81.09277778,,28.0,16.7275,236
+ap_river_discharge_2001_2025.csv,BM drain   Pallikona,bm drain pallikona,80.79777778,,28.0,16.05611111,2177
+ap_river_discharge_2001_2025.csv,Chandraiah drain  Gudivada,chandraiah drain gudivada,80.99972222,,28.0,16.45194444,3086
+ap_river_discharge_2001_2025.csv,ChinamusiMarrichetlapalem,chinamusimarrichetlapalem,79.77305556,,28.0,15.57972222,1356
+ap_river_discharge_2001_2025.csv,Chinamusi  Tumadu,chinamusi tumadu,79.96805556,,28.0,15.36638889,1507
+ap_river_discharge_2001_2025.csv,Errakalva    Ananthapalli,errakalva ananthapalli,81.45916667,,28.0,16.98055556,1655
+ap_river_discharge_2001_2025.csv,ETB drain  Machavaram,etb drain machavaram,80.53972222,,28.0,16.00888889,785
+ap_river_discharge_2001_2025.csv,Inampudi drain  Yendakuduru,inampudi drain yendakuduru,81.03277778,,28.0,16.15305556,1009
+ap_river_discharge_2001_2025.csv,ITCHAPURAM,itchapuram,84.67861111,,28.0,19.09833333,2234
+ap_river_discharge_2001_2025.csv,KALVAPALLY,kalvapally,77.2825,,28.0,14.64,14769
+ap_river_discharge_2001_2025.csv,KAMARAJUPETA,kamarajupeta,81.91527778,,28.0,17.30722222,2
+ap_river_discharge_2001_2025.csv,KAMAVARAM,kamavaram,83.60722222,,28.0,18.14444444,281
+ap_river_discharge_2001_2025.csv,KASIPATNAM,kasipatnam,83.11707778,,28.0,18.2177,3811
+ap_river_discharge_2001_2025.csv,KATRAGADDA,katragadda,83.81194444,,28.0,18.99361111,5682
+ap_river_discharge_2001_2025.csv,Kattaleru   Tiruvuru,kattaleru tiruvuru,80.61555556,,28.0,17.0925,348
+ap_river_discharge_2001_2025.csv,Kovvada Kalva near dommeru,kovvada kalva near dommeru,81.66444444,,28.0,17.01805556,339
+ap_river_discharge_2001_2025.csv,Kovvadakalva   Pragadapalli,kovvadakalva pragadapalli,81.59666667,,28.0,17.21388889,223
+ap_river_discharge_2001_2025.csv,Lazzabanda drain  Pedana,lazzabanda drain pedana,81.1425,,28.0,16.2725,3203
+ap_river_discharge_2001_2025.csv,Muniyeru anicut  Polampalli,muniyeru anicut polampalli,80.19111111,,28.0,17.00111111,3677
+ap_river_discharge_2001_2025.csv,NAGARI,nagari,79.59861111,,28.0,13.31694444,10072
+ap_river_discharge_2001_2025.csv,NAGARI,nagari,,,28.0,,1
+ap_river_discharge_2026_2030.csv,NARASINGARAYANIPETA,narasingarayanipeta,79.21111111,,28.0,13.18,58
+ap_river_velocity_discharge_2021_2025.csv,NAGARI,nagari,79.59861111,,28.0,13.31694444,32
+ap_river_velocity_discharge_2021_2025.csv,NARASINGARAYANIPETA,narasingarayanipeta,79.21111111,,28.0,13.18,783
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBB,sc ba ap pbb,No,RES_HGH,16.5095,80.62135,25881
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBB,sc ba ap pbb,No,RES_WLEV,16.5095,80.62135,1058
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBC,sc ba ap pbc,No,RES_HGH,16.33326,80.62554,64364
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBC,sc ba ap pbc,No,RES_WLEV,16.33326,80.62554,2629
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBD,sc ba ap pbd,No,RES_HGH,16.31868,80.63327,104639
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBD,sc ba ap pbd,No,RES_WLEV,16.31868,80.63327,4274
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBE,sc ba ap pbe,No,RES_HGH,16.51174,80.60781,73033
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBE,sc ba ap pbe,No,RES_WLEV,16.51174,80.60781,2984
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBE1,sc ba ap pbe1,No,RES_HGH,16.51841,80.6239,30627
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBE1,sc ba ap pbe1,No,RES_WLEV,16.51841,80.6239,1250
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBE2,sc ba ap pbe2,No,RES_HGH,16.48234,80.66754,31362
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBE2,sc ba ap pbe2,No,RES_WLEV,16.48234,80.66754,1280
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBJ,sc ba ap pbj,No,RES_HGH,16.24176,80.5751,14361
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBJ,sc ba ap pbj,No,RES_WLEV,16.24176,80.5751,587
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBK,sc ba ap pbk,No,RES_HGH,16.39366,80.6311,13089
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBK,sc ba ap pbk,No,RES_WLEV,16.39366,80.6311,536
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBN,sc ba ap pbn,No,RES_WLEV,15.97249,80.39792,4336
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBN,sc ba ap pbn,No,RES_HGH,15.97249,80.39792,106158
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBR,sc ba ap pbr,No,RES_HGH,16.5162,80.63053,24255
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBR,sc ba ap pbr,No,RES_WLEV,16.5162,80.63053,990
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBW,sc ba ap pbw,No,RES_HGH,16.50021,80.60178,39550
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PBW,sc ba ap pbw,No,RES_WLEV,16.50021,80.60178,1615
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PKC,sc ba ap pkc,No,RES_HGH,16.11858,80.47669,50975
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-PKC,sc ba ap pkc,No,RES_WLEV,16.11858,80.47669,2084
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-SB,sc ba ap sb,No,RES_HGH,16.93624,81.75209,82575
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-SB,sc ba ap sb,No,RES_WLEV,16.93624,81.75209,3373
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-SBE,sc ba ap sbe,No,RES_HGH,16.93827,81.78422,108175
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-SBE,sc ba ap sbe,No,RES_WLEV,16.93827,81.78422,4415
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-SBW,sc ba ap sbw,No,RES_HGH,16.93521,81.72621,81984
+ap_scada_water_discharge_2023_2025.csv,SC-BA-AP-SBW,sc ba ap sbw,No,RES_WLEV,16.93521,81.72621,3347

@@ -1,0 +1,7 @@
+﻿{
+    "tested_at":  "2026-09-02T18:42:43.6919907+05:30",
+    "two_d_create_session_http":  404,
+    "three_d_root_http":  404,
+    "next_step":  "FIX_BASE_MAP_TILES_CONFIGURATION",
+    "diagnostics_dir":  "D:\\simras-digital-twin-repository\\simras-digital-twin\\tools\\reality_twin_fast_viewer\\diagnostics"
+}

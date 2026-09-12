@@ -1,0 +1,30 @@
+{
+  "source": "Federal Highway Administration National Bridge Inventory 2025",
+  "source_url": "https://www.fhwa.dot.gov/BRIDGE/nbi/2025hwybronefiledel.zip",
+  "records": 624193,
+  "label_type": "REAL_INSPECTION_LABEL",
+  "transfer_scope": "US_TO_AP_RESEARCH_TRANSFER",
+  "production_AP_validation": false,
+  "targets": {
+    "bridge_condition": "GOOD/FAIR/POOR",
+    "poor_class": "1 if minimum NBI component condition <=4",
+    "minimum_component_rating": "minimum available Deck/Superstructure/Substructure/Culvert rating"
+  },
+  "condition_definition": {
+    "GOOD": "minimum component rating >= 7",
+    "FAIR": "minimum component rating 5 or 6",
+    "POOR": "minimum component rating <= 4"
+  },
+  "class_counts": {
+    "GOOD": 272779,
+    "FAIR": 309729,
+    "POOR": 41685
+  },
+  "rul_target": "NOT_CREATED",
+  "health_score_target": "NOT_INVENTED",
+  "notes": [
+    "Do not mark AP predictions VALIDATED_ML without AP inspection validation.",
+    "NBI condition ratings are real inspection labels for transfer learning.",
+    "RUL requires longitudinal deterioration data and is intentionally not generated here."
+  ]
+}

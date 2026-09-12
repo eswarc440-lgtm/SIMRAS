@@ -1,0 +1,25 @@
+==============================================================================================================
+SIMRAS STEP 2C - NORMALIZE WRIS ENGINEERING EVIDENCE
+==============================================================================================================
+
+Dam/barrage assets: 177
+
+==============================================================================================================
+STEP 2C RESULT
+==============================================================================================================
+Total dams+barrages              : 177
+Engineering evidence assets      : 175
+Engineering evidence coverage    : 98.87%
+Completion year available        : 85
+Height available                 : 138
+Length available                 : 139
+Gate count available             : 52
+Design flood available           : 56
+Spillway capacity available      : 118
+Seismic zone available           : 165
+Direct hydrology assets          : 11
+assets.built_year backfilled     : 0
+
+Database table:
+public.asset_engineering_evidence_normalized
+==============================================================================================================

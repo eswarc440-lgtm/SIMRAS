@@ -1,0 +1,8 @@
+﻿{
+    "asset_code":  "AP_TEMPLE_KANAKA_DURGA",
+    "capture_status":  "AWAITING_IMAGES",
+    "images_found":  0,
+    "target_minimum":  30,
+    "target_preferred":  40,
+    "next_step":  "COPY_30_TO_60_ORIGINAL_PHOTOS_INTO_RAW_FOLDER"
+}

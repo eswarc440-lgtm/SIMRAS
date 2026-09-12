@@ -1,0 +1,192 @@
+{
+  "generated_at": "2026-09-02T20:11:23.338662+00:00",
+  "root": "/app",
+  "checks": [
+    {
+      "status": "FAIL",
+      "check": "model_artifacts",
+      "detail": "No existing ML model artifacts were discovered."
+    },
+    {
+      "status": "WARN",
+      "check": "training_reports",
+      "detail": "No parseable training/evaluation metric reports were found."
+    },
+    {
+      "status": "WARN",
+      "check": "training_data",
+      "detail": "No auditable CSV training/feature datasets were discovered. Ground-truth quality cannot be verified from model artifacts alone."
+    },
+    {
+      "status": "PASS",
+      "check": "asset_split_leakage",
+      "detail": "No asset overlap detected in datasets exposing both asset ID and split."
+    },
+    {
+      "status": "PASS",
+      "check": "synthetic_ground_truth",
+      "detail": "No explicit synthetic/demo markers found in scanned training datasets."
+    },
+    {
+      "status": "PASS",
+      "check": "full_model_route",
+      "detail": "Full/inspection-aware bridge ML routing code was discovered."
+    },
+    {
+      "status": "PASS",
+      "check": "sparse_model_route",
+      "detail": "Sparse bridge/NBI model route was discovered."
+    },
+    {
+      "status": "PASS",
+      "check": "abstention_route",
+      "detail": "Abstain/unavailable/insufficient-evidence handling exists."
+    },
+    {
+      "status": "WARN",
+      "check": "rules_fallback",
+      "detail": "Rule-based inference exists. Make sure rules are clearly labelled and never presented as trained ML."
+    },
+    {
+      "status": "WARN",
+      "check": "rul_code_present",
+      "detail": "RUL-related code exists. Confirm unsupported RUL is NULL/withheld rather than forced."
+    },
+    {
+      "status": "PASS",
+      "check": "database",
+      "detail": "Connected to PostgreSQL/PostGIS and inspected prediction tables."
+    }
+  ],
+  "models": [],
+  "training_reports": [],
+  "datasets": [],
+  "database": {
+    "tables": [
+      "spatial_ref_sys",
+      "alembic_version",
+      "model_registry",
+      "data_sources",
+      "assets",
+      "ingestion_runs",
+      "asset_identifiers",
+      "asset_components",
+      "asset_geometries",
+      "inspections",
+      "sensors",
+      "environment_observations",
+      "asset_models",
+      "remote_sensing_observations",
+      "state_snapshots",
+      "predictions",
+      "alerts",
+      "defects",
+      "maintenance",
+      "observations",
+      "map_features",
+      "source_documents",
+      "official_evidence"
+    ],
+    "predictions": {
+      "columns": [
+        "id",
+        "asset_id",
+        "prediction_time",
+        "target",
+        "value",
+        "predicted_class",
+        "lower_bound",
+        "upper_bound",
+        "confidence_score",
+        "model_version",
+        "feature_version",
+        "status",
+        "factors"
+      ],
+      "count": 192,
+      "distribution": [
+        {
+          "model_version": "simras_experimental_rul_proxy_v2",
+          "target": "rul",
+          "n": 192,
+          "avg": 55.088541666666735,
+          "sd": 18.419675676838903,
+          "min": 0.0,
+          "max": 89.5
+        }
+      ]
+    }
+  },
+  "routing": {
+    "full_nbi": [
+      "/app/app/services/asset_health_assessment_report.py",
+      "/app/app/services/ml_predictor.py",
+      "/app/app/services/report_decision_support.py",
+      "/app/app/services/twin_service.py"
+    ],
+    "sparse_nbi": [
+      "/app/app/services/asset_health_assessment_report.py",
+      "/app/app/services/ml_predictor.py"
+    ],
+    "rules": [
+      "/app/app/services/dam_hydrology_risk.py",
+      "/app/app/services/risk_engine.py"
+    ],
+    "abstain": [
+      "/app/app/api/routes/ui_compat.py",
+      "/app/app/services/evidence_state_service.py",
+      "/app/app/services/government_evidence_engine.py",
+      "/app/app/services/risk_engine.py"
+    ],
+    "rul": [
+      "/app/app/api/routes/records.py",
+      "/app/app/api/routes/selected_asset_reports.py",
+      "/app/app/api/routes/ui_compat.py",
+      "/app/app/services/asset_health_assessment_report.py",
+      "/app/app/services/evidence_state_service.py",
+      "/app/app/services/ml_predictor.py",
+      "/app/app/services/recommendation_engine.py",
+      "/app/app/services/report_decision_support.py",
+      "/app/app/services/risk_engine.py",
+      "/app/app/services/twin_service.before_full_fix.py",
+      "/app/app/services/twin_service.persisted-backup.py",
+      "/app/app/services/twin_service.py"
+    ]
+  },
+  "quality_gates": [
+    {
+      "name": "health_mae",
+      "status": "WARN",
+      "reason": "metric not found"
+    },
+    {
+      "name": "health_rmse",
+      "status": "WARN",
+      "reason": "metric not found"
+    },
+    {
+      "name": "risk_roc_auc",
+      "status": "WARN",
+      "reason": "metric not found"
+    },
+    {
+      "name": "risk_brier",
+      "status": "WARN",
+      "reason": "metric not found"
+    },
+    {
+      "name": "risk_ece",
+      "status": "WARN",
+      "reason": "metric not found"
+    },
+    {
+      "name": "risk_pr_auc_beats_prevalence",
+      "status": "WARN",
+      "reason": "PR-AUC or prevalence metric missing"
+    }
+  ],
+  "verdict": "NOT READY ? fix FAIL items before presenting predictions as reliable.",
+  "fail_count": 1,
+  "warn_count": 10,
+  "models_loaded": 0
+}

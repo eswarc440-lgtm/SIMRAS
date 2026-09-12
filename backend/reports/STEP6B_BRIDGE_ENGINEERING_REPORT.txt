@@ -1,0 +1,26 @@
+==============================================================================================================
+SIMRAS STEP 6B - VERIFIED BRIDGE ENGINEERING RESULT
+==============================================================================================================
+
+Bridge assets covered             : 2 / 2
+Verified engineering evidence     : 24
+Assets with verified length       : 2 / 2
+Assets with verified pier count   : 2 / 2
+Assets with verified width        : 1 / 2
+Current structural labels         : 0
+
+AP_BR_00001 | Godavari Arch Bridge | length=2745.0 m | width=None | piers=28 | spans=28 | max_span=97.552 m | mode=RAIL
+AP_BR_00002 | Kanaka Durga Flyover | length=2600.0 m | width=23.7744 | piers=45 | spans=None | max_span=45.0 m | mode=ROAD
+
+Database tables:
+ public.bridge_engineering_evidence_verified
+ public.bridge_engineering_features_verified
+
+Feature version:
+ ap_bridge_engineering_v1
+
+IMPORTANT:
+ Geometry/material/maintenance evidence is now available.
+ Current real structural inspection labels remain 0.
+ Therefore bridge Health ML is still NOT AP-validated.
+==============================================================================================================
