@@ -1,17 +1,19 @@
+import { applyDigitalTwinPriorityScores } from "../pages/digital-twin/twinPriority";
+import type { EvidenceStateResponse } from "../types/evidence";
 import type {
   AssetListResponse,
   MapFeatureCollection,
   MapFeatureSummaryResponse,
-  TwinResponse,
   TwinCatalogResponse,
+  TwinResponse,
 } from "../types/twin";
-import type { EvidenceStateResponse } from "../types/evidence";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 if (!API_BASE_URL) {
   throw new Error("VITE_API_BASE_URL is not configured");
 }
+
 async function request<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: "GET",
@@ -30,6 +32,7 @@ async function request<T>(path: string): Promise<T> {
 
   return response.json() as Promise<T>;
 }
+
 export const api = {
   twinCatalog: () => request<TwinCatalogResponse>("/twin-catalog"),
   riskPrediction: (assetCode: string) =>
@@ -82,7 +85,10 @@ export const api = {
 
     return request<AssetListResponse>(
       `/assets?${parameters.toString()}`,
-    );
+    ).then((response) => ({
+      ...response,
+      items: applyDigitalTwinPriorityScores(response.items ?? []),
+    }));
   },
   highRisk: () =>
     request<AssetListResponse["items"]>("/assets/high-risk?limit=10"),
@@ -118,4 +124,3 @@ export const bridgeReportProfile = (
   request<any>(
     `/assets/${encodeURIComponent(assetCode)}/bridge-report-profile`,
   );
-
