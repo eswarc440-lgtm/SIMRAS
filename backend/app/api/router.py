@@ -2,7 +2,6 @@ from fastapi import APIRouter
 
 from app.api.routes import analytics, assets, evidence, map_features, real_reports, records
 
-
 api_router = APIRouter()
 
 api_router.include_router(assets.router)
