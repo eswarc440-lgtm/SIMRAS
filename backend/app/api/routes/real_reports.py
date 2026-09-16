@@ -18,7 +18,6 @@ from app.services.evidence_state_service import build_evidence_state
 from app.services.real_report_service import build_real_report_payload
 from app.services.twin_service import build_twin
 
-
 router = APIRouter(prefix="/real-reports", tags=["real-reports"])
 
 
