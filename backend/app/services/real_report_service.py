@@ -5,7 +5,6 @@ from typing import Any
 
 from app.services.report_truth import compact_report_mapping, is_report_value_present
 
-
 GOVERNMENT_ENGINEERING: dict[str, dict[str, Any]] = {
     "AP_DAM_00001": {
         "asset_name": "Prakasam Barrage",
@@ -171,7 +170,7 @@ def _eligible_ml(ai: dict[str, Any] | None) -> dict[str, Any]:
         return {}
 
     # Public reports must not turn a transfer model or transparent engineering
-    # rules into a locally validated condition assessment.  A prediction is
+    # rules into a locally validated condition assessment. A prediction is
     # published here only after the runtime explicitly marks local validation.
     if ai.get("model_validated") is not True:
         return {}
