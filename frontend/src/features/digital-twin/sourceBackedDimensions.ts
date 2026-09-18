@@ -85,9 +85,12 @@ const aliasesByType: Record<string, Set<string>> = {
     "height_m",
     "temple_height_m",
     "gopuram_height_m",
+    "main_gopuram_height_m",
+    "main_gopuram_height_ft",
     "main_entrance_height_ft",
     "gopuram_tiers",
     "pillar_count",
+    "pathala_ganapathi_depth_ft",
     "land_area_acres",
   ]),
 };
