@@ -37,6 +37,7 @@ const CWC = "Central Water Commission / official project engineering record";
 const AAI = "Airports Authority of India eAIP";
 const ICID = "ICID technical record + Government of Andhra Pradesh expert committee";
 const TTD = "Tirumala Tirupati Devasthanams published temple profile";
+const SRIKALAHASTI = "Sri Kalahasti Temple official site";
 
 const SOURCE_PROFILES: Record<string, SourceProfile> = {
   AP_DAM_00001: {
@@ -147,6 +148,19 @@ const SOURCE_PROFILES: Record<string, SourceProfile> = {
       verified("runway_width_m", "Runway width", "45 m", AAI),
       verified("runway_strip_length_m", "Runway strip length", "2405 m", AAI),
       verified("runway_strip_width_m", "Runway strip width", "150 m", AAI),
+    ],
+  },
+  AP_TEMPLE_SRIKALAHASTI: {
+    assetCode: "AP_TEMPLE_SRIKALAHASTI",
+    name: "Sri Kalahasteeswara Swamy Temple",
+    type: "temple",
+    fidelity: "L1",
+    source: SRIKALAHASTI,
+    sourceUrl: "https://srikalahasthitemple.com/history/",
+    metrics: [
+      verified("main_gopuram_height_m", "Main gopuram height", "36.5 m", SRIKALAHASTI),
+      verified("main_gopuram_height_ft", "Main gopuram height", "120 ft", SRIKALAHASTI),
+      verified("pathala_ganapathi_depth_ft", "Pathala Ganapathi depth", "20 ft", SRIKALAHASTI, "Structure"),
     ],
   },
   AP_TEMPLE_TIRUMALA: {
@@ -306,20 +320,42 @@ function buildAirportTwin(group: THREE.Group, profile: SourceProfile) {
 
 function buildTempleTwin(group: THREE.Group, profile: SourceProfile) {
   const stone = new THREE.MeshStandardMaterial({ color: 0xb89b71, roughness: 0.92 });
+  const reportedHeightM =
+    num(metric(profile, "main_gopuram_height_m")?.value) ??
+    num(metric(profile, "gopuram_height_m")?.value) ??
+    ((num(metric(profile, "main_entrance_height_ft")?.value) ?? 50) * 0.3048);
+  const reportedTiers = Math.round(num(metric(profile, "gopuram_tiers")?.value) ?? 0);
+  const visualCourses = reportedTiers > 0 ? reportedTiers : 8;
+  const towerHeight = Math.max(18, Math.min(36, reportedHeightM * 0.78));
+  const courseHeight = towerHeight / visualCourses;
+
   addBox(group, [56, 2.4, 48], [0, 1.2, 0], stone, "TEMPLE_PLINTH");
   addBox(group, [27, 8, 23], [0, 6.4, 1], stone, "TEMPLE_MANDAPA");
+
   let y = 10.5;
-  for (let tier = 0; tier < 7; tier += 1) {
-    const w = 17 - tier * 1.8;
-    const h = 3.1;
-    addBox(group, [w, h, 8.5], [-16, y + h / 2, 15], stone, `TEMPLE_GOPURAM_TIER_${tier + 1}`);
-    y += h;
+  for (let course = 0; course < visualCourses; course += 1) {
+    const t = visualCourses <= 1 ? 0 : course / (visualCourses - 1);
+    const w = 19 - t * 11;
+    addBox(
+      group,
+      [w, courseHeight * 0.86, 9.5 - t * 3.5],
+      [-16, y + courseHeight / 2, 15],
+      stone,
+      `TEMPLE_GOPURAM_COURSE_${course + 1}`,
+    );
+    y += courseHeight;
   }
+
+  const finial = new THREE.Mesh(new THREE.ConeGeometry(2.4, 4.2, 8), metal());
+  finial.position.set(-16, y + 2.1, 15);
+  group.add(finial);
+
   const sanctum = new THREE.Mesh(new THREE.ConeGeometry(7, 12, 4), metal());
   sanctum.position.set(8, 16, 0);
   sanctum.rotation.y = Math.PI / 4;
   group.add(sanctum);
   group.userData.source = profile.source;
+  group.userData.mainGopuramHeightM = reportedHeightM;
 }
 
 function buildFallback(group: THREE.Group, type: string, assetCode: string) {
