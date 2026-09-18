@@ -81,3 +81,27 @@ def test_real_bridge_ml_can_be_included_when_model_is_locally_validated():
     report = build_real_report_payload("AP_BR_00001", twin, {})
     assert report["ml_prediction"]["health_score"] == 83
     assert report["ml_prediction"]["risk_score"] == 12
+
+
+
+def test_tirumala_report_uses_canonical_asset_code_and_source_backed_structure_facts():
+    twin = {
+        "asset": {
+            "asset_code": "AP_TEMPLE_TIRUMALA",
+            "name": "Sri Venkateswara Swamy Temple, Tirumala",
+            "asset_type": "temple",
+            "district": "Tirupati",
+        },
+        "static": {},
+        "environment": {},
+        "inspection": {},
+        "maintenance": [],
+        "ai": {},
+    }
+
+    report = build_real_report_payload("AP_TEMPLE_TIRUMALA", twin, {})
+    engineering = report["government_engineering"]
+
+    assert engineering["complex_area_acres"] == 16.2
+    assert engineering["main_entrance_height_ft"] == 50
+    assert engineering["gopuram_tiers"] == 7
