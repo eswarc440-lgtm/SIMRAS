@@ -54,3 +54,15 @@ describe("rankDigitalTwins", () => {
     expect(rankDigitalTwins(items).map((item) => item.asset_code)).toEqual(["A", "B", "C"]);
   });
 });
+
+
+describe("canonical temple priority", () => {
+  it("recognizes AP_TEMPLE_TIRUMALA as the showcase Tirumala twin", () => {
+    const items: Asset[] = [
+      { asset_code: "AP_TEMPLE_OTHER", name: "Other Temple", twin_quality_score: 999, fidelity_level: "L1" },
+      { asset_code: "AP_TEMPLE_TIRUMALA", name: "Sri Venkateswara Swamy Temple, Tirumala", twin_quality_score: 1, fidelity_level: "L1" },
+    ];
+
+    expect(rankDigitalTwins(items)[0].asset_code).toBe("AP_TEMPLE_TIRUMALA");
+  });
+});
