@@ -436,9 +436,17 @@ function addDimensions(root: THREE.Group, profile: SourceProfile, type: string) 
   const margin = sceneSize * 0.08;
   const metrics = selectVerifiedDimensionMetrics(profile.metrics, type);
 
-  const length = metrics.find((m) => ["total_length_m", "runway_length_m"].includes(m.key));
-  const height = metrics.find((m) => ["height_m", "gopuram_height_m"].includes(m.key));
-  const width = metrics.find((m) => ["width_m", "runway_width_m", "gate_width_m"].includes(m.key));
+  const length = metrics.find((m) =>
+    ["total_length_m", "length_m", "dam_length_m", "barrage_length_m", "bridge_length_m", "runway_length_m", "temple_length_m"].includes(m.key),
+  );
+  const height = metrics.find((m) =>
+    ["height_m", "dam_height_m", "barrage_height_m", "bridge_height_m", "gopuram_height_m", "temple_height_m", "main_entrance_height_ft"].includes(m.key),
+  );
+  const width = metrics.find((m) =>
+    ["width_m", "breadth_m", "deck_width_m", "runway_width_m", "temple_width_m", "gate_width_m"].includes(m.key),
+  );
+  const runwayStripLength = metrics.find((m) => m.key === "runway_strip_length_m");
+  const runwayStripWidth = metrics.find((m) => m.key === "runway_strip_width_m");
 
   if (length) {
     const y = bounds.max.y + margin;
@@ -475,7 +483,34 @@ function addDimensions(root: THREE.Group, profile: SourceProfile, type: string) 
     );
   }
 
-  const countMetrics = metrics.filter((m) => ["gate_count", "span_count", "pier_count", "pillar_count"].includes(m.key));
+  if (runwayStripLength) {
+    const y = bounds.min.y + Math.max(size.y * 0.12, 0.8);
+    const z = bounds.min.z - margin * 0.7;
+    addDimensionLine(
+      dimensions,
+      new THREE.Vector3(bounds.min.x, y, z),
+      new THREE.Vector3(bounds.max.x, y, z),
+      `${runwayStripLength.label}: ${runwayStripLength.value}`,
+      sceneSize,
+      new THREE.Vector3(0, margin * 0.4, -margin * 0.25),
+    );
+  }
+
+  if (runwayStripWidth) {
+    const x = bounds.max.x - Math.max(size.x * 0.12, 2);
+    addDimensionLine(
+      dimensions,
+      new THREE.Vector3(x, bounds.min.y + Math.max(size.y * 0.18, 0.8), bounds.min.z),
+      new THREE.Vector3(x, bounds.min.y + Math.max(size.y * 0.18, 0.8), bounds.max.z),
+      `${runwayStripWidth.label}: ${runwayStripWidth.value}`,
+      sceneSize,
+      new THREE.Vector3(margin * 0.45, margin * 0.35, 0),
+    );
+  }
+
+  const countMetrics = metrics.filter((m) =>
+    ["gate_count", "span_count", "pier_count", "pillar_count", "gopuram_tiers"].includes(m.key),
+  );
   if (countMetrics.length) {
     const sprite = spriteLabel(countMetrics.map((m) => `${m.label}: ${m.value}`).join(" · "), sceneSize);
     if (sprite) {
@@ -567,6 +602,7 @@ export default function RealityTwinAssetViewer({ assetCode }: Props) {
     if (profile) {
       dimensionGroup = addDimensions(content, profile, type);
       dimensionGroup.visible = dimensionsVisible;
+      dimensionGroup.renderOrder = 80;
       world.add(dimensionGroup);
     }
 
@@ -636,7 +672,10 @@ export default function RealityTwinAssetViewer({ assetCode }: Props) {
         </button>
 
         {dimensionsVisible && displayedMetrics.length > 0 && (
-          <div className="absolute right-4 top-4 z-30 w-[310px] max-h-[46%] overflow-y-auto rounded-xl border border-cyan-400/20 bg-slate-950/92 p-3 shadow-2xl backdrop-blur-md">
+          <div
+            className="absolute right-4 top-4 z-30 w-[310px] max-h-[46%] overflow-y-auto rounded-xl border border-cyan-400/20 bg-slate-950/92 p-3 shadow-2xl backdrop-blur-md"
+            data-simras-dimension-overlay="visible"
+          >
             <div className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.2em] text-cyan-300">Verified engineering evidence</div>
             <div className="grid gap-2">
               {displayedMetrics.map((item) => (
