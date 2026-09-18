@@ -20,3 +20,34 @@ describe("selectVerifiedDimensionMetrics", () => {
     expect(result.some((item) => /not available/i.test(item.value))).toBe(false);
   });
 });
+
+
+describe("category-specific structure dimensions", () => {
+  it("keeps verified airport runway and runway-strip dimensions for on-structure display", () => {
+    const airportMetrics = [
+      { key: "runway_length_m", label: "Runway length", value: "2285 m", status: "VERIFIED", source: "AAI eAIP", category: "Dimensions" },
+      { key: "runway_width_m", label: "Runway width", value: "45 m", status: "VERIFIED", source: "AAI eAIP", category: "Dimensions" },
+      { key: "runway_strip_length_m", label: "Runway strip length", value: "2405 m", status: "VERIFIED", source: "AAI eAIP", category: "Dimensions" },
+      { key: "runway_strip_width_m", label: "Runway strip width", value: "150 m", status: "VERIFIED", source: "AAI eAIP", category: "Dimensions" },
+    ] as const;
+
+    expect(selectVerifiedDimensionMetrics(airportMetrics, "airport").map((item) => item.key)).toEqual([
+      "runway_length_m",
+      "runway_width_m",
+      "runway_strip_length_m",
+      "runway_strip_width_m",
+    ]);
+  });
+
+  it("keeps verified temple entrance height and gopuram tiers for on-structure display", () => {
+    const templeMetrics = [
+      { key: "main_entrance_height_ft", label: "Main entrance height", value: "50 ft", status: "VERIFIED", source: "TTD", category: "Dimensions" },
+      { key: "gopuram_tiers", label: "Main entrance tiers", value: "7", status: "VERIFIED", source: "TTD", category: "Structure" },
+    ] as const;
+
+    expect(selectVerifiedDimensionMetrics(templeMetrics, "temple").map((item) => item.key)).toEqual([
+      "main_entrance_height_ft",
+      "gopuram_tiers",
+    ]);
+  });
+});
