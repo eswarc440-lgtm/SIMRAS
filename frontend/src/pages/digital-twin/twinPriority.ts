@@ -15,7 +15,7 @@ const SHOWCASE_PRIORITY = new Map<string, number>([
   ["AP_DAM_WRIS_AP01HH0062", 4],
   ["AP_AIR_VOBZ", 5],
   ["AP_AIR_VOTP", 6],
-  ["AP_TEMPLE_TTD_0001", 7],
+  ["AP_TEMPLE_TIRUMALA", 7],
 ]);
 
 const FIDELITY_SCORE: Record<string, number> = {
