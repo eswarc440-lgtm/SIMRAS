@@ -8,6 +8,7 @@ import pandas as pd
 
 from simras_ml.nbi import build_panel, download_year
 from simras_ml.nbi_train import train_models
+from simras_ml.temporal_eval import evaluate_bridge_temporal_holdout
 
 
 def parser() -> argparse.ArgumentParser:
@@ -32,6 +33,23 @@ def parser() -> argparse.ArgumentParser:
     train.add_argument("--min-bridges", type=int, default=20_000)
     train.add_argument("--min-years", type=int, default=5)
     train.add_argument("--horizon-years", type=int, default=3)
+
+    evaluate = sub.add_parser(
+        "evaluate-temporal",
+        help="Evaluate the saved bridge artifact on corrected temporal holdouts",
+    )
+    evaluate.add_argument(
+        "--panel",
+        type=Path,
+        default=Path("/data/ml/nbi_panel_2020_2025.csv.gz"),
+    )
+    evaluate.add_argument(
+        "--artifact-dir",
+        type=Path,
+        default=Path("/artifacts/bridge_nbi"),
+    )
+    evaluate.add_argument("--outcome-year", type=int, default=2025)
+    evaluate.add_argument("--horizon-years", type=int, default=3)
     return root
 
 
@@ -46,6 +64,7 @@ def main() -> int:
             )
             print(path)
         return 0
+
     if args.command == "prepare":
         archives = [(year, args.input_dir / f"nbi_{year}.zip") for year in args.years]
         missing = [str(path) for _, path in archives if not path.exists()]
@@ -54,8 +73,28 @@ def main() -> int:
         panel = build_panel(archives, max_records_per_year=args.max_records_per_year)
         args.output.parent.mkdir(parents=True, exist_ok=True)
         panel.to_csv(args.output, index=False, compression="gzip")
-        print(json.dumps({"rows": len(panel), "bridges": panel.bridge_key.nunique(), "output": str(args.output)}))
+        print(
+            json.dumps(
+                {
+                    "rows": len(panel),
+                    "bridges": panel.bridge_key.nunique(),
+                    "output": str(args.output),
+                }
+            )
+        )
         return 0
+
+    if args.command == "evaluate-temporal":
+        panel = pd.read_csv(args.panel)
+        result = evaluate_bridge_temporal_holdout(
+            panel,
+            artifact_dir=args.artifact_dir,
+            outcome_year=args.outcome_year,
+            horizon_years=args.horizon_years,
+        )
+        print(json.dumps(result, indent=2))
+        return 0
+
     panel = pd.read_csv(args.panel)
     manifest = train_models(
         panel,
