@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date
 from typing import Any
 
 
@@ -62,6 +63,24 @@ _PUBLIC_SOURCES: tuple[dict[str, Any], ...] = (
         "is_authoritative": True,
         "use": "AP hydrology and basin-monitoring provenance",
     },
+    {
+        "source_key": "cwc_gundlakamma_monitoring_2023",
+        "agency": "Central Water Commission - Krishna and Godavari Basin Organisation",
+        "title": "Monitoring Report on Kandula Obula Reddy Gundlakamma Reservoir Project, Andhra Pradesh",
+        "document_type": "CWC_PROJECT_MONITORING_REPORT",
+        "url": "https://pmksy.mowr.gov.in/cadwm/VisitReport/2024214-1059-CWC_28_1_24-08-2023_PartII_D_4131_1688733757259.pdf",
+        "is_authoritative": True,
+        "use": "Dated field visit with source-reported component condition findings",
+    },
+    {
+        "source_key": "ndsa_cwc_srisailam_safety_inspection_2024",
+        "agency": "NDSA / Central Water Commission / Andhra Pradesh",
+        "title": "Department of Water Resources Annual Report 2024-25 - Srisailam safety inspection record",
+        "document_type": "OFFICIAL_ANNUAL_REPORT_INSPECTION_RECORD",
+        "url": "https://www.jalshakti-dowr.gov.in/static/uploads/2024/05/fc00cd887135cf39b2005ccf1539e0e5.pdf",
+        "is_authoritative": True,
+        "use": "Confirms dated Srisailam safety inspection; public component findings not present in this source",
+    },
 )
 
 
@@ -83,6 +102,69 @@ _AP_CATEGORY_II_CANDIDATES: tuple[str, ...] = (
     "Somasila Reservoir",
     "Chitravathi Balancing Reservoir",
     "Mid Pennar Stage-I",
+)
+
+
+# These are stronger than category-register candidates because each row has a
+# real date and an authoritative source. Training eligibility is task-specific:
+# Gundlakamma supplies a directly observed/reported gate-condition label, while
+# Srisailam only confirms that a safety inspection occurred and therefore stays
+# non-trainable until the component findings/report are linked.
+_DATED_PUBLIC_INSPECTION_EVENTS: tuple[dict[str, Any], ...] = (
+    {
+        "source_key": "cwc_gundlakamma_monitoring_2023",
+        "asset_name_reported": "Kandula Obula Reddy Gundlakamma Reservoir Project",
+        "inspection_date": date(2023, 6, 20),
+        "inspection_type": "CWC_PROJECT_MONITORING_FIELD_VISIT",
+        "inspection_category": None,
+        "overall_condition": None,
+        "inspector_agency": "Central Water Commission / Andhra Pradesh Water Resources Department",
+        "authority_level": "CWC_KGBO_FIELD_MONITORING",
+        "quality_flag": "SOURCE_REPORTED_COMPONENT_FINDING",
+        "is_official": True,
+        "is_synthetic": False,
+        "training_eligible": True,
+        "label_scope": "COMPONENT_MONITORING_FINDING",
+        "reason_not_training_eligible": None,
+        "recommended_action": "Restore washed-out spillway gate components and complete required gate repairs.",
+        "source_page": "9",
+        "findings": [
+            {
+                "component_name": "gates",
+                "condition_state": "RESTORATION_REQUIRED",
+                "deficiency_type": "WASHED_OUT_GATES",
+                "severity": "MAJOR",
+                "finding_text": "Structures (gates) were reported completed but under restoration of washed-out gates.",
+                "recommended_action": "Restore damaged/washed-out gate components before relying on normal reservoir operation.",
+                "source_page": "9",
+                "quality_flag": "SOURCE_REPORTED_COMPONENT_FINDING",
+                "is_official": True,
+                "is_synthetic": False,
+            }
+        ],
+    },
+    {
+        "source_key": "ndsa_cwc_srisailam_safety_inspection_2024",
+        "asset_name_reported": "Srisailam Project",
+        "inspection_date": date(2024, 2, 7),
+        "inspection_type": "NDSA_CWC_SAFETY_INSPECTION",
+        "inspection_category": None,
+        "overall_condition": None,
+        "inspector_agency": "NDSA / CWC / CSMRS / KRMB / Governments of Telangana and Andhra Pradesh",
+        "authority_level": "NDSA_CWC_SAFETY_INSPECTION",
+        "quality_flag": "OFFICIAL_INSPECTION_EVENT_CONFIRMED",
+        "is_official": True,
+        "is_synthetic": False,
+        "training_eligible": False,
+        "label_scope": "INSPECTION_EVENT_ONLY",
+        "reason_not_training_eligible": (
+            "The official annual report confirms the 7-9 February 2024 safety inspection, "
+            "but public component-level findings from that inspection are not linked in this source."
+        ),
+        "recommended_action": None,
+        "source_page": "69",
+        "findings": [],
+    },
 )
 
 
@@ -128,3 +210,26 @@ def load_candidate_labels() -> list[dict[str, Any]]:
         }
         for name in _AP_CATEGORY_II_CANDIDATES
     ]
+
+
+def load_dated_public_inspection_events() -> list[dict[str, Any]]:
+    """Return dated authoritative inspection/monitoring events.
+
+    ``training_eligible`` is deliberately scoped to the label actually observed.
+    A component-level monitoring finding may train a component-condition model,
+    but it does not become an overall dam-safety category or structural-health
+    label unless the source explicitly reports that outcome.
+    """
+
+    sources = {source["source_key"]: source for source in _PUBLIC_SOURCES}
+    rows: list[dict[str, Any]] = []
+
+    for event in _DATED_PUBLIC_INSPECTION_EVENTS:
+        row = dict(event)
+        source = sources[row["source_key"]]
+        row["source_url"] = source["url"]
+        row["source_title"] = source["title"]
+        row["findings"] = [dict(finding) for finding in event["findings"]]
+        rows.append(row)
+
+    return rows
