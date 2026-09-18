@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { selectVerifiedDimensionMetrics } from "./sourceBackedDimensions";
 
@@ -49,5 +51,16 @@ describe("category-specific structure dimensions", () => {
       "main_entrance_height_ft",
       "gopuram_tiers",
     ]);
+  });
+});
+
+
+describe("Tirumala canonical source-backed profile", () => {
+  it("binds the viewer profile to the canonical AP_TEMPLE_TIRUMALA asset code", () => {
+    const viewerPath = fileURLToPath(new URL("./RealityTwinAssetViewer.tsx", import.meta.url));
+    const viewerSource = readFileSync(viewerPath, "utf8");
+
+    expect(viewerSource).toContain("AP_TEMPLE_TIRUMALA: {");
+    expect(viewerSource).not.toContain("AP_TEMPLE_TTD_0001: {");
   });
 });
