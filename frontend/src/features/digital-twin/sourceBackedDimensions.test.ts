@@ -64,3 +64,14 @@ describe("Tirumala canonical source-backed profile", () => {
     expect(viewerSource).not.toContain("AP_TEMPLE_TTD_0001: {");
   });
 });
+
+
+describe("Srikalahasti source-backed temple profile", () => {
+  it("binds Srikalahasti to a verified main-gopuram dimension", () => {
+    const viewerPath = fileURLToPath(new URL("./RealityTwinAssetViewer.tsx", import.meta.url));
+    const viewerSource = readFileSync(viewerPath, "utf8");
+
+    expect(viewerSource).toContain("AP_TEMPLE_SRIKALAHASTI: {");
+    expect(viewerSource).toContain('verified("main_gopuram_height_m", "Main gopuram height", "36.5 m"');
+  });
+});
