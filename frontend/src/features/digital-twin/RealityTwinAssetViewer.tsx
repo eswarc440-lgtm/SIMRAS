@@ -149,8 +149,8 @@ const SOURCE_PROFILES: Record<string, SourceProfile> = {
       verified("runway_strip_width_m", "Runway strip width", "150 m", AAI),
     ],
   },
-  AP_TEMPLE_TTD_0001: {
-    assetCode: "AP_TEMPLE_TTD_0001",
+  AP_TEMPLE_TIRUMALA: {
+    assetCode: "AP_TEMPLE_TIRUMALA",
     name: "Sri Venkateswara Swamy Temple, Tirumala",
     type: "temple",
     fidelity: "L1",
