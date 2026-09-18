@@ -21,6 +21,7 @@ from app.models.entities import (
 from app.services.ml_predictor import (
     MLInput,
     condition_to_rating,
+    predict_asset,
     predict_bridge,
     predict_bridge_sparse,
 )
@@ -448,8 +449,9 @@ async def refresh_ml_prediction(
 
     asset, _, _ = row
 
-    # Current ML artifact is bridge-only.
-    if not asset.asset_type or asset.asset_type.lower() != "bridge":
+    supported_types = {"bridge", "dam", "barrage", "airport", "temple"}
+    asset_type = (asset.asset_type or "").lower()
+    if asset_type not in supported_types:
         raise HTTPException(
             status_code=400,
             detail={
@@ -457,8 +459,7 @@ async def refresh_ml_prediction(
                 "asset_code": asset.asset_code,
                 "asset_type": asset.asset_type,
                 "message": (
-                    "The currently registered deterioration model "
-                    "supports bridges only."
+                    "No category-specific predictor supports this asset type."
                 ),
             },
         )
@@ -473,13 +474,31 @@ async def refresh_ml_prediction(
         asset_id=asset.id,
     )
 
-    ml_input = _build_bridge_ml_input(
-        asset=asset,
-        model=model,
-        inspection=inspection,
-    )
+    if asset_type == "bridge":
+        ml_input = _build_bridge_ml_input(
+            asset=asset,
+            model=model,
+            inspection=inspection,
+        )
+    else:
+        ml_input = MLInput(
+            asset_type=asset.asset_type,
+            age_years=(
+                datetime.now(UTC).year - asset.built_year
+                if asset.built_year is not None
+                else None
+            ),
+            condition_rating=condition_to_rating(
+                inspection.condition if inspection is not None else None,
+                inspection.score if inspection is not None else None,
+            ),
+            material=asset.material,
+            built_year=asset.built_year,
+            design_life_years=asset.design_life_years,
+            evidence_confidence=asset.confidence_score,
+        )
 
-    ml_prediction = predict_bridge(ml_input)
+    ml_prediction = predict_asset(ml_input)
 
     if ml_prediction is None:
         missing_fields: list[str] = []
@@ -500,7 +519,7 @@ async def refresh_ml_prediction(
                 "asset_name": asset.name,
                 "missing_fields": missing_fields,
                 "message": (
-                    "The bridge ML model could not produce a "
+                    "The category-specific predictor could not produce a "
                     "prediction using the currently available evidence."
                 ),
             },
@@ -528,12 +547,13 @@ async def refresh_ml_prediction(
         },
 
         "model": {
-            "model_name": BRIDGE_MODEL_NAME,
+            "model_name": ml_prediction.prediction_method,
             "version": ml_prediction.model_version,
             "feature_version": ml_prediction.feature_version,
             "stage": ml_prediction.status,
             "model_validated": ml_prediction.model_validated,
             "training_scope": ml_prediction.training_scope,
+            "rul_method": ml_prediction.rul_method,
         },
 
         "prediction": {
@@ -552,6 +572,7 @@ async def refresh_ml_prediction(
 
             "confidence": ml_prediction.confidence,
             "prediction_method": ml_prediction.prediction_method,
+            "rul_method": ml_prediction.rul_method,
             "forecast_horizon_years": (
                 ml_prediction.forecast_horizon_years
             ),
