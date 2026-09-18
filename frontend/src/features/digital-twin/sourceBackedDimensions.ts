@@ -69,6 +69,8 @@ const aliasesByType: Record<string, Set<string>> = {
   airport: new Set([
     "runway_length_m",
     "runway_width_m",
+    "runway_strip_length_m",
+    "runway_strip_width_m",
     "terminal_length_m",
     "terminal_width_m",
     "terminal_height_m",
@@ -83,6 +85,8 @@ const aliasesByType: Record<string, Set<string>> = {
     "height_m",
     "temple_height_m",
     "gopuram_height_m",
+    "main_entrance_height_ft",
+    "gopuram_tiers",
     "pillar_count",
     "land_area_acres",
   ]),
