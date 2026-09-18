@@ -117,6 +117,15 @@ GOVERNMENT_ENGINEERING: dict[str, dict[str, Any]] = {
         "source_url": "https://aim-india.aai.aero/",
         "verification_status": "GOVERNMENT_VERIFIED",
     },
+    "AP_TEMPLE_SRIKALAHASTI": {
+        "asset_name": "Sri Kalahasteeswara Swamy Temple",
+        "main_gopuram_height_m": 36.5,
+        "main_gopuram_height_ft": 120,
+        "pathala_ganapathi_depth_ft": 20,
+        "source_name": "Sri Kalahasti Temple official site",
+        "source_url": "https://srikalahasthitemple.com/history/",
+        "verification_status": "SOURCE_REPORTED",
+    },
     "AP_TEMPLE_TIRUMALA": {
         "asset_name": "Sri Venkateswara Swamy Temple, Tirumala",
         "complex_area_acres": 16.2,
