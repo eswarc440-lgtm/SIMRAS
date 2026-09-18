@@ -28,6 +28,10 @@ from app.services.ml_predictor import (
 from app.services.recommendation_engine import build_recommendations
 from app.services.risk_engine import RiskInput, score_risk
 from app.services.dam_hydrology_risk import score_dam_barrage_operational_risk
+from app.services.current_risk_service import (
+    load_latest_environment,
+    resolve_current_risk_snapshot,
+)
 
 
 BRIDGE_MODEL_NAME = "simras_nbi_bridge_deterioration"
@@ -631,6 +635,24 @@ async def build_asset_summary(
     )
     quality = twin_quality_metadata(model, asset.asset_type)
 
+    environment: dict[str, dict[str, Any]] = {}
+    if str(asset.asset_type or "").lower() in {"dam", "barrage"}:
+        environment = await load_latest_environment(
+            session=session,
+            asset_id=asset.id,
+        )
+
+    current_risk = resolve_current_risk_snapshot(
+        asset_type=asset.asset_type,
+        persisted_risk=risk,
+        environment=environment,
+        dimensions=(
+            model.dimensions
+            if model is not None and model.dimensions
+            else {}
+        ),
+    )
+
     return {
         "asset_code": asset.asset_code,
         "name": asset.name,
@@ -648,17 +670,9 @@ async def build_asset_summary(
             ),
         },
 
-        "risk_score": (
-            risk.value
-            if risk is not None
-            else None
-        ),
+        "risk_score": current_risk["risk_score"],
 
-        "risk_level": (
-            risk.predicted_class
-            if risk is not None
-            else None
-        ),
+        "risk_level": current_risk["risk_level"],
 
         "data_confidence": asset.confidence_score,
         **quality,

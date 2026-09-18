@@ -237,8 +237,10 @@ export default function App() {
     0,
   );
 
-  const highRisk = assets.filter(
-    (asset) => asset.risk_level === "HIGH",
+  const highRisk = assets.filter((asset) =>
+    ["HIGH", "CRITICAL"].includes(
+      (asset.risk_level ?? "").toUpperCase(),
+    ),
   ).length;
 
   const verified = assets.filter(
@@ -337,7 +339,7 @@ export default function App() {
           <KpiCard
             label="High risk"
             value={highRisk}
-            detail="Existing registry classification"
+            detail="Latest decision-support assessment"
             accent="#ff5b62"
           />
 
