@@ -1,7 +1,9 @@
-FROM node:24-alpine AS development
+FROM node:20-bookworm-slim AS development
 WORKDIR /app
-COPY package.json ./
-RUN npm install
+
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+
 COPY . .
 EXPOSE 5173
 CMD ["npm", "run", "dev"]

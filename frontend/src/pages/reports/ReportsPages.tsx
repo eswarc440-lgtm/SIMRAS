@@ -1,30 +1,13 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, Database, Download, FileSpreadsheet, FileText, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Download, FileCheck2, ShieldCheck } from "lucide-react";
 import { DashboardLayout } from "../../layouts/DashboardLayout";
 import { EmptyState, PageHeader } from "../../components/common/PageHeader";
 import { Button } from "../../components/ui/button";
 import { API_BASE_URL, apiRequest } from "../../services/api";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../../components/ui/dialog";
 import { Label } from "../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
-
-type ReportTemplate = {
-  id: string;
-  title: string;
-  category: string;
-  format: "PDF" | "CSV" | "XLSX" | string;
-  requires_asset?: boolean;
-  requires_district?: boolean;
-  description: string;
-};
+import { displayableReportEntries, labelForReportKey } from "./realReportPresentation";
 
 type Asset = {
   asset_id?: string;
@@ -34,134 +17,177 @@ type Asset = {
   district?: string;
 };
 
-const categories = [
-  "All",
-  "Asset Condition",
-  "Inspection",
-  "Maintenance",
-  "Risk",
-  "AI Prediction",
-  "Infrastructure",
-  "Analytics",
-  "Digital Twin",
-  "Model Governance",
-] as const;
+type RealReport = {
+  asset_code: string;
+  asset?: Record<string, unknown>;
+  official_asset_facts?: Record<string, unknown>;
+  government_engineering?: Record<string, unknown>;
+  digital_twin?: Record<string, unknown>;
+  real_environment_observations?: Record<string, Record<string, unknown>>;
+  real_inspection?: Record<string, unknown>;
+  real_maintenance?: Record<string, unknown>[];
+  ml_prediction?: Record<string, unknown>;
+  evidence?: Record<string, unknown>;
+  generated_at?: string;
+};
 
-function reportIcon(format: string) {
-  if (format === "XLSX") return FileSpreadsheet;
-  if (format === "CSV") return Database;
-  return FileText;
+const HIGH_FIDELITY_PRIORITY = new Map<string, number>([
+  ["AP_DAM_00002", 0],
+  ["AP_DAM_00001", 1],
+  ["AP_BAR_WRIS_B00131", 2],
+  ["AP_DAM_NWDP_AP01VH0059", 3],
+  ["AP_DAM_WRIS_AP01HH0062", 4],
+  ["AP_AIR_VOBZ", 5],
+  ["AP_AIR_VOTP", 6],
+  ["AP_TEMPLE_TTD_0001", 7],
+]);
+
+function codeOf(asset: Asset) {
+  return asset.asset_code ?? asset.asset_id ?? "";
 }
 
-function buildDownloadPath(report: ReportTemplate, assetId: string, district: string) {
-  switch (report.id) {
-    case "asset_condition":
-      return `/api/v1/reports/asset/${encodeURIComponent(assetId)}/pdf`;
-    case "inspection":
-      return `/api/v1/reports/asset/${encodeURIComponent(assetId)}/inspection/pdf`;
-    case "maintenance":
-      return `/api/v1/reports/asset/${encodeURIComponent(assetId)}/maintenance/pdf`;
-    case "risk":
-      return `/api/v1/reports/asset/${encodeURIComponent(assetId)}/risk/pdf`;
-    case "ai_prediction":
-      return `/api/v1/reports/asset/${encodeURIComponent(assetId)}/ai/pdf`;
-    case "twin_evidence":
-      return `/api/v1/reports/asset/${encodeURIComponent(assetId)}/twin-evidence/pdf`;
-    case "high_risk":
-      return "/api/v1/reports/high-risk/csv";
-    case "asset_register":
-      return "/api/v1/reports/assets/csv";
-    case "district_analytics":
-      return `/api/v1/reports/district/${encodeURIComponent(district)}/pdf`;
-    case "model_governance":
-      return "/api/v1/reports/model-governance/pdf";
-    case "portfolio":
-      return "/api/v1/reports/portfolio/pdf";
-    case "summary_xlsx":
-      return "/api/v1/reports/summary/xlsx";
-    default:
-      throw new Error("Unsupported report type");
-  }
+function priorityOf(asset: Asset) {
+  return HIGH_FIDELITY_PRIORITY.get(codeOf(asset)) ?? 1000;
 }
 
-function filenameFromResponse(response: Response, report: ReportTemplate) {
-  const disposition = response.headers.get("content-disposition") ?? "";
-  const match = disposition.match(/filename="?([^";]+)"?/i);
-  if (match?.[1]) return match[1];
-  const ext = report.format.toLowerCase();
-  return `simras-${report.id}.${ext}`;
+function EvidenceTable({ title, data }: { title: string; data?: Record<string, unknown> }) {
+  const rows = displayableReportEntries(data);
+  if (rows.length === 0) return null;
+  return (
+    <section className="overflow-hidden rounded-xl border bg-card shadow-panel">
+      <div className="border-b bg-muted/20 px-5 py-4">
+        <h2 className="text-sm font-semibold">{title}</h2>
+      </div>
+      <dl className="divide-y">
+        {rows.map(([label, value]) => (
+          <div key={`${title}-${label}`} className="grid gap-1 px-5 py-3 sm:grid-cols-[220px_1fr] sm:gap-5">
+            <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
+            <dd className="break-words text-sm font-semibold text-foreground">{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}
+
+function EnvironmentSection({ data }: { data?: Record<string, Record<string, unknown>> }) {
+  const items = Object.entries(data ?? {}).filter(([, value]) => displayableReportEntries(value).length > 0);
+  if (items.length === 0) return null;
+  return (
+    <section className="rounded-xl border bg-card p-5 shadow-panel">
+      <h2 className="text-sm font-semibold">Current Real Environment Observations</h2>
+      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {items.map(([name, value]) => (
+          <article key={name} className="rounded-lg border bg-muted/10 p-3">
+            <div className="text-xs font-semibold">{labelForReportKey(name)}</div>
+            <dl className="mt-2 space-y-1.5">
+              {displayableReportEntries(value).map(([label, text]) => (
+                <div key={`${name}-${label}`} className="flex items-start justify-between gap-3 text-xs">
+                  <dt className="text-muted-foreground">{label}</dt>
+                  <dd className="text-right font-medium">{text}</dd>
+                </div>
+              ))}
+            </dl>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function MaintenanceSection({ rows }: { rows?: Record<string, unknown>[] }) {
+  const records = (rows ?? []).filter((row) => displayableReportEntries(row).length > 0);
+  if (records.length === 0) return null;
+  return (
+    <section className="rounded-xl border bg-card p-5 shadow-panel">
+      <h2 className="text-sm font-semibold">Verified Maintenance Records</h2>
+      <div className="mt-4 grid gap-3 md:grid-cols-2">
+        {records.map((row, index) => (
+          <dl key={`maintenance-${index}`} className="rounded-lg border p-3">
+            {displayableReportEntries(row).map(([label, value]) => (
+              <div key={`${index}-${label}`} className="mb-2 grid grid-cols-[130px_1fr] gap-3 text-xs last:mb-0">
+                <dt className="text-muted-foreground">{label}</dt>
+                <dd className="font-medium">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 export function ReportsPage() {
-  const [category, setCategory] = useState<(typeof categories)[number]>("All");
-  const [templates, setTemplates] = useState<ReportTemplate[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
-  const [selectedReportId, setSelectedReportId] = useState("");
-  const [selectedAssetId, setSelectedAssetId] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedAssetCode, setSelectedAssetCode] = useState("");
+  const [report, setReport] = useState<RealReport | null>(null);
+  const [loadingAssets, setLoadingAssets] = useState(true);
+  const [loadingReport, setLoadingReport] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([
-      apiRequest<{ items?: ReportTemplate[] }>("/api/v1/reports/catalog"),
-      apiRequest<{ items?: Asset[] }>("/api/v1/infrastructure?limit=500"),
-    ])
-      .then(([catalog, infrastructure]) => {
-        setTemplates(catalog.items ?? []);
-        setAssets(infrastructure.items ?? []);
+    apiRequest<{ items?: Asset[] }>("/api/v1/infrastructure?limit=500")
+      .then((payload) => {
+        const sorted = [...(payload.items ?? [])].sort((a, b) => {
+          const priority = priorityOf(a) - priorityOf(b);
+          if (priority !== 0) return priority;
+          return String(a.name ?? codeOf(a)).localeCompare(String(b.name ?? codeOf(b)));
+        });
+        setAssets(sorted);
+        const first = sorted.find((asset) => HIGH_FIDELITY_PRIORITY.has(codeOf(asset))) ?? sorted[0];
+        if (first) setSelectedAssetCode(codeOf(first));
       })
-      .catch((reason) => {
-        setError(reason instanceof Error ? reason.message : String(reason));
-      })
-      .finally(() => setLoading(false));
+      .catch((reason) => setError(reason instanceof Error ? reason.message : String(reason)))
+      .finally(() => setLoadingAssets(false));
   }, []);
 
-  const selectedTemplate = templates.find((item: any) => item.id === selectedReportId);
-  const districts = useMemo(
-    () => Array.from(new Set(assets.map((asset) => asset.district).filter((value): value is string => Boolean(value)))).sort(),
-    [assets],
+  useEffect(() => {
+    if (!selectedAssetCode) {
+      setReport(null);
+      return;
+    }
+    setLoadingReport(true);
+    setError(null);
+    apiRequest<RealReport>(`/api/v1/real-reports/${encodeURIComponent(selectedAssetCode)}`)
+      .then(setReport)
+      .catch((reason) => {
+        setReport(null);
+        setError(reason instanceof Error ? reason.message : String(reason));
+      })
+      .finally(() => setLoadingReport(false));
+  }, [selectedAssetCode]);
+
+  const selectedAsset = useMemo(
+    () => assets.find((asset) => codeOf(asset) === selectedAssetCode),
+    [assets, selectedAssetCode],
   );
-  const rows = templates.filter((report) => category === "All" || report.category === category);
 
-  const openGenerator = (reportId?: string) => {
-    if (reportId) setSelectedReportId(reportId);
-    setDialogOpen(true);
-  };
+  const hasGovernmentEvidence = displayableReportEntries(report?.government_engineering).length > 0;
 
-  const canGenerate = Boolean(
-    selectedTemplate &&
-      (!selectedTemplate.requires_asset || selectedAssetId) &&
-      (!selectedTemplate.requires_district || selectedDistrict),
-  );
-
-  const handleGenerateReport = async () => {
-    if (!selectedTemplate || !canGenerate) return;
-    setIsGenerating(true);
+  const downloadPdf = async () => {
+    if (!selectedAssetCode) return;
+    setDownloading(true);
     setError(null);
     try {
-      const path = buildDownloadPath(selectedTemplate, selectedAssetId, selectedDistrict);
-      const response = await fetch(`${API_BASE_URL}${path}`, { headers: { Accept: "*/*" } });
-      if (!response.ok) {
-        const detail = await response.text();
-        throw new Error(detail || `Report generation failed (${response.status})`);
-      }
+      const response = await fetch(
+        `${API_BASE_URL}/api/v1/real-reports/${encodeURIComponent(selectedAssetCode)}/pdf`,
+        { headers: { Accept: "application/pdf" } },
+      );
+      if (!response.ok) throw new Error(`Report generation failed (${response.status})`);
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = filenameFromResponse(response, selectedTemplate);
+      link.download = `SIMRAS_${selectedAssetCode}_REAL_REPORT.pdf`;
       document.body.appendChild(link);
       link.click();
       link.remove();
       URL.revokeObjectURL(url);
-      setDialogOpen(false);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : String(reason));
     } finally {
-      setIsGenerating(false);
+      setDownloading(false);
     }
   };
 
@@ -170,154 +196,73 @@ export function ReportsPage() {
       <div className="space-y-6">
         <PageHeader
           eyebrow="Reports"
-          title="Evidence-Backed Infrastructure Reports"
-          description="Every report is generated on demand from the current SIMRAS backend and PostgreSQL/PostGIS records. Missing values remain N/A or withheld."
+          title="Real Infrastructure Evidence Report"
+          description="Selected-asset reports show only source-backed facts, real observations and eligible validated ML results. Empty or insufficient fields are omitted completely."
           actions={
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-              <DialogTrigger asChild>
-                <Button onClick={() => openGenerator()}>Generate Report</Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                  <DialogTitle>Generate Live Report</DialogTitle>
-                  <DialogDescription>No frontend demonstration dataset is used.</DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Report</Label>
-                    <Select value={selectedReportId} onValueChange={setSelectedReportId}>
-                      <SelectTrigger><SelectValue placeholder="Select report..." /></SelectTrigger>
-                      <SelectContent>
-                        {templates.map((report) => (
-                          <SelectItem key={report.id} value={report.id}>{report.title} Â· {report.format}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {selectedTemplate?.requires_asset && (
-                    <div className="space-y-2">
-                      <Label>Asset</Label>
-                      <Select value={selectedAssetId} onValueChange={setSelectedAssetId}>
-                        <SelectTrigger><SelectValue placeholder="Select real asset..." /></SelectTrigger>
-                        <SelectContent>
-                          {assets.map((asset) => {
-                            const code = asset.asset_code ?? asset.asset_id ?? "";
-                            return <SelectItem key={code} value={code}>{code} Â· {asset.name ?? asset.asset_type ?? "Asset"}</SelectItem>;
-                          })}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-
-                  {selectedTemplate?.requires_district && (
-                    <div className="space-y-2">
-                      <Label>District</Label>
-                      <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
-                        <SelectTrigger><SelectValue placeholder="Select district..." /></SelectTrigger>
-                        <SelectContent>
-                          {districts.map((district) => <SelectItem key={district} value={district}>{district}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-
-                  {selectedTemplate && (
-                    <div className="rounded-md border bg-muted/30 p-3 text-sm text-muted-foreground">
-                      {selectedTemplate.description}
-                    </div>
-                  )}
-
-                  {error && <div className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{error}</div>}
-
-                  <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => setDialogOpen(false)} disabled={isGenerating}>Cancel</Button>
-                    <Button onClick={handleGenerateReport} disabled={!canGenerate || isGenerating}>
-                      <Download className="size-4" />
-                      {isGenerating ? "Generating..." : "Generate from Database"}
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Button onClick={downloadPdf} disabled={!report || downloading}>
+              <Download className="size-4" />
+              {downloading ? "Generating..." : "Download Real PDF"}
+            </Button>
           }
         />
 
-        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm">
-          <div className="flex items-start gap-3">
-            <ShieldCheck className="mt-0.5 size-5 text-primary" />
-            <div><strong>Real-data reporting enabled.</strong><p className="mt-1 text-muted-foreground">Cards below are report templates, not fabricated report history. Generated files query the live database at request time.</p></div>
+        <div className="grid gap-4 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.04] p-4 md:grid-cols-[1fr_auto] md:items-end">
+          <div className="space-y-2">
+            <Label>Infrastructure asset</Label>
+            <Select value={selectedAssetCode} onValueChange={setSelectedAssetCode} disabled={loadingAssets}>
+              <SelectTrigger className="max-w-2xl"><SelectValue placeholder="Select infrastructure..." /></SelectTrigger>
+              <SelectContent>
+                {assets.map((asset) => {
+                  const code = codeOf(asset);
+                  const priority = HIGH_FIDELITY_PRIORITY.has(code);
+                  return (
+                    <SelectItem key={code} value={code}>
+                      {priority ? "★ " : ""}{code} · {asset.name ?? asset.asset_type ?? "Infrastructure"}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">★ Source-backed high-fidelity twins are placed first.</p>
+          </div>
+          <div className="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-background px-3 py-2 text-xs font-semibold text-emerald-600 dark:text-emerald-300">
+            <ShieldCheck className="size-4" />
+            REAL EVIDENCE ONLY
           </div>
         </div>
 
-        <nav className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-          <div className="flex min-w-max gap-2">
-            {categories.map((item) => (
-              <button key={item} type="button" onClick={() => setCategory(item)} className={`rounded-full border px-3.5 py-1.5 text-sm ${category === item ? "border-primary bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>{item}</button>
-            ))}
-          </div>
-        </nav>
+        {error && <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">{error}</div>}
 
-        {loading ? (
-          <div className="rounded-lg border bg-card p-8 text-sm text-muted-foreground">Loading live report catalog...</div>
-        ) : error && templates.length === 0 ? (
-          <EmptyState title="Reports backend unavailable" description={error} />
-        ) : rows.length === 0 ? (
-          <EmptyState title="No report templates in this category" />
-        ) : (
-          <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-            {rows.map((report) => {
-              const Icon = reportIcon(report.format);
-              return (
-                <article key={report.id} className="flex h-full flex-col rounded-lg border bg-card p-5 shadow-panel">
-                  <div className="flex items-start gap-3">
-                    <span className="grid size-10 shrink-0 place-items-center rounded-md border border-primary/20 bg-primary/8 text-primary"><Icon className="size-4" /></span>
-                    <div className="min-w-0"><h2 className="text-sm font-semibold">{report.title}</h2><p className="mt-1 text-[11px] text-muted-foreground">{report.category} Â· {report.format}</p></div>
-                  </div>
-                  <p className="mt-4 flex-1 text-sm text-muted-foreground">{report.description}</p>
-                  <div className="mt-5 flex gap-2 border-t pt-4">
-                    <Button asChild size="sm" variant="outline" className="flex-1"><Link to="/reports/$id" params={{ id: report.id }}>Details</Link></Button>
-                    <Button size="sm" className="flex-1" onClick={() => openGenerator(report.id)}><Download className="size-4" />Generate</Button>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </DashboardLayout>
-  );
-}
-
-export function ReportDetailsPage({ id }: { id: string }) {
-  const [report, setReport] = useState<ReportTemplate | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    apiRequest<{ items?: ReportTemplate[] }>("/api/v1/reports/catalog")
-      .then((payload: any) => setReport((payload.items ?? []).find((item: any) => item.id === id) ?? null))
-      .finally(() => setLoading(false));
-  }, [id]);
-
-  return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        <Link to="/reports" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" />Back to Reports</Link>
-        {loading ? (
-          <div className="rounded-lg border bg-card p-6 text-sm text-muted-foreground">Loading report definition...</div>
+        {loadingReport ? (
+          <div className="rounded-xl border bg-card p-8 text-sm text-muted-foreground">Loading verified evidence...</div>
         ) : !report ? (
-          <EmptyState title="Report type not found" description={`No live report template matches ${id}.`} />
+          <EmptyState title="Select an infrastructure asset" description="The report appears when verified evidence is returned by SIMRAS." />
         ) : (
           <>
-            <PageHeader eyebrow={report.category} title={report.title} description={report.description} />
-            <div className="rounded-lg border bg-card p-6">
-              <dl className="grid gap-4 sm:grid-cols-3">
-                <div><dt className="text-xs text-muted-foreground">Format</dt><dd className="mt-1 font-medium">{report.format}</dd></div>
-                <div><dt className="text-xs text-muted-foreground">Scope</dt><dd className="mt-1 font-medium">{report.requires_asset ? "Selected asset" : report.requires_district ? "Selected district" : "Portfolio"}</dd></div>
-                <div><dt className="text-xs text-muted-foreground">Data source</dt><dd className="mt-1 font-medium">FastAPI â†’ PostgreSQL/PostGIS</dd></div>
-              </dl>
-              <p className="mt-6 text-sm text-muted-foreground">Generate this report from the Reports page. No stored mock report body, fake page count or fabricated generated date is displayed.</p>
-            </div>
+            <section className="rounded-xl border bg-card p-5 shadow-panel">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-cyan-600">Selected asset</div>
+                  <h2 className="mt-1 text-xl font-semibold">{String(report.asset?.name ?? selectedAsset?.name ?? selectedAssetCode)}</h2>
+                  <p className="mt-1 text-xs text-muted-foreground">{selectedAssetCode}{selectedAsset?.district ? ` · ${selectedAsset.district}` : ""}</p>
+                </div>
+                {hasGovernmentEvidence && (
+                  <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
+                    <FileCheck2 className="size-3.5" /> Government / authoritative engineering evidence
+                  </span>
+                )}
+              </div>
+            </section>
+
+            <EvidenceTable title="Asset Identity" data={report.asset} />
+            <EvidenceTable title="Official Asset Facts" data={report.official_asset_facts} />
+            <EvidenceTable title="Government / Authoritative Engineering Evidence" data={report.government_engineering} />
+            <EvidenceTable title="Digital Twin Provenance" data={report.digital_twin} />
+            <EnvironmentSection data={report.real_environment_observations} />
+            <EvidenceTable title="Latest Real Inspection" data={report.real_inspection} />
+            <MaintenanceSection rows={report.real_maintenance} />
+            <EvidenceTable title="Eligible Locally Validated ML Prediction" data={report.ml_prediction} />
+            <EvidenceTable title="Evidence Provenance" data={report.evidence} />
           </>
         )}
       </div>
@@ -325,4 +270,22 @@ export function ReportDetailsPage({ id }: { id: string }) {
   );
 }
 
-
+export function ReportDetailsPage({ id }: { id: string }) {
+  return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        <Link to="/reports" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="size-4" /> Back to Reports
+        </Link>
+        <PageHeader
+          eyebrow="Evidence-backed report"
+          title="Selected Asset Real Report"
+          description="SIMRAS now generates one clear selected-asset report from available authoritative engineering evidence, real observations and eligible validated ML outputs."
+        />
+        <div className="rounded-xl border bg-card p-6 text-sm text-muted-foreground">
+          Open the Reports page, select the infrastructure asset, review the live evidence, and download the PDF. Legacy template id: {id}.
+        </div>
+      </div>
+    </DashboardLayout>
+  );
+}
