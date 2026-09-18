@@ -105,3 +105,26 @@ def test_tirumala_report_uses_canonical_asset_code_and_source_backed_structure_f
     assert engineering["complex_area_acres"] == 16.2
     assert engineering["main_entrance_height_ft"] == 50
     assert engineering["gopuram_tiers"] == 7
+
+
+
+def test_srikalahasti_report_contains_source_backed_gopuram_height():
+    twin = {
+        "asset": {
+            "asset_code": "AP_TEMPLE_SRIKALAHASTI",
+            "name": "Sri Kalahasteeswara Swamy Temple",
+            "asset_type": "temple",
+            "district": "Tirupati",
+        },
+        "static": {},
+        "environment": {},
+        "inspection": {},
+        "maintenance": [],
+        "ai": {},
+    }
+
+    report = build_real_report_payload("AP_TEMPLE_SRIKALAHASTI", twin, {})
+    engineering = report["government_engineering"]
+
+    assert engineering["main_gopuram_height_m"] == 36.5
+    assert engineering["main_gopuram_height_ft"] == 120
