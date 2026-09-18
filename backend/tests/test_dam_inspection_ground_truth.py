@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from app.models.entities import DamInspectionEvent, DamInspectionFinding
+from app.models.dam_inspection import DamInspectionEvent, DamInspectionFinding
 from app.services.dam_inspection_ground_truth import (
     load_candidate_labels,
     load_public_source_registry,
