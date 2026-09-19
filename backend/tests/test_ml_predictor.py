@@ -7,7 +7,7 @@ from pathlib import Path
 import joblib
 import numpy as np
 
-from app.services.ml_predictor import MLInput, predict_bridge
+from app.services.ml_predictor import MLInput, predict_asset, predict_bridge
 
 
 class ConstantRegressor:
@@ -104,6 +104,40 @@ def test_rejected_or_out_of_scope_model_abstains(tmp_path: Path) -> None:
         predict_bridge(
             MLInput(asset_type="dam", age_years=50, condition_rating=6),
             artifact_dir=tmp_path,
+        )
+        is None
+    )
+
+
+def test_non_bridge_uses_explicit_engineering_rul_baseline() -> None:
+    result = predict_asset(
+        MLInput(
+            asset_type="dam",
+            age_years=26,
+            condition_rating=None,
+            built_year=2000,
+            design_life_years=100,
+            current_year=2026,
+        )
+    )
+
+    assert result is not None
+    assert result.health_score is None
+    assert result.risk_score is None
+    assert result.remaining_life_years == 74
+    assert result.rul_method == "ENGINEERING_RUL_BASELINE"
+    assert result.status == "ENGINEERING_BASELINE"
+    assert "not an ML forecast" in result.factors[-1]
+
+
+def test_non_bridge_without_built_year_abstains() -> None:
+    assert (
+        predict_asset(
+            MLInput(
+                asset_type="temple",
+                age_years=None,
+                condition_rating=None,
+            )
         )
         is None
     )
