@@ -18,7 +18,7 @@ from app.models.entities import ModelRegistry
 from app.services.evidence_state_service import build_evidence_state
 from app.services.twin_service import build_twin
 from app.services.report_decision_support import enrich_report_decision_support
-from app.services.asset_health_assessment_report import assessment_docx_bytes, assessment_pdf_bytes, build_asset_health_assessment
+from app.services.asset_health_assessment_report import apply_numeric_assessment, assessment_docx_bytes, assessment_pdf_bytes, build_asset_health_assessment
 from app.services.prediction_report_overlay import overlay_assessment_with_latest_predictions
 
 router = APIRouter(prefix="/reports/assets", tags=["selected-asset-reports"])
@@ -456,7 +456,6 @@ def _csv_rows(report: dict[str, Any]) -> list[dict[str, Any]]:
         authority_level: Any = None,
         origin: Any = None,
         quality_flag: Any = None,
-        confidence: Any = None,
         document: Any = None,
         document_url: Any = None,
         note: Any = None,
@@ -477,7 +476,6 @@ def _csv_rows(report: dict[str, Any]) -> list[dict[str, Any]]:
                 "authority_level": _display(authority_level) if authority_level is not None else "",
                 "origin": _display(origin) if origin is not None else "",
                 "quality_flag": _display(quality_flag) if quality_flag is not None else "",
-                "confidence": _display(confidence) if confidence is not None else "",
                 "document": _display(document) if document is not None else "",
                 "document_url": _display(document_url) if document_url is not None else "",
                 "note": _display(note) if note is not None else "",
@@ -495,7 +493,6 @@ def _csv_rows(report: dict[str, Any]) -> list[dict[str, Any]]:
         "design_life_years",
         "material",
         "identity_status",
-        "confidence_score",
     ):
         add("ASSET_IDENTITY", field, asset.get(field))
 
@@ -539,7 +536,6 @@ def _csv_rows(report: dict[str, Any]) -> list[dict[str, Any]]:
             authority_level=item.get("authority_level"),
             origin=item.get("origin"),
             quality_flag=item.get("quality_flag"),
-            confidence=item.get("confidence_score"),
             document=item.get("document_title"),
             document_url=item.get("document_url"),
         )
@@ -558,7 +554,6 @@ def _csv_rows(report: dict[str, Any]) -> list[dict[str, Any]]:
             source_type=item.get("source_type"),
             origin=item.get("spatial_method"),
             quality_flag=item.get("quality_flag"),
-            confidence=item.get("confidence_score") or item.get("confidence"),
             note=(
                 "Excluded from operational/real evidence because source or quality metadata is synthetic/demo."
                 if non_operational
@@ -587,7 +582,6 @@ def _csv_rows(report: dict[str, Any]) -> list[dict[str, Any]]:
         "remaining_life_years",
         "rul_lower_bound",
         "rul_upper_bound",
-        "confidence",
         "status",
         "prediction_method",
         "model_version",
@@ -740,9 +734,6 @@ def _pdf_bytes(report: dict[str, Any]) -> bytes:
     line("Health estimate / interval", f"{health} / {health_range}")
     line("Poor-condition probability", f"{_prediction_line(ai.get('risk_score'), '%')} / {_display(ai.get('risk_level'))}")
     line("Environment hazard", f"{_prediction_line(ai.get('hazard_score'), '/100')} / {_display(ai.get('hazard_level'))}")
-    conf = ai.get("confidence")
-    conf_text = "NOT AVAILABLE" if conf is None else f"{(float(conf) * 100 if float(conf) <= 1 else float(conf)):.0f}%"
-    line("Prediction confidence", conf_text)
     rul = _prediction_line(ai.get("remaining_life_years"), " years")
     if ai.get("rul_lower_bound") is not None and ai.get("rul_upper_bound") is not None:
         rul += f" ({_prediction_line(ai.get('rul_lower_bound'))}-{_prediction_line(ai.get('rul_upper_bound'))})"
@@ -879,7 +870,9 @@ async def selected_asset_health_assessment(
     asset_code: str,
     session: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
-    return await overlay_assessment_with_latest_predictions(session, asset_code, await build_asset_health_assessment(session, asset_code))
+    report = await build_asset_health_assessment(session, asset_code)
+    report = await overlay_assessment_with_latest_predictions(session, asset_code, report)
+    return apply_numeric_assessment(report)
 
 
 @router.get("/{asset_code}/assessment/pdf")
@@ -887,7 +880,12 @@ async def selected_asset_health_assessment_pdf(
     asset_code: str,
     session: AsyncSession = Depends(get_db),
 ) -> Response:
-    report = await build_asset_health_assessment(session, asset_code)
+    report = await overlay_assessment_with_latest_predictions(
+        session,
+        asset_code,
+        await build_asset_health_assessment(session, asset_code),
+    )
+    report = apply_numeric_assessment(report)
     payload = assessment_pdf_bytes(report)
     filename = f"{asset_code}-SIMRAS-Asset-Health-Assessment.pdf"
     return Response(
@@ -900,12 +898,49 @@ async def selected_asset_health_assessment_pdf(
     )
 
 
+@router.get("/{asset_code}/assessment/csv")
+async def selected_asset_health_assessment_csv(
+    asset_code: str,
+    session: AsyncSession = Depends(get_db),
+) -> Response:
+    report = await overlay_assessment_with_latest_predictions(
+        session,
+        asset_code,
+        await build_asset_health_assessment(session, asset_code),
+    )
+    public = apply_numeric_assessment(report)
+    fields = [
+        "asset_code", "name", "category", "health_score", "health_basis",
+        "risk_score", "risk_level", "risk_basis", "confidence", "rul_years",
+        "rul_lower_years", "rul_upper_years", "rul_basis", "prediction_basis",
+        "features_used", "features_missing", "feature_version", "model_name",
+        "model_version", "limitations",
+    ]
+    row = {
+        "asset_code": public.get("asset", {}).get("asset_code"),
+        "name": public.get("asset", {}).get("name"),
+        "category": public.get("asset", {}).get("asset_type"),
+        **{field: public.get(field) for field in fields if field not in {"asset_code", "name", "category"}},
+        "features_used": ";".join(public.get("features_used", [])),
+        "features_missing": ";".join(public.get("features_missing", [])),
+        "limitations": ";".join(public.get("limitations", [])),
+    }
+    stream = StringIO(newline="")
+    writer = csv.DictWriter(stream, fieldnames=fields)
+    writer.writeheader()
+    writer.writerow(row)
+    safe_code = "".join(ch for ch in asset_code if ch.isalnum() or ch in {"-", "_"})
+    return Response(
+        stream.getvalue().encode("utf-8-sig"),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{safe_code}-SIMRAS-Asset-Health-Assessment.csv"'},
+    )
 @router.get("/{asset_code}/assessment/docx")
 async def selected_asset_health_assessment_docx(
     asset_code: str,
     session: AsyncSession = Depends(get_db),
 ) -> Response:
-    report = await build_asset_health_assessment(session, asset_code)
+    report = apply_numeric_assessment(await build_asset_health_assessment(session, asset_code))
     payload = assessment_docx_bytes(report)
     filename = f"{asset_code}-SIMRAS-Asset-Health-Assessment.docx"
     return Response(

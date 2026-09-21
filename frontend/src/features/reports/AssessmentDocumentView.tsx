@@ -81,17 +81,6 @@ function valueText(
   return String(value);
 }
 
-function scoreText(
-  value: unknown,
-): string {
-  const number =
-    Number(value);
-
-  return Number.isFinite(number)
-    ? `${number.toFixed(1)} / 100`
-    : "WITHHELD";
-}
-
 function confidenceText(
   value: unknown,
 ): string {
@@ -1223,6 +1212,45 @@ export function AssessmentDocumentView({
             root.remaining_useful_life,
           );
 
+        const rawPredictionContract = objectOf(root.prediction_contract);
+        const predictionContract = {
+          ...rawPredictionContract,
+          health: {
+            ...objectOf(rawPredictionContract.health),
+            ...(Number.isFinite(Number(root.health_score)) ? {
+              available: true,
+              value: root.health_score,
+              basis: root.health_basis ?? root.prediction_basis ?? "ESTIMATED_PROXY",
+            } : {}),
+          },
+          risk: {
+            ...objectOf(rawPredictionContract.risk),
+            ...(Number.isFinite(Number(root.risk_score)) ? {
+              available: true,
+              score: root.risk_score,
+              level: root.risk_level,
+              basis: root.risk_basis ?? root.prediction_basis ?? "ESTIMATED_PROXY",
+            } : {}),
+          },
+          rul: {
+            ...objectOf(rawPredictionContract.rul),
+            ...(Number.isFinite(Number(root.rul_years)) ? {
+              available: true,
+              years: root.rul_years,
+              basis: root.rul_basis ?? "EXPERIMENTAL_PROXY",
+            } : {}),
+          },
+          prediction_confidence: Number.isFinite(Number(root.confidence))
+            ? (Number(root.confidence) / 100)
+            : rawPredictionContract.prediction_confidence,
+          evidence_readiness: Number.isFinite(Number(root.confidence))
+            ? (Number(root.confidence) / 100)
+            : rawPredictionContract.evidence_readiness,
+          features_used: root.features_used ?? rawPredictionContract.features_used ?? [],
+          features_missing: root.features_missing ?? rawPredictionContract.features_missing ?? [],
+          features: rawPredictionContract.features ?? root.features ?? [],
+        };
+
         const transparency =
           objectOf(
             root.transparency,
@@ -1403,16 +1431,6 @@ export function AssessmentDocumentView({
 
             {
               field:
-                "Confidence",
-              value:
-                confidenceText(
-                  transparency.confidence ??
-                  risk.confidence,
-                ),
-            },
-
-            {
-              field:
                 "Model",
               value:
                 modelName,
@@ -1477,6 +1495,7 @@ export function AssessmentDocumentView({
           health,
           risk,
           rul,
+          predictionContract,
           supporting,
           factors,
           notes,
@@ -1531,6 +1550,7 @@ export function AssessmentDocumentView({
     health,
     risk,
     rul,
+    predictionContract,
     supporting,
     factors,
     notes,
@@ -1541,59 +1561,37 @@ export function AssessmentDocumentView({
     model;
 
 
+  const healthContract = objectOf(predictionContract.health);
+  const riskContract = objectOf(predictionContract.risk);
+  const rulContract = objectOf(predictionContract.rul);
+
   const healthValue =
-    health.available ===
-      false ||
-    health.score ===
-      undefined ||
-    health.score ===
-      null
-      ? "WITHHELD"
-      : scoreText(
-          health.score,
-        );
+    healthContract.available === true &&
+    Number.isFinite(Number(healthContract.value))
+      ? `${Number(healthContract.value).toFixed(1)}%`
+      : "PREDICTION UNAVAILABLE";
+  const healthBasis = valueText(healthContract.basis, "ESTIMATED").replaceAll("_", " ");
 
 
   const riskScore =
-    risk.score ===
-      undefined ||
-    risk.score ===
-      null
-      ? "WITHHELD"
-      : scoreText(
-          risk.score,
-        );
+    riskContract.available === true &&
+    Number.isFinite(Number(riskContract.score))
+      ? `${Number(riskContract.score).toFixed(1)}%`
+      : "PREDICTION UNAVAILABLE";
+  const riskBasis = valueText(riskContract.basis, "ESTIMATED").replaceAll("_", " ");
 
 
   const riskLevel =
-    valueText(
-      risk.level,
-      "WITHHELD",
-    );
-
-
-  const confidenceValue =
-    confidenceText(
-      risk.confidence,
-    );
-
-
-  const rulNumber =
-    rul.years ??
-    rul.estimate_years ??
-    rul.rul_years ??
-    rul.value;
+    riskContract.available === true
+      ? valueText(riskContract.level, "PREDICTION UNAVAILABLE")
+      : "PREDICTION UNAVAILABLE";
 
 
   const rulValue =
-    rulNumber ===
-      undefined ||
-    rulNumber ===
-      null
-      ? "WITHHELD"
-      : `${valueText(
-          rulNumber,
-        )} years`;
+    rulContract.available === true && Number.isFinite(Number(rulContract.years))
+      ? `${Number(rulContract.years).toFixed(1)} years`
+      : "RUL UNAVAILABLE";
+  const rulBasis = valueText(rulContract.basis, "EXPERIMENTAL_PROXY").replaceAll("_", " ");
 
 
   const riskRows =
@@ -1610,13 +1608,6 @@ export function AssessmentDocumentView({
           "Risk level",
         value:
           riskLevel,
-      },
-
-      {
-        field:
-          "Risk confidence",
-        value:
-          confidenceValue,
       },
 
       {
@@ -1654,7 +1645,7 @@ export function AssessmentDocumentView({
         value:
           rul.lower_bound ??
           rul.lower_bound_years ??
-          "WITHHELD",
+          "NOT AVAILABLE",
       },
 
       {
@@ -1673,7 +1664,7 @@ export function AssessmentDocumentView({
           rul.reason ??
           (
             rulValue ===
-              "WITHHELD"
+              "RUL UNAVAILABLE"
               ? "Longitudinal deterioration evidence is required."
               : "AVAILABLE"
           ),
@@ -1822,33 +1813,56 @@ export function AssessmentDocumentView({
         <Kpi
           title="Health Score"
           value={healthValue}
-          detail="Current structural / condition assessment"
+          detail={healthBasis}
         />
 
         <Kpi
           title="Risk Level"
           value={riskLevel}
-          detail="Selected-asset risk classification"
+          detail={riskBasis}
         />
 
         <Kpi
           title="Risk Score"
           value={riskScore}
-          detail="Decision-support estimate"
-        />
-
-        <Kpi
-          title="Confidence"
-          value={confidenceValue}
-          detail="Current prediction confidence"
+          detail={riskBasis}
         />
 
         <Kpi
           title="Remaining Useful Life"
           value={rulValue}
-          detail="Longitudinal evidence gated"
+          detail={rulBasis}
         />
       </div>
+
+      <section style={panel}>
+        <SectionHeader title="Government / verified evidence and model usage" />
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", minWidth: 760, borderCollapse: "collapse", fontSize: 11 }}>
+            <thead>
+              <tr style={{ color: "#8ca6b7", textAlign: "left" }}>
+                {["FEATURE", "VALUE", "SOURCE", "VERIFICATION", "USED BY MODEL", "REASON"].map((heading) => (
+                  <th key={heading} style={{ padding: "10px 12px", borderBottom: "1px solid rgba(148,163,184,.18)" }}>{heading}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {arrayOf(predictionContract.features).length ? arrayOf(predictionContract.features).map((raw, index) => {
+                const feature = objectOf(raw);
+                return (
+                  <tr key={`${String(feature.factor ?? "feature")}-${index}`}>
+                    {[feature.factor, feature.current_value ?? "NOT AVAILABLE", feature.source ?? "NOT AVAILABLE", feature.verification ?? "WITHHELD", feature.used_by_model === true ? "YES" : "NO", feature.reason ?? feature.impact ?? "NOT AVAILABLE"].map((value, cellIndex) => (
+                      <td key={cellIndex} style={{ padding: "9px 12px", borderBottom: "1px solid rgba(148,163,184,.1)", color: cellIndex === 4 && value === "YES" ? "#5eead4" : "#dbe8f1" }}>{valueText(value)}</td>
+                    ))}
+                  </tr>
+                );
+              }) : (
+                <tr><td colSpan={6} style={{ padding: 14, color: "#94a3b8" }}>No model feature trace is available for this asset.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
 
 
       <section style={panel}>

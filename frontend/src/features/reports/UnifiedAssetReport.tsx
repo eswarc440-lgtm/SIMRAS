@@ -342,14 +342,6 @@ export function UnifiedAssetReport({ report }: Props) {
     "summary.risk_score",
   ]);
 
-  const confidence = pick(report, [
-    "confidence",
-    "prediction.confidence",
-    "prediction.prediction_confidence",
-    "decision_support.prediction.prediction_confidence",
-    "summary.confidence",
-  ]);
-
   const rul = pick(report, [
     "rul_years",
     "remaining_useful_life_years",
@@ -662,6 +654,30 @@ export function UnifiedAssetReport({ report }: Props) {
 
   const transparencyRows: Row[] = [
     {
+      label: "Assessment Method",
+      value: pick(report, [
+        "decision_support.prediction.structural.assessment_method",
+        "prediction.structural.assessment_method",
+        "assessment_method",
+      ]) || "ML",
+    },
+    {
+      label: "Health Basis",
+      value: pick(report, [
+        "decision_support.prediction.structural.health_basis",
+        "prediction.structural.health_basis",
+        "health_basis",
+      ]),
+    },
+    {
+      label: "Risk Basis",
+      value: pick(report, [
+        "decision_support.prediction.structural.risk_basis",
+        "prediction.structural.risk_basis",
+        "risk_basis",
+      ]),
+    },
+    {
       label: "Model",
       value: pick(report, [
         "model.name",
@@ -777,7 +793,7 @@ export function UnifiedAssetReport({ report }: Props) {
       </div>
 
       <Panel title="Condition & Risk Summary">
-        <div className="grid gap-2 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-5">
+        <div className="grid gap-2 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
           <SummaryCard
             label="Health Score"
             value={score(healthScore)}
@@ -792,11 +808,6 @@ export function UnifiedAssetReport({ report }: Props) {
             label="Risk Score"
             value={score(riskScore)}
             note="Current structural risk score."
-          />
-          <SummaryCard
-            label="Confidence"
-            value={percent(confidence)}
-            note="Current model/input confidence."
           />
           <SummaryCard
             label="Remaining Useful Life"
