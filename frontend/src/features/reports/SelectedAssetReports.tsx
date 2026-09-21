@@ -4,6 +4,8 @@ import DamOperationalForecastPanel from "./DamOperationalForecastPanel";
 import DamBarrageOfficialEvidence from "./DamBarrageOfficialEvidence";
 import BridgeEngineeringEvidence from "./BridgeEngineeringEvidence";
 import { AssessmentDocumentView } from "./AssessmentDocumentView";
+import AIAssistant from "../../components/AIAssistant";
+import { useAuth } from "../../contexts/AuthContext";
 type UnknownRecord = Record<string, unknown>;
 
 interface SelectedAssetReportsProps {
@@ -482,6 +484,7 @@ export function SelectedAssetReports({
   selected,
   twin,
 }: SelectedAssetReportsProps) {
+  const { isAuthenticated, isOfficer } = useAuth();
   const source = {
     selected,
     twin,
@@ -1549,6 +1552,9 @@ return (
       <AssessmentDocumentView
         assetCode={assetCode}
       />
+      {isAuthenticated && isOfficer && (
+        <AIAssistant assetCode={assetCode} />
+      )}
     </>
   );
 }
