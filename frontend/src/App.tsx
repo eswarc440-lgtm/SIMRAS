@@ -17,8 +17,9 @@ import type {
   MapFeatureSummaryItem,
   TwinResponse,
 } from "./types/twin";
+import { useAuth } from "./contexts/AuthContext";
 
-type Workspace = "GIS" | "TWIN" | "REPORTS";
+type Workspace = "GIS" | "TWIN" | "REPORTS" | "INSPECTIONS" | "MAINTENANCE" | "OFFICER";
 type ViewerMode = "ASSET_MODEL" | "GEOSPATIAL";
 
 const emptyMapFeatures: MapFeatureCollection = {
@@ -30,6 +31,7 @@ const emptyMapFeatures: MapFeatureCollection = {
 };
 
 export default function App() {
+  const { user, isAuthenticated, isOfficer, logout } = useAuth();
   const [assets, setAssets] = useState<AssetSummary[]>([]);
   const [selected, setSelected] = useState<AssetSummary>();
   const [twin, setTwin] = useState<TwinResponse>();
@@ -263,21 +265,58 @@ export default function App() {
             className={workspace === "GIS" ? "active" : ""}
             onClick={() => setWorkspace("GIS")}
           >
-            GIS command
+            GIS Command
           </button>
 
           <button
             className={workspace === "TWIN" ? "active" : ""}
             onClick={() => setWorkspace("TWIN")}
           >
-            Digital twin
+            Digital Twin
           </button>
+
+          {isOfficer && (
+            <>
+              <button
+                className={workspace === "INSPECTIONS" ? "active" : ""}
+                onClick={() => setWorkspace("INSPECTIONS")}
+              >
+                Inspections
+              </button>
+
+              <button
+                className={workspace === "MAINTENANCE" ? "active" : ""}
+                onClick={() => setWorkspace("MAINTENANCE")}
+              >
+                Maintenance
+              </button>
+            </>
+          )}
+
           <button
             className={workspace === "REPORTS" ? "active" : ""}
             onClick={() => setWorkspace("REPORTS")}
           >
             Reports
           </button>
+
+          <button className="notification-bell">
+            🔔
+            {isOfficer && <span className="badge">4</span>}
+          </button>
+
+          {isAuthenticated ? (
+            <button
+              className={workspace === "OFFICER" ? "active" : ""}
+              onClick={() => setWorkspace("OFFICER")}
+            >
+              Officer Workspace
+            </button>
+          ) : (
+            <button onClick={() => setWorkspace("OFFICER")}>
+              Officer Login
+            </button>
+          )}
         </nav>
 
         <StatusPill label="Evidence backed" tone="good" />
@@ -351,7 +390,40 @@ export default function App() {
           />
         </section>
 
-        {workspace === "GIS" ? (
+        {workspace === "OFFICER" && !isAuthenticated ? (
+          <section className="workspace-grid">
+            <div className="login-container">
+              {/* Login page will be rendered here */}
+              <div className="text-center">
+                <h2>Officer Login Required</h2>
+                <p>Please login to access the officer workspace.</p>
+              </div>
+            </div>
+          </section>
+        ) : workspace === "OFFICER" && isAuthenticated ? (
+          <section className="workspace-grid">
+            <div className="officer-dashboard">
+              <h2>Officer Workspace</h2>
+              <p>Welcome, {user?.name}</p>
+              <p>Role: {user?.role}</p>
+              <p>District: {user?.district || 'Not assigned'}</p>
+            </div>
+          </section>
+        ) : workspace === "INSPECTIONS" ? (
+          <section className="workspace-grid">
+            <div className="inspections-workspace">
+              <h2>Inspections Workspace</h2>
+              <p>Inspection management coming soon...</p>
+            </div>
+          </section>
+        ) : workspace === "MAINTENANCE" ? (
+          <section className="workspace-grid">
+            <div className="maintenance-workspace">
+              <h2>Maintenance Workspace</h2>
+              <p>Maintenance management coming soon...</p>
+            </div>
+          </section>
+        ) : workspace === "GIS" ? (
           <section className="workspace-grid">
             <aside className="asset-sidebar">
               <div className="filters">

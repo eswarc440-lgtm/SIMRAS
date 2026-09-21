@@ -36,6 +36,10 @@ app.add_middleware(
 
 app.include_router(api_router, prefix="/api/v1")
 
+# Authentication routes
+from app.api.routes.auth import router as auth_router
+app.include_router(auth_router, prefix="/api/v1")
+
 
 @app.get("/")
 async def root() -> dict[str, str]:

@@ -143,8 +143,8 @@ class AssetModel(Base, TimestampMixin):
     asset: Mapped[Asset] = relationship(back_populates="models")
 
 
-class Inspection(Base, TimestampMixin):
-    __tablename__ = "inspections"
+class LegacyInspection(Base, TimestampMixin):
+    __tablename__ = "legacy_inspections"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     asset_id: Mapped[int] = mapped_column(ForeignKey("assets.id", ondelete="CASCADE"), index=True)
@@ -163,7 +163,7 @@ class Defect(Base, TimestampMixin):
     __tablename__ = "defects"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    inspection_id: Mapped[int] = mapped_column(ForeignKey("inspections.id", ondelete="CASCADE"), index=True)
+    inspection_id: Mapped[int] = mapped_column(ForeignKey("legacy_inspections.id", ondelete="CASCADE"), index=True)
     component_id: Mapped[int | None] = mapped_column(ForeignKey("asset_components.id"))
     defect_type: Mapped[str] = mapped_column(String(80))
     severity: Mapped[str] = mapped_column(String(30))
@@ -173,8 +173,8 @@ class Defect(Base, TimestampMixin):
     verification_status: Mapped[str] = mapped_column(String(30), default="CANDIDATE")
 
 
-class Maintenance(Base, TimestampMixin):
-    __tablename__ = "maintenance"
+class LegacyMaintenance(Base, TimestampMixin):
+    __tablename__ = "legacy_maintenance"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     asset_id: Mapped[int] = mapped_column(ForeignKey("assets.id", ondelete="CASCADE"), index=True)
