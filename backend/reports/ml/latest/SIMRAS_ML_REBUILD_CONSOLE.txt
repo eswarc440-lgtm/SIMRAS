@@ -1,0 +1,14 @@
+====================================================================================================
+SIMRAS REAL-WORLD ML REBUILD + VALIDATION
+====================================================================================================
+RUN ID: 20260903_020557
+ROOT: /workspace
+
+1. DISCOVER TRAINING DATA
+----------------------------------------------------------------------------------------------------
+     194 rows | health=health_score | risk=None | group=asset_code | /workspace/archive/real_twin_factory_v13_1_20260902_135959/all_asset_real_twin_manifest.csv
+     194 rows | health=health_score | risk=None | group=asset_code | /workspace/archive/real_twin_factory_v13_1_20260902_135959/real_twin_priority_queue.csv
+
+====================================================================================================
+GENERATING ML REPORT PACK
+====================================================================================================

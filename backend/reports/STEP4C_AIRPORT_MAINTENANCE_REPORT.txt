@@ -1,0 +1,25 @@
+====================================================================================================
+SIMRAS STEP 4C - AIRPORT MAINTENANCE RESULT
+====================================================================================================
+
+Unique AP airports                 : 6
+Airports with maintenance evidence : 0
+Maintenance events extracted       : 0
+High-significance events            : 0
+Medium-significance events          : 0
+
+VOBZ  : 0 events
+VOCP  : 0 events
+VOKU  : 0 events
+VORY  : 0 events
+VOTP  : 0 events
+VOVZ  : 0 events
+
+Database table:
+ public.airport_maintenance_evidence
+
+IMPORTANT:
+Maintenance/tender evidence may support maintenance age and
+rehabilitation history, but is NOT itself a PCI or structural
+inspection ground-truth label.
+====================================================================================================

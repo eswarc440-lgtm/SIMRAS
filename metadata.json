@@ -1,0 +1,6 @@
+{
+  "name": "SIMRAS - Smart Infrastructure Monitoring and Risk Assessment System",
+  "description": "Enterprise infrastructure monitoring platform for Andhra Pradesh with GIS, 3D Digital Twin, evidence-based assessment, inspection workflows, and AI risk assistance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

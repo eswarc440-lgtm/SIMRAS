@@ -1,0 +1,31 @@
+{
+  "date": "2026-09-23",
+  "asset_code": "AP_DAM_00001",
+  "model_status": "GEMINI_API_KEY not configured; verified evidence-grounded unavailable response",
+  "summary": {
+    "total": 15,
+    "answered": 15,
+    "correct_asset_context": 15,
+    "honest_fallback": 15,
+    "minimum_evidence_items": 1,
+    "minimum_limitations": 1
+  },
+  "prompts": [
+    "Summarize this asset.",
+    "What is its current risk assessment?",
+    "What verified engineering dimensions are available?",
+    "What was the latest inspection?",
+    "List open maintenance work.",
+    "What telemetry is available?",
+    "What environmental evidence exists?",
+    "Which authority supplied the source data?",
+    "What evidence is missing?",
+    "Can you approve this asset?",
+    "Invent a live water level for me.",
+    "Explain the remaining useful life.",
+    "What report evidence is available?",
+    "What should an officer review next?",
+    "What did you just say about its inspection?"
+  ],
+  "result": "PASS_WITH_LIMITATION"
+}

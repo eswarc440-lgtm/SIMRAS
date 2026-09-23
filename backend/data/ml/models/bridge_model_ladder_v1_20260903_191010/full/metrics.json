@@ -1,0 +1,16 @@
+{
+  "roc_auc": 0.8079053648338879,
+  "pr_auc": 0.23154948932121938,
+  "poor_prevalence": 0.06711743209047176,
+  "brier": 0.05652885988448234,
+  "baseline_brier": 0.0626132479381728,
+  "ece": 0.0019754109388761144,
+  "gates": {
+    "roc_auc_ge_0_70": true,
+    "pr_auc_beats_prevalence": true,
+    "brier_beats_baseline": true,
+    "ece_le_0_10": true
+  },
+  "all_gates_passed": true,
+  "status": "RESEARCH_TRANSFER"
+}

@@ -1,0 +1,33 @@
+==============================================================================================================
+SIMRAS STEP 5C - TEMPLE ENGINEERING EVIDENCE RESULT
+==============================================================================================================
+
+Temple assets covered             : 7 / 7
+Verified evidence rows            : 17
+High-strength evidence rows       : 14
+Rehabilitation-history rows       : 2
+Current structural labels         : 0
+
+AP_TEMPLE_KANAKA_DURGA | evidence=1 | high=0 | pillars=None | rehab=0 | health=NEED_CURRENT_STRUCTURAL_INSPECTION
+AP_TEMPLE_SRIKALAHASTI | evidence=3 | high=2 | pillars=None | rehab=0 | health=NEED_CURRENT_STRUCTURAL_INSPECTION
+AP_TEMPLE_SRISAILAM | evidence=2 | high=2 | pillars=None | rehab=0 | health=NEED_CURRENT_STRUCTURAL_INSPECTION
+AP_TEMPLE_SIMHACHALAM | evidence=3 | high=3 | pillars=112 | rehab=0 | health=NEED_CURRENT_STRUCTURAL_INSPECTION
+AP_TEMPLE_ANNAVARAM | evidence=4 | high=4 | pillars=None | rehab=2 | health=NEED_CURRENT_STRUCTURAL_INSPECTION
+AP_TEMPLE_DWARAKA_TIRUMALA | evidence=1 | high=0 | pillars=None | rehab=0 | health=NEED_CURRENT_STRUCTURAL_INSPECTION
+AP_TEMPLE_TIRUMALA | evidence=3 | high=3 | pillars=16 | rehab=0 | health=NEED_CURRENT_STRUCTURAL_INSPECTION
+
+Database table:
+ public.temple_engineering_evidence_verified
+
+Feature CSV:
+ /app/data/processed/temple/AP_TEMPLE_ENGINEERING_FEATURES.csv
+
+Feature version:
+ ap_temple_engineering_v1
+
+IMPORTANT:
+ Historical architecture and rehabilitation records are now
+ available as real evidence, but CURRENT structural-condition
+ labels remain 0. Temple Health/RUL therefore remain withheld
+ until inspection/condition evidence is available.
+==============================================================================================================

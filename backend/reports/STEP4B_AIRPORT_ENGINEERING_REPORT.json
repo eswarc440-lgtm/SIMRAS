@@ -1,0 +1,13 @@
+{
+  "generated_at": "2026-09-03T05:00:13.812944+00:00",
+  "simras_airport_asset_rows": 8,
+  "unique_physical_airports": 6,
+  "aai_pages_downloaded": 6,
+  "assets_with_aai_evidence": 8,
+  "assets_with_runway_dimensions": 8,
+  "assets_with_pavement_strength": 8,
+  "runway_end_records": 14,
+  "duplicate_asset_rows": 4,
+  "duplicate_icao_codes": 2,
+  "feature_version": "ap_airport_engineering_v1"
+}

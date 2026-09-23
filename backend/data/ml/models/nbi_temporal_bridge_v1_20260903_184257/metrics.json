@@ -1,0 +1,65 @@
+{
+  "model_version": "nbi_temporal_bridge_v1_20260903_184257",
+  "validation_design": {
+    "risk_train": "2022->2023",
+    "risk_calibration": "2023->2024",
+    "temporal_test": "2024->2025",
+    "ap_validation": false
+  },
+  "risk_model": {
+    "roc_auc": 0.9840875498723614,
+    "pr_auc": 0.9017234771763181,
+    "brier": 0.011091568446322747,
+    "ece": 0.0009410027652555656,
+    "test_prevalence": 0.06711699854823681,
+    "baseline_brier": 0.06261287258283854,
+    "gates": {
+      "risk_auc_ge_0_70": true,
+      "risk_pr_auc_beats_prevalence": true,
+      "risk_brier_beats_baseline": true,
+      "risk_ece_le_0_10": true
+    },
+    "gates_passed": true
+  },
+  "condition_model": {
+    "accuracy": 0.9588387186373127,
+    "balanced_accuracy": 0.9409527049555332,
+    "macro_f1": 0.9451353694769425,
+    "confusion_matrix_labels": [
+      "GOOD",
+      "FAIR",
+      "POOR"
+    ],
+    "confusion_matrix": [
+      [
+        261899,
+        5807,
+        717
+      ],
+      [
+        12386,
+        294691,
+        2185
+      ],
+      [
+        178,
+        4216,
+        37168
+      ]
+    ],
+    "gate_macro_f1_ge_0_55": true
+  },
+  "deterioration_model": {
+    "roc_auc": 0.6743482106276575,
+    "pr_auc": 0.11216689133782132,
+    "brier": 0.21744195921565884,
+    "prevalence": 0.049800806463333694,
+    "gate_passed": true
+  },
+  "rating_change_model": {
+    "mae": 0.1313400928157537,
+    "rmse": 0.36872005699309235,
+    "baseline_mae": 0.09142716880340156,
+    "gate_beats_baseline": false
+  }
+}

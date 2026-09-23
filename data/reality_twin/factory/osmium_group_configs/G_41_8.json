@@ -1,0 +1,185 @@
+{
+    "directory":  "/work/data/reality_twin/factory/osm_extracts",
+    "extracts":  [
+                     {
+                         "output":  "AP_AIR_AAI_VISAKHAPATNAM.osm.pbf",
+                         "description":  "Visakhapatnam Airport / airport",
+                         "bbox":  [
+                                      83.1995,
+                                      17.6962,
+                                      83.249500000000012,
+                                      17.746199999999998
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0077.osm.pbf",
+                         "description":  "Dharakalava Reservoir / dam",
+                         "bbox":  [
+                                      82.22166667,
+                                      17.32416667,
+                                      82.25166667,
+                                      17.35416667
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D02672.osm.pbf",
+                         "description":  "Ghambiramgedda Dam / dam",
+                         "bbox":  [
+                                      83.3372305,
+                                      17.860703179999998,
+                                      83.3672305,
+                                      17.89070318
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0097.osm.pbf",
+                         "description":  "Jajigedda Dam / dam",
+                         "bbox":  [
+                                      82.73600659,
+                                      17.65196959,
+                                      82.76600659,
+                                      17.68196959
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0056.osm.pbf",
+                         "description":  "Konam Dam / dam",
+                         "bbox":  [
+                                      82.83916886,
+                                      17.95112358,
+                                      82.86916886,
+                                      17.981123580000002
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0078.osm.pbf",
+                         "description":  "Maddigedda Dam / dam",
+                         "bbox":  [
+                                      81.99705806,
+                                      17.47079608,
+                                      82.02705806,
+                                      17.50079608
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0042.osm.pbf",
+                         "description":  "Mehadrigedda / dam",
+                         "bbox":  [
+                                      83.17583333,
+                                      17.75,
+                                      83.20583333,
+                                      17.78
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0138.osm.pbf",
+                         "description":  "N.T.R. , Thatiparthi(V), Madugula (M) Dam / dam",
+                         "bbox":  [
+                                      82.75287008,
+                                      17.921260959999998,
+                                      82.78287008,
+                                      17.95126096
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0046.osm.pbf",
+                         "description":  "Pampa Dam / dam",
+                         "bbox":  [
+                                      82.39252984,
+                                      17.272312539999998,
+                                      82.42252984,
+                                      17.30231254
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D02215.osm.pbf",
+                         "description":  "Sri Tenneti Viswanatham Pedderu Dam / dam",
+                         "bbox":  [
+                                      82.68009214,
+                                      17.88416678,
+                                      82.71009214,
+                                      17.914166780000002
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0027.osm.pbf",
+                         "description":  "Subba Reddy Sagar / dam",
+                         "bbox":  [
+                                      82.18916667,
+                                      17.31638889,
+                                      82.21916667,
+                                      17.34638889
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0121.osm.pbf",
+                         "description":  "Tajangi , Tajangi(V) Dam / dam",
+                         "bbox":  [
+                                      82.4811826,
+                                      17.85466855,
+                                      82.5111826,
+                                      17.88466855
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01HH0043.osm.pbf",
+                         "description":  "Thandava(Sri Raja Sagi Suryanarayana Raju (Srssr) Dam / dam",
+                         "bbox":  [
+                                      82.44650758,
+                                      17.6063047,
+                                      82.47650758,
+                                      17.6363047
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0145.osm.pbf",
+                         "description":  "Urakagedda , Sankaram (V), Madugula(M) Dam / dam",
+                         "bbox":  [
+                                      82.71101449,
+                                      17.92443707,
+                                      82.74101449,
+                                      17.95443707
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0039.osm.pbf",
+                         "description":  "Varaha Dam / dam",
+                         "bbox":  [
+                                      82.6605239,
+                                      17.79580941,
+                                      82.6905239,
+                                      17.82580941
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01HH0149.osm.pbf",
+                         "description":  "Yeleru Dam / dam",
+                         "bbox":  [
+                                      82.0806831,
+                                      17.29291881,
+                                      82.1106831,
+                                      17.32291881
+                                  ]
+                     },
+                     {
+                         "output":  "AP_TEMPLE_SIMHACHALAM.osm.pbf",
+                         "description":  "Sri Varaha Lakshmi Narasimha Temple, Simhachalam / temple",
+                         "bbox":  [
+                                      83.2445,
+                                      17.7604,
+                                      83.2565,
+                                      17.7724
+                                  ]
+                     },
+                     {
+                         "output":  "AP_TEMPLE_ANNAVARAM.osm.pbf",
+                         "description":  "Sri Veera Venkata Satyanarayana Swamy Temple, Annavaram / temple",
+                         "bbox":  [
+                                      82.3982,
+                                      17.2765,
+                                      82.4102,
+                                      17.2885
+                                  ]
+                     }
+                 ]
+}

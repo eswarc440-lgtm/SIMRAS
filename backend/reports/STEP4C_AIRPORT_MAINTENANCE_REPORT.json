@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-09-03T05:29:32.896361+00:00",
+  "unique_airports": 6,
+  "airports_with_maintenance_evidence": 0,
+  "maintenance_events": 0,
+  "high_significance_events": 0,
+  "medium_significance_events": 0,
+  "events_by_airport": {
+    "VOBZ": 0,
+    "VOCP": 0,
+    "VOKU": 0,
+    "VORY": 0,
+    "VOTP": 0,
+    "VOVZ": 0
+  },
+  "database_table": "airport_maintenance_evidence",
+  "important_limitation": "Tender/maintenance evidence is not a pavement condition index or structural inspection label."
+}

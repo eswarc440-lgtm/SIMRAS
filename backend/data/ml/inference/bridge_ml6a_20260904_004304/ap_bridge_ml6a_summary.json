@@ -1,0 +1,25 @@
+{
+  "total_ap_bridges": 23119,
+  "predicted_research_transfer": 6,
+  "abstained": 23113,
+  "prediction_coverage_percent": 0.025952679614170162,
+  "status_counts": {
+    "ABSTAIN": 23111,
+    "ABSTAIN_OUT_OF_DISTRIBUTION": 2,
+    "RESEARCH_TRANSFER": 6
+  },
+  "variant_counts": {
+    "AGE": 5,
+    "FULL": 1
+  },
+  "risk_level_counts": {
+    "LOW": 6
+  },
+  "Health": "WITHHELD",
+  "RUL": "WITHHELD",
+  "Confidence": "WITHHELD_AP_GROUND_TRUTH_VALIDATION_PENDING",
+  "risk_definition": "calibrated probability of POOR condition at next inspection",
+  "prediction_status": "RESEARCH_TRANSFER_ONLY",
+  "AP_ground_truth_validated": false,
+  "database_written": false
+}

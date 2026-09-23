@@ -1,0 +1,172 @@
+[
+  {
+    "file": "tools/reality_twin_fast_viewer/assets.json",
+    "category": "CANONICAL_ASSET_INVENTORY",
+    "purpose": "Core 194 canonical infrastructure baseline assets (167 dams, 10 barrages, 2 bridges, 8 airports, 7 temples)",
+    "row_count": 194,
+    "asset_key": "asset_code",
+    "source": "India-WRIS / CWC / MoRTH / AAI / APWRD",
+    "used_by": "Asset Service, GIS, Digital Twin",
+    "lifecycle": "production"
+  },
+  {
+    "file": "data/reality_twin/reality_twin_queue.csv",
+    "category": "CANONICAL_ASSET_INVENTORY",
+    "purpose": "Reality twin queue with priority and visual strategy for AP assets",
+    "row_count": 202,
+    "asset_key": "asset_code",
+    "source": "Government of Andhra Pradesh / SIMRAS Registry",
+    "used_by": "Asset Ingestion, Fast Viewer",
+    "lifecycle": "production"
+  },
+  {
+    "file": "data/seed/assets.csv",
+    "category": "CANONICAL_ASSET_INVENTORY",
+    "purpose": "Initial seed asset catalog of AP bridges and dams",
+    "row_count": 6,
+    "asset_key": "asset_code",
+    "source": "AP R&B / WRIS / NRLD",
+    "used_by": "Database seed script",
+    "lifecycle": "production"
+  },
+  {
+    "file": "backend/data/raw/nwdp/ap_rainfall_hourly_2026_2030.csv",
+    "category": "HYDROLOGY_WEATHER_TIME_SERIES",
+    "purpose": "NWDP hydrology telemetry for AP basin stations: ap_rainfall_hourly_2026_2030.csv",
+    "row_count": 3605,
+    "asset_key": "station_code / basin",
+    "source": "National Water Data Portal / CWC",
+    "used_by": "Hydrology Analytics, Dam Operational Forecast",
+    "lifecycle": "production"
+  },
+  {
+    "file": "backend/data/raw/nwdp/ap_reservoir_level_daily_2026_2030.csv",
+    "category": "HYDROLOGY_WEATHER_TIME_SERIES",
+    "purpose": "NWDP hydrology telemetry for AP basin stations: ap_reservoir_level_daily_2026_2030.csv",
+    "row_count": 799,
+    "asset_key": "station_code / basin",
+    "source": "National Water Data Portal / CWC",
+    "used_by": "Hydrology Analytics, Dam Operational Forecast",
+    "lifecycle": "production"
+  },
+  {
+    "file": "backend/data/raw/nwdp/ap_reservoir_storage_daily_2026_2030.csv",
+    "category": "HYDROLOGY_WEATHER_TIME_SERIES",
+    "purpose": "NWDP hydrology telemetry for AP basin stations: ap_reservoir_storage_daily_2026_2030.csv",
+    "row_count": 685,
+    "asset_key": "station_code / basin",
+    "source": "National Water Data Portal / CWC",
+    "used_by": "Hydrology Analytics, Dam Operational Forecast",
+    "lifecycle": "production"
+  },
+  {
+    "file": "backend/data/raw/nwdp/ap_river_velocity_discharge_daily_2026_2030.csv",
+    "category": "HYDROLOGY_WEATHER_TIME_SERIES",
+    "purpose": "NWDP hydrology telemetry for AP basin stations: ap_river_velocity_discharge_daily_2026_2030.csv",
+    "row_count": 1,
+    "asset_key": "station_code / basin",
+    "source": "National Water Data Portal / CWC",
+    "used_by": "Hydrology Analytics, Dam Operational Forecast",
+    "lifecycle": "production"
+  },
+  {
+    "file": "backend/data/raw/nwdp/godavari_river_level_hourly_2026_2030.csv",
+    "category": "HYDROLOGY_WEATHER_TIME_SERIES",
+    "purpose": "NWDP hydrology telemetry for AP basin stations: godavari_river_level_hourly_2026_2030.csv",
+    "row_count": 10019,
+    "asset_key": "station_code / basin",
+    "source": "National Water Data Portal / CWC",
+    "used_by": "Hydrology Analytics, Dam Operational Forecast",
+    "lifecycle": "production"
+  },
+  {
+    "file": "backend/data/raw/nwdp/krishna_river_level_hourly_2026_2030.csv",
+    "category": "HYDROLOGY_WEATHER_TIME_SERIES",
+    "purpose": "NWDP hydrology telemetry for AP basin stations: krishna_river_level_hourly_2026_2030.csv",
+    "row_count": 58791,
+    "asset_key": "station_code / basin",
+    "source": "National Water Data Portal / CWC",
+    "used_by": "Hydrology Analytics, Dam Operational Forecast",
+    "lifecycle": "production"
+  },
+  {
+    "file": "backend/data/raw/nwdp/pennar_river_level_hourly_2026_2030.csv",
+    "category": "HYDROLOGY_WEATHER_TIME_SERIES",
+    "purpose": "NWDP hydrology telemetry for AP basin stations: pennar_river_level_hourly_2026_2030.csv",
+    "row_count": 24928,
+    "asset_key": "station_code / basin",
+    "source": "National Water Data Portal / CWC",
+    "used_by": "Hydrology Analytics, Dam Operational Forecast",
+    "lifecycle": "production"
+  },
+  {
+    "file": "nwdp_fixed_dryrun.txt",
+    "category": "INTERMEDIATE_ETL_OUTPUTS",
+    "purpose": "Hydrology ETL extraction dry-run log and station mapping verification",
+    "row_count": 165,
+    "asset_key": "station_id",
+    "source": "NWDP Ingestion Pipeline",
+    "used_by": "ETL Verification",
+    "lifecycle": "intermediate"
+  },
+  {
+    "file": "artifacts/bridge_nbi/health.joblib",
+    "category": "MODEL_ARTIFACTS",
+    "purpose": "Trained and calibrated scikit-learn estimator: health.joblib",
+    "row_count": 1,
+    "asset_key": "asset_code",
+    "source": "ML Pipeline (RandomForest / GradientBoosting)",
+    "used_by": "ML Predictor, Assessment Service",
+    "lifecycle": "production"
+  },
+  {
+    "file": "artifacts/bridge_nbi/risk.joblib",
+    "category": "MODEL_ARTIFACTS",
+    "purpose": "Trained and calibrated scikit-learn estimator: risk.joblib",
+    "row_count": 1,
+    "asset_key": "asset_code",
+    "source": "ML Pipeline (RandomForest / GradientBoosting)",
+    "used_by": "ML Predictor, Assessment Service",
+    "lifecycle": "production"
+  },
+  {
+    "file": "artifacts/bridge_nbi/risk_calibrator.joblib",
+    "category": "MODEL_ARTIFACTS",
+    "purpose": "Trained and calibrated scikit-learn estimator: risk_calibrator.joblib",
+    "row_count": 1,
+    "asset_key": "asset_code",
+    "source": "ML Pipeline (RandomForest / GradientBoosting)",
+    "used_by": "ML Predictor, Assessment Service",
+    "lifecycle": "production"
+  },
+  {
+    "file": "artifacts/bridge_nbi/rul_lower.joblib",
+    "category": "MODEL_ARTIFACTS",
+    "purpose": "Trained and calibrated scikit-learn estimator: rul_lower.joblib",
+    "row_count": 1,
+    "asset_key": "asset_code",
+    "source": "ML Pipeline (RandomForest / GradientBoosting)",
+    "used_by": "ML Predictor, Assessment Service",
+    "lifecycle": "production"
+  },
+  {
+    "file": "artifacts/bridge_nbi/rul_median.joblib",
+    "category": "MODEL_ARTIFACTS",
+    "purpose": "Trained and calibrated scikit-learn estimator: rul_median.joblib",
+    "row_count": 1,
+    "asset_key": "asset_code",
+    "source": "ML Pipeline (RandomForest / GradientBoosting)",
+    "used_by": "ML Predictor, Assessment Service",
+    "lifecycle": "production"
+  },
+  {
+    "file": "artifacts/bridge_nbi/rul_upper.joblib",
+    "category": "MODEL_ARTIFACTS",
+    "purpose": "Trained and calibrated scikit-learn estimator: rul_upper.joblib",
+    "row_count": 1,
+    "asset_key": "asset_code",
+    "source": "ML Pipeline (RandomForest / GradientBoosting)",
+    "used_by": "ML Predictor, Assessment Service",
+    "lifecycle": "production"
+  }
+]

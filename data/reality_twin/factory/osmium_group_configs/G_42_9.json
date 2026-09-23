@@ -1,0 +1,15 @@
+{
+    "directory":  "/work/data/reality_twin/factory/osm_extracts",
+    "extracts":  [
+                     {
+                         "output":  "AP_DAM_WRIS_D06095.osm.pbf",
+                         "description":  "Kalinga Dal Dam / dam",
+                         "bbox":  [
+                                      84.42038905,
+                                      18.93262939,
+                                      84.45038905,
+                                      18.96262939
+                                  ]
+                     }
+                 ]
+}

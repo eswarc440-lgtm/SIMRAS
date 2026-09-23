@@ -1,0 +1,212 @@
+{
+  "created_at_utc": "20260903_182556",
+  "purpose": "Feature-only AP infrastructure ML dataset. No fabricated structural labels.",
+  "targets": {
+    "health": "NOT_AVAILABLE",
+    "risk": "NOT_AVAILABLE",
+    "rul": "NOT_AVAILABLE_FOR_VALIDATED_TRAINING"
+  },
+  "classes": {
+    "bridge": {
+      "assets": 23119,
+      "feature_matrix": "bridge/bridge_feature_matrix.csv",
+      "source_tables": [
+        {
+          "table": "bridge_engineering_features_verified",
+          "link_key": "asset_id",
+          "rows": 2,
+          "linked_assets": 2
+        },
+        {
+          "table": "bridge_digital_twin_profiles",
+          "link_key": "asset_id",
+          "rows": 23119,
+          "linked_assets": 23119
+        },
+        {
+          "table": "bridge_engineering_evidence_verified",
+          "link_key": "asset_id",
+          "rows": 24,
+          "linked_assets": 2
+        },
+        {
+          "table": "bridge_report_readiness",
+          "link_key": "asset_id",
+          "rows": 23119,
+          "linked_assets": 23119
+        },
+        {
+          "table": "bridge_osm_catalog",
+          "link_key": "canonical_asset_id",
+          "rows": 23121,
+          "linked_assets": 23118
+        },
+        {
+          "table": "official_evidence",
+          "link_key": "asset_id",
+          "rows": 0,
+          "linked_assets": 0
+        },
+        {
+          "table": "environment_observations",
+          "link_key": "asset_id",
+          "rows": 3,
+          "linked_assets": 1
+        }
+      ],
+      "real_health_labels": 0,
+      "real_risk_labels": 0,
+      "real_rul_labels": 0,
+      "production_training_allowed": false
+    },
+    "dam": {
+      "assets": 167,
+      "feature_matrix": "dam/dam_feature_matrix.csv",
+      "source_tables": [
+        {
+          "table": "dam_barrage_feature_snapshots",
+          "link_key": "asset_id",
+          "rows": 167,
+          "linked_assets": 167
+        },
+        {
+          "table": "asset_hydrology_source_matches",
+          "link_key": "asset_id",
+          "rows": 33,
+          "linked_assets": 10
+        },
+        {
+          "table": "asset_engineering_evidence_normalized",
+          "link_key": "asset_id",
+          "rows": 165,
+          "linked_assets": 165
+        },
+        {
+          "table": "official_evidence",
+          "link_key": "asset_id",
+          "rows": 166,
+          "linked_assets": 166
+        },
+        {
+          "table": "environment_observations",
+          "link_key": "asset_id",
+          "rows": 466,
+          "linked_assets": 33
+        }
+      ],
+      "real_health_labels": 0,
+      "real_risk_labels": 0,
+      "real_rul_labels": 0,
+      "production_training_allowed": false
+    },
+    "barrage": {
+      "assets": 10,
+      "feature_matrix": "barrage/barrage_feature_matrix.csv",
+      "source_tables": [
+        {
+          "table": "dam_barrage_feature_snapshots",
+          "link_key": "asset_id",
+          "rows": 10,
+          "linked_assets": 10
+        },
+        {
+          "table": "asset_hydrology_source_matches",
+          "link_key": "asset_id",
+          "rows": 2,
+          "linked_assets": 1
+        },
+        {
+          "table": "asset_engineering_evidence_normalized",
+          "link_key": "asset_id",
+          "rows": 10,
+          "linked_assets": 10
+        },
+        {
+          "table": "official_evidence",
+          "link_key": "asset_id",
+          "rows": 10,
+          "linked_assets": 10
+        },
+        {
+          "table": "environment_observations",
+          "link_key": "asset_id",
+          "rows": 305,
+          "linked_assets": 2
+        }
+      ],
+      "real_health_labels": 0,
+      "real_risk_labels": 0,
+      "real_rul_labels": 0,
+      "production_training_allowed": false
+    },
+    "airport": {
+      "assets": 8,
+      "feature_matrix": "airport/airport_feature_matrix.csv",
+      "source_tables": [
+        {
+          "table": "asset_engineering_evidence_normalized",
+          "link_key": "asset_id",
+          "rows": 0,
+          "linked_assets": 0
+        },
+        {
+          "table": "official_evidence",
+          "link_key": "asset_id",
+          "rows": 0,
+          "linked_assets": 0
+        },
+        {
+          "table": "environment_observations",
+          "link_key": "asset_id",
+          "rows": 0,
+          "linked_assets": 0
+        }
+      ],
+      "real_health_labels": 0,
+      "real_risk_labels": 0,
+      "real_rul_labels": 0,
+      "production_training_allowed": false
+    },
+    "temple": {
+      "assets": 7,
+      "feature_matrix": "temple/temple_feature_matrix.csv",
+      "source_tables": [
+        {
+          "table": "temple_engineering_evidence_verified",
+          "link_key": "asset_id",
+          "rows": 17,
+          "linked_assets": 7
+        },
+        {
+          "table": "temple_identity_evidence_verified",
+          "link_key": "asset_id",
+          "rows": 7,
+          "linked_assets": 7
+        },
+        {
+          "table": "asset_engineering_evidence_normalized",
+          "link_key": "asset_id",
+          "rows": 0,
+          "linked_assets": 0
+        },
+        {
+          "table": "official_evidence",
+          "link_key": "asset_id",
+          "rows": 0,
+          "linked_assets": 0
+        },
+        {
+          "table": "environment_observations",
+          "link_key": "asset_id",
+          "rows": 0,
+          "linked_assets": 0
+        }
+      ],
+      "real_health_labels": 0,
+      "real_risk_labels": 0,
+      "real_rul_labels": 0,
+      "production_training_allowed": false
+    }
+  },
+  "experimental_predictions": 192
+}

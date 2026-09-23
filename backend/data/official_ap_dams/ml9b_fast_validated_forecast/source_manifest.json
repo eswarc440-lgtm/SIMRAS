@@ -1,0 +1,50 @@
+[
+  {
+    "path": "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\official_ap_dams\\ap_reservoir_level_2026_2030.csv",
+    "kind": "LEVEL",
+    "target_column": "Manual Daily Reservoir water level (m)",
+    "size_bytes": 148799
+  },
+  {
+    "path": "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\official_ap_dams\\ap_reservoir_storage_2026_2030.csv",
+    "kind": "STORAGE",
+    "target_column": "Manual Daily Reservoir storage (mcm)",
+    "size_bytes": 125326
+  },
+  {
+    "path": "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\official\\dam\\hydrology\\reservoir\\ap_reservoir_level_1970_2025.csv",
+    "kind": "LEVEL",
+    "target_column": "Manual Daily Reservoir water level (m)",
+    "size_bytes": 23762669
+  },
+  {
+    "path": "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\official\\dam\\hydrology\\reservoir\\ap_reservoir_level_2026_2030.csv",
+    "kind": "LEVEL",
+    "target_column": "Manual Daily Reservoir water level (m)",
+    "size_bytes": 148799
+  },
+  {
+    "path": "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\official\\dam\\hydrology\\reservoir\\ap_reservoir_storage_1970_2025.csv",
+    "kind": "STORAGE",
+    "target_column": "Manual Daily Reservoir storage (mcm)",
+    "size_bytes": 18174787
+  },
+  {
+    "path": "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\official\\dam\\hydrology\\reservoir\\ap_reservoir_storage_2026_2030.csv",
+    "kind": "STORAGE",
+    "target_column": "Manual Daily Reservoir storage (mcm)",
+    "size_bytes": 125326
+  },
+  {
+    "path": "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\raw\\nwdp\\ap_reservoir_level_daily_2026_2030.csv",
+    "kind": "LEVEL",
+    "target_column": "Manual Daily Reservoir water level (m)",
+    "size_bytes": 148639
+  },
+  {
+    "path": "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\raw\\nwdp\\ap_reservoir_storage_daily_2026_2030.csv",
+    "kind": "STORAGE",
+    "target_column": "Manual Daily Reservoir storage (mcm)",
+    "size_bytes": 125326
+  }
+]

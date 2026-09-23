@@ -1,0 +1,14 @@
+{
+  "generated_at": "2026-09-03T04:42:23.824718+00:00",
+  "government_csv_files": 8,
+  "source_entities": 111,
+  "simras_dam_barrage_assets": 177,
+  "matched_asset_count": 11,
+  "asset_coverage_percent": 6.21,
+  "matched_high_entities": 33,
+  "matched_review_entities": 2,
+  "unmatched_entities": 76,
+  "database_table": "asset_hydrology_source_matches",
+  "match_csv": "/app/data/processed/dam_barrage/AP_HYDROLOGY_ASSET_MATCHES.csv",
+  "entity_csv": "/app/data/processed/dam_barrage/AP_HYDROLOGY_SOURCE_ENTITIES.csv"
+}

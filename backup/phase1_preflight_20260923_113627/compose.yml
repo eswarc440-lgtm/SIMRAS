@@ -1,0 +1,90 @@
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-simras}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-simras-change-me}
+      POSTGRES_DB: ${POSTGRES_DB:-simras}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgis_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-simras} -d ${POSTGRES_DB:-simras}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-simras}:${POSTGRES_PASSWORD:-simras-change-me}@db:5432/${POSTGRES_DB:-simras}
+      SIMRAS_ML_ARTIFACT_DIR: /artifacts/bridge_nbi
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./data:/data
+      - ./artifacts:/artifacts:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["sh", "-c", "alembic upgrade head && python -m scripts.seed && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"]
+
+  etl:
+    build:
+      context: ./etl
+    profiles: ["etl"]
+    env_file: .env
+    volumes:
+      - ./etl:/app
+      - ./data:/data
+    command: ["python", "-m", "simras_etl.flows"]
+
+  ml:
+    build:
+      context: ./ml
+    profiles: ["ml"]
+    volumes:
+      - ./ml:/app
+      - ./data:/data
+      - ./artifacts:/artifacts
+    command: ["--help"]
+
+  frontend:
+    build:
+      context: ./frontend
+      target: development
+    restart: unless-stopped
+    environment:
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000/api/v1}
+      VITE_CESIUM_ION_TOKEN: ${VITE_CESIUM_ION_TOKEN:-}
+      VITE_DEFAULT_ASSET_ID: ${VITE_DEFAULT_ASSET_ID:-AP_DAM_00001}
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    depends_on:
+      - backend
+
+  martin:
+    image: ghcr.io/maplibre/martin:latest
+    profiles: ["scale"]
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-simras}:${POSTGRES_PASSWORD:-simras-change-me}@db:5432/${POSTGRES_DB:-simras}
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgis_data:
+  frontend_node_modules:

@@ -1,0 +1,18 @@
+{
+  "version": "ml8h_table_a5_extract_v1",
+  "table_anchor_page": 8,
+  "page_range": [
+    7,
+    20
+  ],
+  "candidate_lines": 125,
+  "bridge_rows": 118,
+  "condition_rows": 1,
+  "defect_rows": 13,
+  "detected_headers": 40,
+  "condition_column_detected": true,
+  "date_context_rows": 0,
+  "evidence_status": "POTENTIAL_BRIDGE_LEVEL_CONDITION_TABLE",
+  "training_labels_created": 0,
+  "database_modified": false
+}

@@ -1,0 +1,16 @@
+{
+  "approved_rows": 2,
+  "same_model_preexisting": 0,
+  "inserted": 2,
+  "verified_assets": 2,
+  "target": "risk",
+  "risk_semantics": "Calibrated probability of POOR condition at next inspection * 100",
+  "status": "RESEARCH_TRANSFER",
+  "model_version": "bridge_model_ladder_v1_20260903_191010",
+  "feature_version": "ap_nbi_shared_crosswalk_v1",
+  "Health": "WITHHELD",
+  "RUL": "WITHHELD",
+  "Confidence": "WITHHELD_AP_GROUND_TRUTH_VALIDATION_PENDING",
+  "AP_ground_truth_validated": false,
+  "database_written": true
+}

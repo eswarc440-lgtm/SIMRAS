@@ -1,0 +1,11 @@
+{
+  "schema_version": "ml_bridge_inspection_v1",
+  "synthetic_labels_allowed": false,
+  "asset_condition_is_training_label": false,
+  "osm_is_condition_label": false,
+  "government_inspection_allowed": true,
+  "official_engineering_inspection_allowed": true,
+  "current_condition_minimum": "1 verified labelled inspection",
+  "temporal_risk_minimum": "2 verified labelled dates for same asset",
+  "rul_policy": "RUL remains withheld until longitudinal deterioration evidence and validation gates are established."
+}

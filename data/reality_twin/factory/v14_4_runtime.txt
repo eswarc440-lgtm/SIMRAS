@@ -1,0 +1,1 @@
+SCRIPT|/work/tools/osm2world/current/osm2world.sh

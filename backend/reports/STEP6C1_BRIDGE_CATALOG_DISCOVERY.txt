@@ -1,0 +1,38 @@
+===================================================================================================================
+SIMRAS STEP 6C.1 - STATEWIDE BRIDGE CATALOG DISCOVERY RESULT
+===================================================================================================================
+
+Current canonical bridge assets : 2
+Candidate DB source tables      : 1
+Likely promotion source tables  : 0
+Bridge-related repository files : 9
+
+DATABASE CANDIDATES:
+
+public.map_features | score=6 | rows=21 | type=BASE TABLE
+  columns: id, source_id, external_id, name, feature_type, subtype, geometry, attributes, identity_status, confidence_score, retrieved_at, created_at, updated_at
+  sample1: {"id": 1, "source_id": 96, "external_id": "node/12994101236", "name": "Gannavaram Airport", "feature_type": "airport", "subtype": "aerodrome", "attributes": "{'name': 'Gannavaram Airport', 'aeroway': 'aerodrome'}", "identity_status": "SOURCE_REPORTED", "confidence_score": 0.75, "retrieved_at": "2026-08-28 03:50:31.815473+00:00", "created_at": "2026-08-28 03:50:34.980790+00:00", "updated_at": "2026-08-28 03:50:34.980790+00:00"}
+  sample2: {"id": 2, "source_id": 96, "external_id": "way/82611242", "name": "Tirupati Airport", "feature_type": "airport", "subtype": "public", "attributes": "{'ref': 'TIR', 'iata': 'TIR', 'icao': 'VOTP', 'name': 'Tirupati Airport', 'aeroway': 'aerodrome', 'operator': 'Airports Authority of India', 'wikidata': 'Q1321723', 'wikipedia': 'en:Tirupati Airport', 'aerodrome:type': 'public'}", "identity_status": "SOURCE_REPORTED", "confidence_score": 0.75, "retrieved_at": "2026-08-28 03:50:31.815473+00:00", "created_at": "2026-08-28 03:50:34.980790+00:00", "updated_at": "2026-08-28 03:50:34.980790+00:00"}
+  sample3: {"id": 3, "source_id": 96, "external_id": "way/101362695", "name": "Nagarjuna Sagar", "feature_type": "airport", "subtype": "aerodrome", "attributes": "{'icao': 'VONS', 'name': 'Nagarjuna Sagar', 'aeroway': 'aerodrome', 'wikidata': 'Q12694095'}", "identity_status": "SOURCE_REPORTED", "confidence_score": 0.75, "retrieved_at": "2026-08-28 03:50:31.815473+00:00", "created_at": "2026-08-28 03:50:34.980790+00:00", "updated_at": "2026-08-28 03:50:34.980790+00:00"}
+
+BRIDGE-RELATED FILES:
+  data/processed/bridge/AP_BRIDGE_ENGINEERING_EVIDENCE.csv | 0.008 MB | columns=asset_id,asset_name,asset_code,evidence_type,feature_name,numeric_value,text_value,unit,component,source_tier,source_authority,source_key,source_title,is_derived,verification_method,is_synthetic,is_current_condition_label,is_health_label,is_risk_label,is_rul_label
+  reports/STEP6A_BRIDGE_INVENTORY.json | 0.002 MB
+  reports/STEP6A_BRIDGE_INVENTORY.txt | 0.002 MB
+  reports/STEP6B_BRIDGE_ENGINEERING_REPORT.json | 0.002 MB
+  data/processed/bridge/AP_BRIDGE_ENGINEERING_FEATURES.csv | 0.001 MB | columns=asset_id,asset_code,asset_name,district,structure_mode,length_m,width_m,pier_count,abutment_count,span_count,max_reported_span_m,lane_or_track_count,material_summary,completion_year_evidence,full_operation_year,current_maintenance_procurement,government_evidence_rows,technical_reference_rows,current_structural_condition_labels,health_ml_readiness
+  data/processed/bridge/AP_BRIDGE_SOURCE_PLAN.csv | 0.001 MB | columns=asset_id,asset_code,asset_name,normalized_name,district,latitude,longitude,built_year,material,design_life_years,length_m,width_m,height_m,official_evidence_rows,inspection_rows,real_inspection_rows,synthetic_inspection_rows,prediction_rows,real_inspection_status,health_ml_readiness
+  reports/STEP6B_BRIDGE_ENGINEERING_REPORT.txt | 0.001 MB
+  reports/ml/latest/11_BRIDGE_MODEL_REPORT.md | 0.0 MB
+  reports/ml/run_20260903_020557/11_BRIDGE_MODEL_REPORT.md | 0.0 MB
+
+NEXT DECISION:
+  No bridge rows have been promoted in this step.
+  The highest-quality statewide ETL source will be selected
+  from the database/files above and reconciled against the
+  two verified anchor bridges before canonical promotion.
+
+IMPORTANT:
+  Do not train statewide AP bridge ML until the canonical
+  bridge catalog and real validation-label strategy are locked.
+===================================================================================================================

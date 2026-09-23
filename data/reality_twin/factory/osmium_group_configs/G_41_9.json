@@ -1,0 +1,185 @@
+{
+    "directory":  "/work/data/reality_twin/factory/osm_extracts",
+    "extracts":  [
+                     {
+                         "output":  "AP_BAR_WRIS_B00434.osm.pbf",
+                         "description":  "Gotta Barrage / barrage",
+                         "bbox":  [
+                                      83.95060961,
+                                      18.67649917,
+                                      83.97460961,
+                                      18.70049917
+                                  ]
+                     },
+                     {
+                         "output":  "AP_BAR_WRIS_B00435.osm.pbf",
+                         "description":  "Neradi Barrage / barrage",
+                         "bbox":  [
+                                      83.79816627,
+                                      18.97997127,
+                                      83.82216627,
+                                      19.00397127
+                                  ]
+                     },
+                     {
+                         "output":  "AP_BAR_WRIS_B00165.osm.pbf",
+                         "description":  "Tarakarama Thirtha Sagaram Barrage / barrage",
+                         "bbox":  [
+                                      83.4213391,
+                                      18.22933711,
+                                      83.4453391,
+                                      18.25333711
+                                  ]
+                     },
+                     {
+                         "output":  "AP_BAR_WRIS_B00429.osm.pbf",
+                         "description":  "Thotapalli Barrage / barrage",
+                         "bbox":  [
+                                      83.48461842,
+                                      18.77329852,
+                                      83.50861842,
+                                      18.797298520000002
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0072.osm.pbf",
+                         "description":  "Andhra Dam / dam",
+                         "bbox":  [
+                                      83.18257541,
+                                      18.32765174,
+                                      83.21257541,
+                                      18.35765174
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0033.osm.pbf",
+                         "description":  "Gujjuvai  Reservoir / dam",
+                         "bbox":  [
+                                      83.71833333,
+                                      18.92388889,
+                                      83.74833333,
+                                      18.95388889
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01HH0023.osm.pbf",
+                         "description":  "Guntawada Main Dam / dam",
+                         "bbox":  [
+                                      82.02441964,
+                                      18.04478839,
+                                      82.05441964,
+                                      18.074788390000002
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01_0131.osm.pbf",
+                         "description":  "Hiramandalam Dam / dam",
+                         "bbox":  [
+                                      83.931476809999992,
+                                      18.64994367,
+                                      83.96147681,
+                                      18.67994367
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01HH0132.osm.pbf",
+                         "description":  "Jhanjhavathi / Janjavathi Dam / dam",
+                         "bbox":  [
+                                      83.41955871,
+                                      18.84774443,
+                                      83.44955871,
+                                      18.87774443
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D02317.osm.pbf",
+                         "description":  "Kumili Dam / dam",
+                         "bbox":  [
+                                      83.49907376,
+                                      18.106591939999998,
+                                      83.52907376,
+                                      18.13659194
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0075.osm.pbf",
+                         "description":  "Madduvalasa Dam / dam",
+                         "bbox":  [
+                                      83.60423487,
+                                      18.57232798,
+                                      83.63423487,
+                                      18.602327980000002
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D02198.osm.pbf",
+                         "description":  "Narayanapuram Dam / dam",
+                         "bbox":  [
+                                      83.79460236,
+                                      18.47174298,
+                                      83.82460236,
+                                      18.50174298
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0140.osm.pbf",
+                         "description":  "Peddagedda Dam / dam",
+                         "bbox":  [
+                                      83.09797336,
+                                      18.45538458,
+                                      83.12797336,
+                                      18.48538458
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0053.osm.pbf",
+                         "description":  "Raiwada Dam / dam",
+                         "bbox":  [
+                                      82.95079849,
+                                      17.99163975,
+                                      82.98079849,
+                                      18.021639750000002
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01HH0024.osm.pbf",
+                         "description":  "Thatipudi Dam / dam",
+                         "bbox":  [
+                                      83.17641839,
+                                      18.15717773,
+                                      83.20641839,
+                                      18.187177730000002
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0147.osm.pbf",
+                         "description":  "Vanaka Badigedda Dam / dam",
+                         "bbox":  [
+                                      83.4037376,
+                                      18.88252984,
+                                      83.4337376,
+                                      18.91252984
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0069.osm.pbf",
+                         "description":  "Vengalaraya Sagar Dam / dam",
+                         "bbox":  [
+                                      83.20658412,
+                                      18.60824116,
+                                      83.23658412,
+                                      18.63824116
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0030.osm.pbf",
+                         "description":  "Vottigadda Dam / dam",
+                         "bbox":  [
+                                      83.57314987,
+                                      18.82355824,
+                                      83.60314987,
+                                      18.85355824
+                                  ]
+                     }
+                 ]
+}

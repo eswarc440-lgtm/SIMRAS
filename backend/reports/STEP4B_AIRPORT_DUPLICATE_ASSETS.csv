@@ -1,0 +1,5 @@
+asset_id,asset_code,asset_name,district,latitude,longitude,built_year,icao_code,aai_canonical_name,mapping_status,source_authority,source_system,eaip_required
+191,AP_AIR_AAI_VIJAYAWADA,Vijayawada Airport,Krishna,,,,VOBZ,Vijayawada Airport,AUTO_NAME_MATCH,Airports Authority of India,AIM India / eAIP,YES
+204,AP_AIR_VOBZ,Vijayawada Airport,Krishna,,,,VOBZ,Vijayawada Airport,AUTO_NAME_MATCH,Airports Authority of India,AIM India / eAIP,YES
+194,AP_AIR_AAI_TIRUPATI,Tirupati Airport,Tirupati,,,,VOTP,Tirupati Airport,AUTO_NAME_MATCH,Airports Authority of India,AIM India / eAIP,YES
+205,AP_AIR_VOTP,Tirupati Airport,Tirupati,,,,VOTP,Tirupati Airport,AUTO_NAME_MATCH,Airports Authority of India,AIM India / eAIP,YES

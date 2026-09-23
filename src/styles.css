@@ -1,0 +1,266 @@
+:root {
+  font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  color: #172B3A;
+  background-color: #F5F8FB;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+
+  /* Central SIMRAS Government Design Tokens */
+  --simras-navy: #0C4775;
+  --simras-navy-dark: #083354;
+  --simras-navy-light: #155A91;
+  --simras-blue: #0875BE;
+  --simras-blue-hover: #0764A3;
+  --simras-blue-light: #EAF5FC;
+  --simras-background: #F5F8FB;
+  --simras-background-alt: #F7F9FC;
+  --simras-surface: #FFFFFF;
+  --simras-border: #D9E3EC;
+  --simras-border-subtle: #E2EAF1;
+  --simras-text: #172B3A;
+  --simras-muted: #61788A;
+  --simras-success: #20A36A;
+  --simras-success-bg: #E8F7F0;
+  --simras-warning: #F2A623;
+  --simras-warning-bg: #FEF6E9;
+  --simras-danger: #D94343;
+  --simras-danger-bg: #FDF1F1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #F5F8FB;
+  color: #172B3A;
+  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Light Card & Container Standards */
+.gov-card {
+  background: #FFFFFF;
+  border: 1px solid #D9E3EC;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(12, 71, 117, 0.04);
+}
+
+.gov-card-interactive {
+  background: #FFFFFF;
+  border: 1px solid #D9E3EC;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(12, 71, 117, 0.04);
+  transition: all 0.15s ease-in-out;
+}
+
+.gov-card-interactive:hover {
+  border-color: #0875BE;
+  box-shadow: 0 4px 12px rgba(8, 117, 190, 0.08);
+  transform: translateY(-1px);
+}
+
+/* Standard Government Table */
+.gov-table-container {
+  background: #FFFFFF;
+  border: 1px solid #D9E3EC;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.gov-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+  color: #172B3A;
+}
+
+.gov-table th {
+  background-color: #F4F7FA;
+  color: #61788A;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 10px 14px;
+  border-bottom: 1px solid #D9E3EC;
+}
+
+.gov-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #E2EAF1;
+  background-color: #FFFFFF;
+}
+
+.gov-table tr:last-child td {
+  border-bottom: none;
+}
+
+.gov-table tr:hover td {
+  background-color: #F8FAFC;
+}
+
+/* Input Fields */
+.gov-input {
+  height: 42px;
+  padding: 8px 12px;
+  background: #FFFFFF;
+  border: 1px solid #D9E3EC;
+  border-radius: 6px;
+  color: #172B3A;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.gov-input:focus {
+  border-color: #0875BE;
+  box-shadow: 0 0 0 2px rgba(8, 117, 190, 0.12);
+}
+
+/* Primary Action Buttons */
+.gov-btn-primary {
+  background-color: #0875BE;
+  color: #FFFFFF;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 9px 16px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background-color 0.15s;
+}
+
+.gov-btn-primary:hover {
+  background-color: #0764A3;
+}
+
+.gov-btn-secondary {
+  background-color: #FFFFFF;
+  color: #172B3A;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 9px 16px;
+  border-radius: 6px;
+  border: 1px solid #D9E3EC;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.gov-btn-secondary:hover {
+  background-color: #F4F7FA;
+  border-color: #CBD5E1;
+}
+
+/* Status Pills */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.status-pill.good {
+  background-color: #E8F7F0;
+  color: #20A36A;
+  border: 1px solid rgba(32, 163, 106, 0.25);
+}
+
+.status-pill.warn {
+  background-color: #FEF6E9;
+  color: #F2A623;
+  border: 1px solid rgba(242, 166, 35, 0.25);
+}
+
+.status-pill.danger {
+  background-color: #FDF1F1;
+  color: #D94343;
+  border: 1px solid rgba(217, 67, 67, 0.25);
+}
+
+.status-pill.neutral {
+  background-color: #F1F5F9;
+  color: #61788A;
+  border: 1px solid #D9E3EC;
+}
+
+/* Leaflet Overrides for Light Theme */
+.leaflet-container {
+  background-color: #E6ECF2 !important;
+  font-family: inherit !important;
+}
+
+.leaflet-control-zoom a {
+  background-color: #FFFFFF !important;
+  color: #172B3A !important;
+  border: 1px solid #D9E3EC !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #FFFFFF !important;
+  color: #172B3A !important;
+  border-radius: 8px !important;
+  border: 1px solid #D9E3EC !important;
+  box-shadow: 0 10px 25px -5px rgba(12, 71, 117, 0.12) !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+
+.leaflet-popup-tip {
+  background: #FFFFFF !important;
+  border: 1px solid #D9E3EC !important;
+}
+
+/* Scrollbars for light theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F4F7FA;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* SIMRAS GIS map stage */
+.gis-map {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 480px;
+  position: relative;
+  z-index: 1;
+}
+

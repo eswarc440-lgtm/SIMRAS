@@ -1,0 +1,417 @@
+{
+  "images_in_database": 14,
+  "verified_pairs": 7,
+  "strongest_pair_inliers": 233,
+  "pair_counts_by_inlier_threshold": {
+    "15": 7,
+    "30": 5,
+    "50": 4,
+    "100": 3
+  },
+  "largest_component_ge15": 5,
+  "largest_component_ge30": 4,
+  "global_attempt_allowed": true,
+  "recommendation": "TRY_GLOBAL_SFM",
+  "components": {
+    "15": [
+      {
+        "size": 5,
+        "images": [
+          "img_003.jpg",
+          "img_008.jpg",
+          "img_010.jpg",
+          "img_012.jpg",
+          "img_007.jpg"
+        ],
+        "image_ids": [
+          3,
+          8,
+          10,
+          12,
+          7
+        ]
+      },
+      {
+        "size": 2,
+        "images": [
+          "img_001.jpg",
+          "img_002.jpg"
+        ],
+        "image_ids": [
+          1,
+          2
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_004.jpg"
+        ],
+        "image_ids": [
+          4
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_005.jpg"
+        ],
+        "image_ids": [
+          5
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_006.jpg"
+        ],
+        "image_ids": [
+          6
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_009.jpg"
+        ],
+        "image_ids": [
+          9
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_011.jpg"
+        ],
+        "image_ids": [
+          11
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_013.jpg"
+        ],
+        "image_ids": [
+          13
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_014.jpg"
+        ],
+        "image_ids": [
+          14
+        ]
+      }
+    ],
+    "30": [
+      {
+        "size": 4,
+        "images": [
+          "img_003.jpg",
+          "img_008.jpg",
+          "img_012.jpg",
+          "img_007.jpg"
+        ],
+        "image_ids": [
+          3,
+          8,
+          12,
+          7
+        ]
+      },
+      {
+        "size": 2,
+        "images": [
+          "img_001.jpg",
+          "img_002.jpg"
+        ],
+        "image_ids": [
+          1,
+          2
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_004.jpg"
+        ],
+        "image_ids": [
+          4
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_005.jpg"
+        ],
+        "image_ids": [
+          5
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_006.jpg"
+        ],
+        "image_ids": [
+          6
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_009.jpg"
+        ],
+        "image_ids": [
+          9
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_010.jpg"
+        ],
+        "image_ids": [
+          10
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_011.jpg"
+        ],
+        "image_ids": [
+          11
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_013.jpg"
+        ],
+        "image_ids": [
+          13
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_014.jpg"
+        ],
+        "image_ids": [
+          14
+        ]
+      }
+    ],
+    "50": [
+      {
+        "size": 4,
+        "images": [
+          "img_003.jpg",
+          "img_008.jpg",
+          "img_012.jpg",
+          "img_007.jpg"
+        ],
+        "image_ids": [
+          3,
+          8,
+          12,
+          7
+        ]
+      },
+      {
+        "size": 2,
+        "images": [
+          "img_001.jpg",
+          "img_002.jpg"
+        ],
+        "image_ids": [
+          1,
+          2
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_004.jpg"
+        ],
+        "image_ids": [
+          4
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_005.jpg"
+        ],
+        "image_ids": [
+          5
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_006.jpg"
+        ],
+        "image_ids": [
+          6
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_009.jpg"
+        ],
+        "image_ids": [
+          9
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_010.jpg"
+        ],
+        "image_ids": [
+          10
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_011.jpg"
+        ],
+        "image_ids": [
+          11
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_013.jpg"
+        ],
+        "image_ids": [
+          13
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_014.jpg"
+        ],
+        "image_ids": [
+          14
+        ]
+      }
+    ],
+    "100": [
+      {
+        "size": 3,
+        "images": [
+          "img_003.jpg",
+          "img_008.jpg",
+          "img_007.jpg"
+        ],
+        "image_ids": [
+          3,
+          8,
+          7
+        ]
+      },
+      {
+        "size": 2,
+        "images": [
+          "img_001.jpg",
+          "img_002.jpg"
+        ],
+        "image_ids": [
+          1,
+          2
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_004.jpg"
+        ],
+        "image_ids": [
+          4
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_005.jpg"
+        ],
+        "image_ids": [
+          5
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_006.jpg"
+        ],
+        "image_ids": [
+          6
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_009.jpg"
+        ],
+        "image_ids": [
+          9
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_010.jpg"
+        ],
+        "image_ids": [
+          10
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_011.jpg"
+        ],
+        "image_ids": [
+          11
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_012.jpg"
+        ],
+        "image_ids": [
+          12
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_013.jpg"
+        ],
+        "image_ids": [
+          13
+        ]
+      },
+      {
+        "size": 1,
+        "images": [
+          "img_014.jpg"
+        ],
+        "image_ids": [
+          14
+        ]
+      }
+    ]
+  }
+}

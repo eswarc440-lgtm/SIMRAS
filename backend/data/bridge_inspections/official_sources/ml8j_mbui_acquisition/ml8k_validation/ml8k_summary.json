@@ -1,0 +1,10 @@
+{
+  "version": "ml8k_real_inspection_gate_v1",
+  "files_found": 0,
+  "rows_seen": 0,
+  "candidate_real_rows": 0,
+  "rejected_rows": 0,
+  "rows_imported": 0,
+  "database_modified": false,
+  "structural_model_unlocked": false
+}

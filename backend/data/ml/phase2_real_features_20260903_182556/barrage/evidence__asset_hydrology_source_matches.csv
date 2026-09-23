@@ -1,0 +1,3 @@
+id,asset_id,asset_code,asset_name,asset_type,dataset,source_name,source_code,parameter,latitude,longitude,source_row_count,match_score,name_score,coordinate_score,distance_km,match_method,match_status,provenance,created_at
+16,184,AP_BAR_WRIS_B00448,Swarnamukhi Barrage,barrage,ap_reservoir_level_1970_2025.csv,SWARNAMUKHI.,79.70111111,,28.0,13.75722222,6311,1.0,1.0,0.0,,EXACT_OR_ALIAS_NAME,MATCHED_HIGH,AP_NWDP_GOVERNMENT_DATA,2026-09-03T04:42:23.619835+00:00
+30,184,AP_BAR_WRIS_B00448,Swarnamukhi Barrage,barrage,ap_reservoir_level_2026_2030.csv,SWARNAMUKHI.,79.70111111,,28.0,13.75722222,58,1.0,1.0,0.0,,EXACT_OR_ALIAS_NAME,MATCHED_HIGH,AP_NWDP_GOVERNMENT_DATA,2026-09-03T04:42:23.619835+00:00

@@ -1,0 +1,25 @@
+{
+  "model_features": [
+    "log_structure_length",
+    "lanes_count",
+    "bridge_age_years",
+    "route_HIGH_CAPACITY",
+    "route_ARTERIAL",
+    "route_COLLECTOR",
+    "route_LOCAL",
+    "route_OTHER"
+  ],
+  "source_features": [
+    "structure_length_m",
+    "route_class",
+    "lanes_count",
+    "bridge_age_years"
+  ],
+  "excluded": [
+    "render_width_m",
+    "assets.condition",
+    "synthetic inspections",
+    "experimental RUL",
+    "current structural inspection ratings"
+  ]
+}

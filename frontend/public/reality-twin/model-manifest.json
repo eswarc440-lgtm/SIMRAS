@@ -1,0 +1,1942 @@
+[
+    {
+        "asset_code":  "AP_AIR_AAI_KADAPA",
+        "latitude":  14.5101,
+        "longitude":  78.7728,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_AIR_AAI_KADAPA/AP_AIR_AAI_KADAPA.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_AIR_AAI_KURNOOL",
+        "latitude":  15.7163,
+        "longitude":  78.1692,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_AIR_AAI_KURNOOL/AP_AIR_AAI_KURNOOL.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_AIR_AAI_RAJAHMUNDRY",
+        "latitude":  17.1104,
+        "longitude":  81.8182,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_AIR_AAI_RAJAHMUNDRY/AP_AIR_AAI_RAJAHMUNDRY.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_AIR_AAI_TIRUPATI",
+        "latitude":  13.6325,
+        "longitude":  79.5433,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_AIR_AAI_TIRUPATI/AP_AIR_AAI_TIRUPATI.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_AIR_VOTP",
+        "latitude":  13.633056,
+        "longitude":  79.541944,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_AIR_VOTP/AP_AIR_VOTP.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_AIR_VOBZ",
+        "latitude":  16.533611,
+        "longitude":  80.803333,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_AIR_VOBZ/AP_AIR_VOBZ.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_AIR_AAI_VIJAYAWADA",
+        "latitude":  16.5304,
+        "longitude":  80.7968,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_AIR_AAI_VIJAYAWADA/AP_AIR_AAI_VIJAYAWADA.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_AIR_AAI_VISAKHAPATNAM",
+        "latitude":  17.7212,
+        "longitude":  83.2245,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_AIR_AAI_VISAKHAPATNAM/AP_AIR_AAI_VISAKHAPATNAM.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_BAR_WRIS_B01201",
+        "latitude":  14.91841065,
+        "longitude":  77.82824068,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_BAR_WRIS_B01201/AP_BAR_WRIS_B01201.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_BAR_WRIS_B00434",
+        "latitude":  18.68849917,
+        "longitude":  83.96260961,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_BAR_WRIS_B00434/AP_BAR_WRIS_B00434.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_BAR_WRIS_B00435",
+        "latitude":  18.99197127,
+        "longitude":  83.81016627,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_BAR_WRIS_B00435/AP_BAR_WRIS_B00435.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_00001",
+        "latitude":  16.5075,
+        "longitude":  80.6052777777778,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_DAM_00001/AP_DAM_00001.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_BAR_WRIS_B00800",
+        "latitude":  15.04166667,
+        "longitude":  79.70833333,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_BAR_WRIS_B00800/AP_BAR_WRIS_B00800.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_BAR_WRIS_B00131",
+        "latitude":  16.93630906,
+        "longitude":  81.75615385,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_BAR_WRIS_B00131/AP_BAR_WRIS_B00131.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_BAR_WRIS_B00448",
+        "latitude":  14.00638047,
+        "longitude":  80.06930247,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_BAR_WRIS_B00448/AP_BAR_WRIS_B00448.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_BAR_WRIS_B00165",
+        "latitude":  18.24133711,
+        "longitude":  83.4333391,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_BAR_WRIS_B00165/AP_BAR_WRIS_B00165.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_BAR_WRIS_B00429",
+        "latitude":  18.78529852,
+        "longitude":  83.49661842,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_BAR_WRIS_B00429/AP_BAR_WRIS_B00429.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_BAR_WRIS_B01609",
+        "latitude":  16.58160938,
+        "longitude":  80.42228184,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_BAR_WRIS_B01609/AP_BAR_WRIS_B01609.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_BR_00001",
+        "latitude":  17.007833,
+        "longitude":  81.75583,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_BR_00001/AP_BR_00001.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_BR_00002",
+        "latitude":  16.5154062,
+        "longitude":  80.6029107,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_BR_00002/AP_BR_00002.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D01773",
+        "latitude":  14.79085399,
+        "longitude":  77.29862207,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_DAM_WRIS_D01773/AP_DAM_WRIS_D01773.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0168",
+        "latitude":  13.76833333,
+        "longitude":  79.33916667,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_DAM_WRIS_AP01MH0168/AP_DAM_WRIS_AP01MH0168.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0084",
+        "latitude":  17.13395618,
+        "longitude":  80.59027273,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_DAM_WRIS_AP01LH0084/AP_DAM_WRIS_AP01LH0084.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D06052",
+        "latitude":  15.69996308,
+        "longitude":  78.40817558,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_DAM_WRIS_D06052/AP_DAM_WRIS_D06052.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0085",
+        "latitude":  14.56027829,
+        "longitude":  79.38739583,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_DAM_WRIS_AP01LH0085/AP_DAM_WRIS_AP01LH0085.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0072",
+        "latitude":  18.34265174,
+        "longitude":  83.19757541,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_DAM_WRIS_AP01MH0072/AP_DAM_WRIS_AP01MH0072.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0021",
+        "latitude":  13.41694978,
+        "longitude":  79.74269111,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_DAM_WRIS_AP01MH0021/AP_DAM_WRIS_AP01MH0021.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01HH0127",
+        "latitude":  13.55934796,
+        "longitude":  78.62877169,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0018",
+        "latitude":  14.53801688,
+        "longitude":  76.83914118,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_DAM_WRIS_AP01MH0018/AP_DAM_WRIS_AP01MH0018.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D01879",
+        "latitude":  17.44681795,
+        "longitude":  81.76549352,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_DAM_WRIS_D01879/AP_DAM_WRIS_D01879.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01HH0019",
+        "latitude":  16.48199115,
+        "longitude":  79.53124211,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_DAM_WRIS_AP01HH0019/AP_DAM_WRIS_AP01HH0019.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0073",
+        "latitude":  14.40017137,
+        "longitude":  78.83565042,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_DAM_WRIS_AP01MH0073/AP_DAM_WRIS_AP01MH0073.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0034",
+        "latitude":  14.18511928,
+        "longitude":  77.77219364,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_DAM_WRIS_AP01LH0034/AP_DAM_WRIS_AP01LH0034.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0128",
+        "latitude":  14.91831297,
+        "longitude":  77.82826904,
+        "priority":  2,
+        "model_url":  "/reality-twin/models/AP_DAM_WRIS_AP01MH0128/AP_DAM_WRIS_AP01MH0128.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0086",
+        "latitude":  13.45166667,
+        "longitude":  78.82166667,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0129",
+        "latitude":  14.21376072,
+        "longitude":  79.01755427,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0087",
+        "latitude":  14.67083333,
+        "longitude":  77.67027778,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0090",
+        "latitude":  13.63333333,
+        "longitude":  78.6,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0089",
+        "latitude":  13.64805556,
+        "longitude":  79.0925,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0026",
+        "latitude":  13.86161573,
+        "longitude":  78.17947277,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0091",
+        "latitude":  14.69667139,
+        "longitude":  78.32099927,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D00569",
+        "latitude":  14.56189482,
+        "longitude":  77.95875023,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0001",
+        "latitude":  15.57613043,
+        "longitude":  79.08129862,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0077",
+        "latitude":  17.33916667,
+        "longitude":  82.23666667,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0125",
+        "latitude":  14.39855365,
+        "longitude":  77.74328411,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0002",
+        "latitude":  16.54333333,
+        "longitude":  80.4525,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01HH0057",
+        "latitude":  17.93429283,
+        "longitude":  81.79511466,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0080",
+        "latitude":  15.75361111,
+        "longitude":  78.97833333,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D06074",
+        "latitude":  15.13353222,
+        "longitude":  78.86885221,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_TL47HH0060",
+        "latitude":  17.8651526,
+        "longitude":  81.70191883,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0047",
+        "latitude":  15.69345933,
+        "longitude":  77.6196078,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0092",
+        "latitude":  16.07975491,
+        "longitude":  79.19397414,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0063",
+        "latitude":  14.99069647,
+        "longitude":  79.29765101,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D02672",
+        "latitude":  17.87570318,
+        "longitude":  83.3522305,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0167",
+        "latitude":  13.690976,
+        "longitude":  79.353559,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D06350",
+        "latitude":  15.11544984,
+        "longitude":  77.60546379,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01HH0130",
+        "latitude":  15.57006907,
+        "longitude":  78.40330932,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0093",
+        "latitude":  13.23,
+        "longitude":  78.81944444,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0033",
+        "latitude":  18.93888889,
+        "longitude":  83.73333333,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0094",
+        "latitude":  13.48,
+        "longitude":  79.525,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D00587",
+        "latitude":  15.66088434,
+        "longitude":  79.98661493,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D03507",
+        "latitude":  15.35489328,
+        "longitude":  78.81859319,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0095",
+        "latitude":  15.35527778,
+        "longitude":  79.81861111,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01HH0023",
+        "latitude":  18.05978839,
+        "longitude":  82.03941964,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0096",
+        "latitude":  13.90717929,
+        "longitude":  77.29847333,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01_0131",
+        "latitude":  18.66494367,
+        "longitude":  83.94647681,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0054",
+        "latitude":  14.73138889,
+        "longitude":  78.78138889,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0097",
+        "latitude":  17.66696959,
+        "longitude":  82.75100659,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0051",
+        "latitude":  15.72272933,
+        "longitude":  78.31117549,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01HH0064",
+        "latitude":  17.29000348,
+        "longitude":  81.34574665,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01HH0132",
+        "latitude":  18.86274443,
+        "longitude":  83.43455871,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D06395",
+        "latitude":  15.65104814,
+        "longitude":  79.11110054,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0015",
+        "latitude":  13.60794554,
+        "longitude":  79.79502307,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0041",
+        "latitude":  14.735,
+        "longitude":  78.45722222,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D06095",
+        "latitude":  18.94762939,
+        "longitude":  84.43538905,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_NWDP_AP01HH0040",
+        "latitude":  13.6575477,
+        "longitude":  79.2692838,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0098",
+        "latitude":  14.78965363,
+        "longitude":  79.24861601,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01HH0133",
+        "latitude":  14.33612279,
+        "longitude":  79.62390336,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D06351",
+        "latitude":  14.80138504,
+        "longitude":  77.06886359,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D00719",
+        "latitude":  14.54733101,
+        "longitude":  79.853524,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0099",
+        "latitude":  13.86472222,
+        "longitude":  77.72611111,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0056",
+        "latitude":  17.96612358,
+        "longitude":  82.85416886,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D02041",
+        "latitude":  17.19816059,
+        "longitude":  81.5079656,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0052",
+        "latitude":  13.36900447,
+        "longitude":  79.35319891,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01HH0169",
+        "latitude":  13.72861111,
+        "longitude":  79.325,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D02317",
+        "latitude":  18.12159194,
+        "longitude":  83.51407376,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0100",
+        "latitude":  13.975491,
+        "longitude":  78.52705451,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D02086",
+        "latitude":  14.95356084,
+        "longitude":  78.94818736,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0102",
+        "latitude":  13.92755361,
+        "longitude":  77.2473022,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0078",
+        "latitude":  17.48579608,
+        "longitude":  82.01205806,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0075",
+        "latitude":  18.58732798,
+        "longitude":  83.61923487,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_NWDP_AP01MH0135",
+        "latitude":  13.6808173,
+        "longitude":  79.5277787,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0136",
+        "latitude":  14.29402569,
+        "longitude":  77.91749909,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0006",
+        "latitude":  15.73166667,
+        "longitude":  79.27777778,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D06353",
+        "latitude":  14.822925,
+        "longitude":  77.878639,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0042",
+        "latitude":  17.765,
+        "longitude":  83.19083333,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D06026",
+        "latitude":  14.87087862,
+        "longitude":  77.40949728,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0004",
+        "latitude":  15.1062066,
+        "longitude":  79.48193501,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0036",
+        "latitude":  16.05434157,
+        "longitude":  79.33638759,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01HH0137",
+        "latitude":  17.38000725,
+        "longitude":  81.76728038,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0103",
+        "latitude":  14.09944444,
+        "longitude":  78.08305556,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0058",
+        "latitude":  14.84951961,
+        "longitude":  78.34061776,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0138",
+        "latitude":  17.93626096,
+        "longitude":  82.76787008,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0083",
+        "latitude":  14.825,
+        "longitude":  78.75,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0152",
+        "latitude":  14.79027778,
+        "longitude":  78.79861111,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0028",
+        "latitude":  15.552044799999999,
+        "longitude":  77.29406233,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0010",
+        "latitude":  15.05772296,
+        "longitude":  79.37444669,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D02198",
+        "latitude":  18.48674298,
+        "longitude":  83.80960236,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D00721",
+        "latitude":  14.45153115,
+        "longitude":  79.95560153,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D06356",
+        "latitude":  15.161697,
+        "longitude":  77.504906,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D00963",
+        "latitude":  15.18621995,
+        "longitude":  78.0970444,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0046",
+        "latitude":  17.28731254,
+        "longitude":  82.40752984,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0104",
+        "latitude":  14.04016839,
+        "longitude":  78.1465663,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01HH0060",
+        "latitude":  13.71944444,
+        "longitude":  79.34361111,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0105",
+        "latitude":  13.47666667,
+        "longitude":  79.83972222,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0106",
+        "latitude":  13.44169496,
+        "longitude":  78.44984365,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0070",
+        "latitude":  13.96924829,
+        "longitude":  78.38503034,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0037",
+        "latitude":  14.30875678,
+        "longitude":  77.65125139,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0108",
+        "latitude":  13.33696958,
+        "longitude":  78.72407397,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0109",
+        "latitude":  13.70244114,
+        "longitude":  78.20273467,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0107",
+        "latitude":  13.46881704,
+        "longitude":  79.74263737,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0044",
+        "latitude":  15.95833333,
+        "longitude":  79.13611111,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0140",
+        "latitude":  18.47038458,
+        "longitude":  83.11297336,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D04538",
+        "latitude":  13.48189794,
+        "longitude":  79.27742307,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_NWDP_AP01HH0049",
+        "latitude":  13.8843638,
+        "longitude":  78.3705165,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D06352",
+        "latitude":  14.97256939,
+        "longitude":  77.86948879,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0067",
+        "latitude":  14.42631049,
+        "longitude":  78.35909599,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0111",
+        "latitude":  13.60787188,
+        "longitude":  79.37578004,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0016",
+        "latitude":  13.90914116,
+        "longitude":  78.99995959,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0045",
+        "latitude":  15.47805825,
+        "longitude":  79.12404685,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_00002",
+        "latitude":  17.2473,
+        "longitude":  81.6433,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_DAM_00002/AP_DAM_00002.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01HH0159",
+        "latitude":  15.65833333,
+        "longitude":  79.17944444,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D06327",
+        "latitude":  16.77085143,
+        "longitude":  80.05657579,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0053",
+        "latitude":  18.00663975,
+        "longitude":  82.96579849,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0113",
+        "latitude":  13.32166667,
+        "longitude":  79.73638889,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0013",
+        "latitude":  15.05547117,
+        "longitude":  79.71923441,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D06139",
+        "latitude":  15.62797397,
+        "longitude":  79.79613879,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0114",
+        "latitude":  15.15972222,
+        "longitude":  78.94194444,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0115",
+        "latitude":  15.05301066,
+        "longitude":  77.80463519,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0048",
+        "latitude":  13.59367831,
+        "longitude":  79.61823729,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0050",
+        "latitude":  13.44027778,
+        "longitude":  79.84416667,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0071",
+        "latitude":  15.1482259,
+        "longitude":  79.02396218,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0116",
+        "latitude":  13.22900941,
+        "longitude":  78.60804951,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0061",
+        "latitude":  15.00615073,
+        "longitude":  78.8895675,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0117",
+        "latitude":  16.01945867,
+        "longitude":  79.87626839,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0017",
+        "latitude":  13.8314465,
+        "longitude":  79.13996135,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0003",
+        "latitude":  15.86027778,
+        "longitude":  78.69111111,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01HH0062",
+        "latitude":  14.48810983,
+        "longitude":  79.30578834,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_DAM_WRIS_AP01HH0062/AP_DAM_WRIS_AP01HH0062.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D06393",
+        "latitude":  14.80540608,
+        "longitude":  78.88446678,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0118",
+        "latitude":  14.78503268,
+        "longitude":  77.71069046,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D06354",
+        "latitude":  14.81486423,
+        "longitude":  77.88915891,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D02215",
+        "latitude":  17.89916678,
+        "longitude":  82.69509214,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_NWDP_AP01VH0059",
+        "latitude":  16.0866523,
+        "longitude":  78.8967766,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_DAM_NWDP_AP01VH0059/AP_DAM_NWDP_AP01VH0059.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0027",
+        "latitude":  17.33138889,
+        "longitude":  82.20416667,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D02269",
+        "latitude":  17.3361651,
+        "longitude":  81.90270192,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0166",
+        "latitude":  17.50611111,
+        "longitude":  81.90472222,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0119",
+        "latitude":  14.99361111,
+        "longitude":  79.12027778,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0120",
+        "latitude":  14.84569329,
+        "longitude":  78.92903757,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0121",
+        "latitude":  17.86966855,
+        "longitude":  82.4961826,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0055",
+        "latitude":  15.18213417,
+        "longitude":  78.88061498,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0065",
+        "latitude":  17.00509972,
+        "longitude":  80.9240973,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01HH0043",
+        "latitude":  17.6213047,
+        "longitude":  82.46150758,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01HH0024",
+        "latitude":  18.17217773,
+        "longitude":  83.19141839,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0005",
+        "latitude":  15.69056917,
+        "longitude":  79.16670215,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D06394",
+        "latitude":  15.54094462,
+        "longitude":  78.98711449,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_NWDP_AP01MH0011",
+        "latitude":  14.3367172,
+        "longitude":  77.3541577,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0122",
+        "latitude":  15.00833333,
+        "longitude":  79.15,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0145",
+        "latitude":  17.93943707,
+        "longitude":  82.72601449,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0068",
+        "latitude":  13.86944444,
+        "longitude":  79.33388889,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0147",
+        "latitude":  18.89752984,
+        "longitude":  83.4187376,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0148",
+        "latitude":  15.966995,
+        "longitude":  78.64643698,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0039",
+        "latitude":  17.81080941,
+        "longitude":  82.6755239,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0066",
+        "latitude":  15.07557878,
+        "longitude":  78.86858603,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01HH0081",
+        "latitude":  14.03134324,
+        "longitude":  78.47679015,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D01824",
+        "latitude":  15.76750386,
+        "longitude":  79.18046396,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_DAM_WRIS_D01824/AP_DAM_WRIS_D01824.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0150",
+        "latitude":  15.72512958,
+        "longitude":  78.59127775,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0069",
+        "latitude":  18.62324116,
+        "longitude":  83.22158412,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0123",
+        "latitude":  14.25,
+        "longitude":  77.8,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0030",
+        "latitude":  18.83855824,
+        "longitude":  83.58814987,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0032",
+        "latitude":  13.73048055,
+        "longitude":  78.13812669,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01LH0124",
+        "latitude":  15.14880787,
+        "longitude":  77.55154443,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_D06208",
+        "latitude":  14.80851737,
+        "longitude":  78.25142349,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01HH0149",
+        "latitude":  17.30791881,
+        "longitude":  82.0956831,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0076",
+        "latitude":  17.09982512,
+        "longitude":  81.25669309,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_NWDP_AP01MH0074",
+        "latitude":  14.358223,
+        "longitude":  78.0515916,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0074",
+        "latitude":  14.35822299,
+        "longitude":  78.05159158,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_DAM_WRIS_AP01MH0022",
+        "latitude":  15.32720653,
+        "longitude":  78.12610286,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_TEMPLE_KANAKA_DURGA",
+        "latitude":  16.5154,
+        "longitude":  80.6059,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_TEMPLE_SRIKALAHASTI",
+        "latitude":  13.7502,
+        "longitude":  79.7002,
+        "priority":  2,
+        "model_url":  null,
+        "model_status":  "NO_LOCAL_MODEL",
+        "fidelity":  "NO_LOCAL_3D_MODEL",
+        "truth_note":  "No registered local 3D model is available."
+    },
+    {
+        "asset_code":  "AP_TEMPLE_SRISAILAM",
+        "latitude":  16.0833,
+        "longitude":  78.8667,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_TEMPLE_SRISAILAM/AP_TEMPLE_SRISAILAM.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_TEMPLE_SIMHACHALAM",
+        "latitude":  17.7664,
+        "longitude":  83.2505,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_TEMPLE_SIMHACHALAM/AP_TEMPLE_SIMHACHALAM.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_TEMPLE_ANNAVARAM",
+        "latitude":  17.2825,
+        "longitude":  82.4042,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_TEMPLE_ANNAVARAM/AP_TEMPLE_ANNAVARAM.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_TEMPLE_DWARAKA_TIRUMALA",
+        "latitude":  16.9545,
+        "longitude":  81.2566,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_TEMPLE_DWARAKA_TIRUMALA/AP_TEMPLE_DWARAKA_TIRUMALA.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    },
+    {
+        "asset_code":  "AP_TEMPLE_TIRUMALA",
+        "latitude":  13.6831,
+        "longitude":  79.3469,
+        "priority":  1,
+        "model_url":  "/reality-twin/models/AP_TEMPLE_TIRUMALA/AP_TEMPLE_TIRUMALA.glb",
+        "model_status":  "LOCAL_GLB_READY",
+        "fidelity":  "L2_SOURCE_BACKED_OSM_CONTEXT",
+        "truth_note":  "Local source-backed OSM-derived 3D model. Not survey/BIM/photogrammetry unless separately verified."
+    }
+]

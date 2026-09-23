@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-09-03T04:45:39.271312+00:00",
+  "total_dam_barrage_assets": 177,
+  "assets_with_normalized_engineering_evidence": 175,
+  "engineering_evidence_coverage_percent": 98.87,
+  "completion_year_assets": 85,
+  "height_assets": 138,
+  "length_assets": 139,
+  "gate_count_assets": 52,
+  "design_flood_assets": 56,
+  "spillway_capacity_assets": 118,
+  "seismic_zone_assets": 165,
+  "assets_with_direct_hydrology": 11,
+  "built_year_updates": 0,
+  "database_table": "asset_engineering_evidence_normalized"
+}

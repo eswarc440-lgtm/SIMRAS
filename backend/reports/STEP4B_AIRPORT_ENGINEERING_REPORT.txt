@@ -1,0 +1,22 @@
+====================================================================================================
+SIMRAS STEP 4B - AIRPORT ENGINEERING RESULT
+====================================================================================================
+
+SIMRAS airport asset rows       : 8
+Unique physical airports        : 6
+AAI eAIP pages downloaded       : 6
+Assets with AAI evidence        : 8
+Assets with runway dimensions   : 8
+Assets with pavement strength   : 8
+Runway-end records extracted    : 14
+
+Duplicate airport asset rows    : 4
+ICAO codes with duplicates      : 2
+
+Database tables:
+ public.airport_engineering_evidence_normalized
+ public.airport_runway_evidence
+
+Feature version:
+ ap_airport_engineering_v1
+====================================================================================================

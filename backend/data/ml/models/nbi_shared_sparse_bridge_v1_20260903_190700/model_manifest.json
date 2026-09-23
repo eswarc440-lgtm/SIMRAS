@@ -1,0 +1,27 @@
+{
+  "model_version": "nbi_shared_sparse_bridge_v1_20260903_190700",
+  "asset_class": "BRIDGE",
+  "model": "SHARED_SPARSE_TEMPORAL_POOR_RISK",
+  "source": "FHWA NBI 2022-2025 longitudinal inspections",
+  "target": "P(next inspection condition = POOR)",
+  "risk_score_definition": "calibrated probability * 100",
+  "selected_inputs": [
+    "structure length",
+    "coarse route class",
+    "reported lanes when present",
+    "bridge age when present"
+  ],
+  "validation_gates_passed": true,
+  "status": "RESEARCH_TRANSFER",
+  "AP_ground_truth_validated": false,
+  "AP_total": 23119,
+  "AP_core_eligible": 21318,
+  "AP_core_eligibility_percent": 92.20987066914658,
+  "AP_enhanced_eligible": 3134,
+  "AP_fully_populated": 2,
+  "AP_rail_only_excluded": 1425,
+  "Health": "WITHHELD",
+  "RUL": "WITHHELD",
+  "database_predictions_written": false,
+  "next_gate": "ML-6 asset-level AP inference with domain checks, evidence completeness, confidence and abstention."
+}

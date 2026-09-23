@@ -1,0 +1,54 @@
+{
+  "dataset": "nbi_2022_2025_one_year_transitions.csv",
+  "years": [
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "pairs": {
+    "2022->2023": {
+      "source_labelled": 620669,
+      "matched": 616241,
+      "match_rate": 0.9928657625884328
+    },
+    "2023->2024": {
+      "source_labelled": 621581,
+      "matched": 617292,
+      "match_rate": 0.9930998534382486
+    },
+    "2024->2025": {
+      "source_labelled": 623218,
+      "matched": 619247,
+      "match_rate": 0.993628232817409
+    }
+  },
+  "total_transitions": 1852780,
+  "target_condition_counts": {
+    "FAIR": 918513,
+    "GOOD": 808548,
+    "POOR": 125719
+  },
+  "target_poor_counts": {
+    "0": 1727061,
+    "1": 125719
+  },
+  "target_deteriorated_counts": {
+    "0": 1765507,
+    "1": 87273
+  },
+  "features_time": "YEAR_T",
+  "targets_time": "YEAR_T_PLUS_1",
+  "leakage_control": "Future inspection ratings are used only as targets and never as source-year features.",
+  "targets": {
+    "condition_t1": "GOOD / FAIR / POOR",
+    "target_poor_next_year": "binary future POOR condition",
+    "target_deteriorated_next_year": "binary next-year minimum-rating decline",
+    "target_rating_change": "minimum_rating_t1 - minimum_rating_t"
+  },
+  "health_score": "NOT_CREATED",
+  "rul": "NOT_CREATED",
+  "AP_validation": false,
+  "model_status": "RESEARCH_TRANSFER",
+  "important_note": "Real U.S. NBI inspection transitions. These labels support transfer research, not validated Andhra Pradesh structural claims."
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "feature": "bridge_age_years",
+    "importance_mean": 0.2465471905888239,
+    "importance_std": 0.008741745587582228
+  },
+  {
+    "feature": "route_LOCAL",
+    "importance_mean": 0.04174120179661589,
+    "importance_std": 0.0038847880051355865
+  },
+  {
+    "feature": "log_structure_length",
+    "importance_mean": 0.0258658384693089,
+    "importance_std": 0.0016295729073183551
+  },
+  {
+    "feature": "lanes_count",
+    "importance_mean": 0.01790423433860333,
+    "importance_std": 0.0006393356738640943
+  },
+  {
+    "feature": "route_HIGH_CAPACITY",
+    "importance_mean": 0.0082456350400813,
+    "importance_std": 0.0006358905289327033
+  },
+  {
+    "feature": "route_COLLECTOR",
+    "importance_mean": 0.004065793597263834,
+    "importance_std": 0.001131381724535807
+  },
+  {
+    "feature": "route_ARTERIAL",
+    "importance_mean": 0.000854763683186599,
+    "importance_std": 7.23286888134611e-05
+  },
+  {
+    "feature": "route_OTHER",
+    "importance_mean": 0.0,
+    "importance_std": 0.0
+  }
+]

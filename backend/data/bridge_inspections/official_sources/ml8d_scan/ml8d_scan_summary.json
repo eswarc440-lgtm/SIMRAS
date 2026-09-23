@@ -1,0 +1,64 @@
+{
+  "scanner_version": "ml8d_official_bridge_pdf_scan_v1",
+  "policy": {
+    "ocr_used": false,
+    "synthetic_labels": false,
+    "automatic_promotion": false,
+    "automatic_training_label": false,
+    "manual_review_required": true
+  },
+  "documents": [
+    {
+      "source_id": "IR_IRBM_2024",
+      "document": "Indian_Railway_Bridge_Manual_2024.pdf",
+      "role": "INSPECTION_STANDARD",
+      "pages": 302,
+      "text_pages": 298,
+      "empty_text_pages": 4,
+      "evidence_hit_pages": 178,
+      "bridge_level_candidate_pages": 0,
+      "canonical_asset_matches": 9,
+      "sha256": "61CB5D43E4D2ED88A3443AA8B1DD2ED9E01C96162A4F471AE63F33933054C22F",
+      "sha256_verified": true,
+      "automatic_training_labels": 0,
+      "automatic_promotions": 0
+    },
+    {
+      "source_id": "NHAI_AP_GIDDALUR_VINUKONDA",
+      "document": "NHAI_Giddalur_Vinukonda_NH544D.pdf",
+      "role": "REHABILITATION_ENGINEERING_EVIDENCE",
+      "pages": 803,
+      "text_pages": 509,
+      "empty_text_pages": 294,
+      "evidence_hit_pages": 303,
+      "bridge_level_candidate_pages": 119,
+      "canonical_asset_matches": 133,
+      "sha256": "0456469DF3BD642737FD1DD9C7F6E4EDC7AD1A5728DC382A9ADDF73028DA4F20",
+      "sha256_verified": true,
+      "automatic_training_labels": 0,
+      "automatic_promotions": 0
+    },
+    {
+      "source_id": "NHAI_AP_TADA_NELLORE",
+      "document": "NHAI_Tada_Nellore_NH5_Vol_II.pdf",
+      "role": "HISTORICAL_CONDITION_SURVEY",
+      "pages": 110,
+      "text_pages": 110,
+      "empty_text_pages": 0,
+      "evidence_hit_pages": 36,
+      "bridge_level_candidate_pages": 11,
+      "canonical_asset_matches": 161,
+      "sha256": "D7D4AE7A23F574367D972FFD83397FE1832B1A0988D14C143CA87B983DF0DB5E",
+      "sha256_verified": true,
+      "automatic_training_labels": 0,
+      "automatic_promotions": 0
+    }
+  ],
+  "counts": {
+    "documents": 3,
+    "page_evidence_hits": 517,
+    "canonical_asset_name_matches": 2448,
+    "bridge_level_condition_candidates": 130,
+    "labels_promoted": 0
+  }
+}

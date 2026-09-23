@@ -1,0 +1,4 @@
+id,asset_id,variable,value,unit,observed_at,ingested_at,source_id,source_type,spatial_method,quality_flag,confidence_score,is_estimated
+4,2,rainfall_24h,42.0,mm,2026-08-26T13:31:16.309484+00:00,2026-08-26T15:31:16.309496+00:00,1,SYNTHETIC_DEMO,seed record,UNVERIFIED,0.3,True
+5,2,rainfall_7d,138.0,mm,2026-08-26T13:31:16.309484+00:00,2026-08-26T15:31:16.309535+00:00,1,SYNTHETIC_DEMO,seed record,UNVERIFIED,0.3,True
+6,2,water_level_anomaly,0.7,m,2026-08-26T13:31:16.309484+00:00,2026-08-26T15:31:16.309568+00:00,1,SYNTHETIC_DEMO,seed record,UNVERIFIED,0.3,True

@@ -1,0 +1,615 @@
+{
+    "directory":  "/work/data/reality_twin/factory/osm_extracts",
+    "extracts":  [
+                     {
+                         "output":  "AP_AIR_AAI_KADAPA.osm.pbf",
+                         "description":  "Kadapa Airport / airport",
+                         "bbox":  [
+                                      78.7478,
+                                      14.4851,
+                                      78.797800000000009,
+                                      14.5351
+                                  ]
+                     },
+                     {
+                         "output":  "AP_AIR_AAI_KURNOOL.osm.pbf",
+                         "description":  "Kurnool Airport / airport",
+                         "bbox":  [
+                                      78.1442,
+                                      15.6913,
+                                      78.194200000000009,
+                                      15.7413
+                                  ]
+                     },
+                     {
+                         "output":  "AP_BAR_WRIS_B00800.osm.pbf",
+                         "description":  "Rallapadu Barrage / barrage",
+                         "bbox":  [
+                                      79.69633333,
+                                      15.02966667,
+                                      79.72033333,
+                                      15.05366667
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D06052.osm.pbf",
+                         "description":  "Alaganoor Dam / dam",
+                         "bbox":  [
+                                      78.39317558,
+                                      15.68496308,
+                                      78.42317558,
+                                      15.71496308
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0085.osm.pbf",
+                         "description":  "Ananthasagarm Dam / dam",
+                         "bbox":  [
+                                      79.37239583,
+                                      14.545278289999999,
+                                      79.40239583,
+                                      14.57527829
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0073.osm.pbf",
+                         "description":  "Buggavanka Dam / dam",
+                         "bbox":  [
+                                      78.820650419999993,
+                                      14.38517137,
+                                      78.85065042,
+                                      14.415171370000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0129.osm.pbf",
+                         "description":  "Cheyyeru / Annamayya Dam / dam",
+                         "bbox":  [
+                                      79.00255427,
+                                      14.19876072,
+                                      79.03255427,
+                                      14.22876072
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0091.osm.pbf",
+                         "description":  "Chintakuntavagu Dam / dam",
+                         "bbox":  [
+                                      78.30599927,
+                                      14.68167139,
+                                      78.33599927,
+                                      14.711671390000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0001.osm.pbf",
+                         "description":  "Cumbum Dam / dam",
+                         "bbox":  [
+                                      79.06629862,
+                                      15.561130429999999,
+                                      79.09629862,
+                                      15.59113043
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0080.osm.pbf",
+                         "description":  "Earlakatta  Tank / dam",
+                         "bbox":  [
+                                      78.96333333,
+                                      15.738611109999999,
+                                      78.99333333,
+                                      15.76861111
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D06074.osm.pbf",
+                         "description":  "Eguva Thamballa Palli - Cheruvu Dam / dam",
+                         "bbox":  [
+                                      78.85385221,
+                                      15.118532219999999,
+                                      78.88385221,
+                                      15.14853222
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0063.osm.pbf",
+                         "description":  "Gandipalem /Pcr Gandipalem Dam / dam",
+                         "bbox":  [
+                                      79.28265101,
+                                      14.975696469999999,
+                                      79.31265101,
+                                      15.00569647
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01HH0130.osm.pbf",
+                         "description":  "Gorakallu Dam / dam",
+                         "bbox":  [
+                                      78.38830932,
+                                      15.55506907,
+                                      78.41830932,
+                                      15.585069070000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D00587.osm.pbf",
+                         "description":  "Gundlakamma Dam / dam",
+                         "bbox":  [
+                                      79.97161493,
+                                      15.64588434,
+                                      80.00161493,
+                                      15.675884340000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D03507.osm.pbf",
+                         "description":  "Gundlamotu Dam / dam",
+                         "bbox":  [
+                                      78.80359319,
+                                      15.33989328,
+                                      78.83359319,
+                                      15.369893280000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0095.osm.pbf",
+                         "description":  "Gundlamotu Reservoir / dam",
+                         "bbox":  [
+                                      79.80361111,
+                                      15.34027778,
+                                      79.83361111,
+                                      15.37027778
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0054.osm.pbf",
+                         "description":  "Itugulapadu Tank / dam",
+                         "bbox":  [
+                                      78.76638889,
+                                      14.71638889,
+                                      78.79638889,
+                                      14.74638889
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0051.osm.pbf",
+                         "description":  "Jalakanur Dam / dam",
+                         "bbox":  [
+                                      78.29617549,
+                                      15.70772933,
+                                      78.32617549,
+                                      15.73772933
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D06395.osm.pbf",
+                         "description":  "Kakarla Dam / dam",
+                         "bbox":  [
+                                      79.09610054,
+                                      15.63604814,
+                                      79.12610054,
+                                      15.666048140000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0041.osm.pbf",
+                         "description":  "Kaleti Vagu Reservoir / dam",
+                         "bbox":  [
+                                      78.44222222,
+                                      14.719999999999999,
+                                      78.47222222,
+                                      14.75
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0098.osm.pbf",
+                         "description":  "Kampasamudram New Dam / dam",
+                         "bbox":  [
+                                      79.23361601,
+                                      14.77465363,
+                                      79.26361601,
+                                      14.80465363
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01HH0133.osm.pbf",
+                         "description":  "Kandaleru /Kandaleru Dam / dam",
+                         "bbox":  [
+                                      79.60890336,
+                                      14.321122789999999,
+                                      79.63890336,
+                                      14.35112279
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D00719.osm.pbf",
+                         "description":  "Kanigiri Dam / dam",
+                         "bbox":  [
+                                      79.838523999999992,
+                                      14.53233101,
+                                      79.868524,
+                                      14.562331010000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D02086.osm.pbf",
+                         "description":  "Lower Sagileru Dam / dam",
+                         "bbox":  [
+                                      78.93318736,
+                                      14.93856084,
+                                      78.96318736,
+                                      14.96856084
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0006.osm.pbf",
+                         "description":  "Markapur  Tank / dam",
+                         "bbox":  [
+                                      79.26277778,
+                                      15.716666669999999,
+                                      79.29277778,
+                                      15.74666667
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0004.osm.pbf",
+                         "description":  "Mopadu Dam / dam",
+                         "bbox":  [
+                                      79.46693501,
+                                      15.0912066,
+                                      79.49693501,
+                                      15.1212066
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0103.osm.pbf",
+                         "description":  "Muthyalacheruvu / dam",
+                         "bbox":  [
+                                      78.06805556,
+                                      14.084444439999999,
+                                      78.09805556,
+                                      14.11444444
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0058.osm.pbf",
+                         "description":  "Mylavaram Dam / dam",
+                         "bbox":  [
+                                      78.32561776,
+                                      14.83451961,
+                                      78.35561776,
+                                      14.86451961
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0083.osm.pbf",
+                         "description":  "N.T.R. T.G.P-Subsidiary\nReservoir  No 1 / dam",
+                         "bbox":  [
+                                      78.735,
+                                      14.809999999999999,
+                                      78.765,
+                                      14.84
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0152.osm.pbf",
+                         "description":  "N.T.R. T.G.P-Subsidiary\nReservoir  No 2 / dam",
+                         "bbox":  [
+                                      78.78361111,
+                                      14.77527778,
+                                      78.81361111,
+                                      14.80527778
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0010.osm.pbf",
+                         "description":  "Nakkalagandi Dam / dam",
+                         "bbox":  [
+                                      79.35944669,
+                                      15.042722959999999,
+                                      79.38944669,
+                                      15.07272296
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D00721.osm.pbf",
+                         "description":  "Nellore Dam / dam",
+                         "bbox":  [
+                                      79.94060153,
+                                      14.436531149999999,
+                                      79.97060153,
+                                      14.46653115
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D00963.osm.pbf",
+                         "description":  "Paleru ,Owk Dam / dam",
+                         "bbox":  [
+                                      78.0820444,
+                                      15.17121995,
+                                      78.1120444,
+                                      15.20121995
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0104.osm.pbf",
+                         "description":  "Panthulu Cheruvu Dam / dam",
+                         "bbox":  [
+                                      78.1315663,
+                                      14.02516839,
+                                      78.1615663,
+                                      14.05516839
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0044.osm.pbf",
+                         "description":  "Peddabommalapuram\nReservoir / dam",
+                         "bbox":  [
+                                      79.12111111,
+                                      15.94333333,
+                                      79.15111111,
+                                      15.97333333
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0067.osm.pbf",
+                         "description":  "Pendlur Dam / dam",
+                         "bbox":  [
+                                      78.34409599,
+                                      14.41131049,
+                                      78.37409599,
+                                      14.441310490000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0045.osm.pbf",
+                         "description":  "Pittakayagulla Dam / dam",
+                         "bbox":  [
+                                      79.10904685,
+                                      15.46305825,
+                                      79.13904685,
+                                      15.49305825
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01HH0159.osm.pbf",
+                         "description":  "Ps Velegonda Project Kakarla\nDam / dam",
+                         "bbox":  [
+                                      79.16444444,
+                                      15.643333329999999,
+                                      79.19444444,
+                                      15.67333333
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0013.osm.pbf",
+                         "description":  "Rallapadu Dam / dam",
+                         "bbox":  [
+                                      79.70423441,
+                                      15.04047117,
+                                      79.73423441,
+                                      15.070471170000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D06139.osm.pbf",
+                         "description":  "Ramathirtham Dam / dam",
+                         "bbox":  [
+                                      79.78113879,
+                                      15.612973969999999,
+                                      79.81113879,
+                                      15.64297397
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0114.osm.pbf",
+                         "description":  "Rao Cheruvu,  Rajupalem / dam",
+                         "bbox":  [
+                                      78.92694444,
+                                      15.14472222,
+                                      78.95694444,
+                                      15.174722220000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0071.osm.pbf",
+                         "description":  "Sancherla Dam / dam",
+                         "bbox":  [
+                                      79.00896218,
+                                      15.1332259,
+                                      79.03896218,
+                                      15.1632259
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0061.osm.pbf",
+                         "description":  "Savisettipalli Dam / dam",
+                         "bbox":  [
+                                      78.8745675,
+                                      14.99115073,
+                                      78.9045675,
+                                      15.02115073
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0003.osm.pbf",
+                         "description":  "Siddapuram Tank / dam",
+                         "bbox":  [
+                                      78.67611111,
+                                      15.84527778,
+                                      78.70611111,
+                                      15.875277780000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01HH0062.osm.pbf",
+                         "description":  "Somasila Dam / dam",
+                         "bbox":  [
+                                      79.29078834,
+                                      14.47310983,
+                                      79.32078834,
+                                      14.503109830000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D06393.osm.pbf",
+                         "description":  "Spvbs Dam / dam",
+                         "bbox":  [
+                                      78.86946678,
+                                      14.790406079999999,
+                                      78.89946678,
+                                      14.82040608
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0119.osm.pbf",
+                         "description":  "Swamy Tank / dam",
+                         "bbox":  [
+                                      79.10527778,
+                                      14.97861111,
+                                      79.13527778,
+                                      15.00861111
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0120.osm.pbf",
+                         "description":  "T.Sundupalli Dam / dam",
+                         "bbox":  [
+                                      78.91403757,
+                                      14.83069329,
+                                      78.94403757,
+                                      14.86069329
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0055.osm.pbf",
+                         "description":  "Thadukuvagu Dam / dam",
+                         "bbox":  [
+                                      78.86561498,
+                                      15.167134169999999,
+                                      78.89561498,
+                                      15.19713417
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0005.osm.pbf",
+                         "description":  "Thippayapalem Dam / dam",
+                         "bbox":  [
+                                      79.15170215,
+                                      15.67556917,
+                                      79.18170215,
+                                      15.70556917
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D06394.osm.pbf",
+                         "description":  "Turimella Reservoir Dam / dam",
+                         "bbox":  [
+                                      78.97211449,
+                                      15.525944619999999,
+                                      79.00211449,
+                                      15.55594462
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01LH0122.osm.pbf",
+                         "description":  "Ura Tank, S.R. Puram / dam",
+                         "bbox":  [
+                                      79.135,
+                                      14.993333329999999,
+                                      79.165,
+                                      15.02333333
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0148.osm.pbf",
+                         "description":  "Varadaraja Swamy Gudi Dam / dam",
+                         "bbox":  [
+                                      78.63143698,
+                                      15.951995,
+                                      78.66143698,
+                                      15.981995000000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0066.osm.pbf",
+                         "description":  "Varikunta Dam / dam",
+                         "bbox":  [
+                                      78.85358603,
+                                      15.06057878,
+                                      78.88358603,
+                                      15.090578780000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01HH0081.osm.pbf",
+                         "description":  "Veligallu Dam / dam",
+                         "bbox":  [
+                                      78.46179015,
+                                      14.01634324,
+                                      78.49179015,
+                                      14.04634324
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D01824.osm.pbf",
+                         "description":  "Veligonda Dam / dam",
+                         "bbox":  [
+                                      79.16546396,
+                                      15.75250386,
+                                      79.19546396,
+                                      15.78250386
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0150.osm.pbf",
+                         "description":  "Velugodu Dam / dam",
+                         "bbox":  [
+                                      78.57627775,
+                                      15.71012958,
+                                      78.60627775,
+                                      15.740129580000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_D06208.osm.pbf",
+                         "description":  "Yeddula Eswaraiah Gandikoata Dam / dam",
+                         "bbox":  [
+                                      78.236423489999993,
+                                      14.79351737,
+                                      78.26642349,
+                                      14.823517370000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_NWDP_AP01MH0074.osm.pbf",
+                         "description":  "Yogi Vemana (Maddileru) Reservoir / dam",
+                         "bbox":  [
+                                      78.0365916,
+                                      14.343223,
+                                      78.0665916,
+                                      14.373223000000001
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0074.osm.pbf",
+                         "description":  "Yogivemana Dam / dam",
+                         "bbox":  [
+                                      78.036591579999993,
+                                      14.34322299,
+                                      78.06659158,
+                                      14.37322299
+                                  ]
+                     },
+                     {
+                         "output":  "AP_DAM_WRIS_AP01MH0022.osm.pbf",
+                         "description":  "Zurreru Dam / dam",
+                         "bbox":  [
+                                      78.11110286,
+                                      15.31220653,
+                                      78.14110286,
+                                      15.34220653
+                                  ]
+                     }
+                 ]
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "container_filename": "source_001.csv",
+    "kind": "LEVEL",
+    "target_column": "Manual Daily Reservoir water level (m)",
+    "original_path": "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\official_ap_dams\\ap_reservoir_level_2026_2030.csv"
+  },
+  {
+    "container_filename": "source_002.csv",
+    "kind": "STORAGE",
+    "target_column": "Manual Daily Reservoir storage (mcm)",
+    "original_path": "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\official_ap_dams\\ap_reservoir_storage_2026_2030.csv"
+  },
+  {
+    "container_filename": "source_003.csv",
+    "kind": "LEVEL",
+    "target_column": "Manual Daily Reservoir water level (m)",
+    "original_path": "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\official\\dam\\hydrology\\reservoir\\ap_reservoir_level_1970_2025.csv"
+  },
+  {
+    "container_filename": "source_004.csv",
+    "kind": "LEVEL",
+    "target_column": "Manual Daily Reservoir water level (m)",
+    "original_path": "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\official\\dam\\hydrology\\reservoir\\ap_reservoir_level_2026_2030.csv"
+  },
+  {
+    "container_filename": "source_005.csv",
+    "kind": "STORAGE",
+    "target_column": "Manual Daily Reservoir storage (mcm)",
+    "original_path": "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\official\\dam\\hydrology\\reservoir\\ap_reservoir_storage_1970_2025.csv"
+  },
+  {
+    "container_filename": "source_006.csv",
+    "kind": "STORAGE",
+    "target_column": "Manual Daily Reservoir storage (mcm)",
+    "original_path": "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\official\\dam\\hydrology\\reservoir\\ap_reservoir_storage_2026_2030.csv"
+  },
+  {
+    "container_filename": "source_007.csv",
+    "kind": "LEVEL",
+    "target_column": "Manual Daily Reservoir water level (m)",
+    "original_path": "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\raw\\nwdp\\ap_reservoir_level_daily_2026_2030.csv"
+  },
+  {
+    "container_filename": "source_008.csv",
+    "kind": "STORAGE",
+    "target_column": "Manual Daily Reservoir storage (mcm)",
+    "original_path": "D:\\simras-digital-twin-repository\\simras-digital-twin\\backend\\data\\raw\\nwdp\\ap_reservoir_storage_daily_2026_2030.csv"
+  }
+]

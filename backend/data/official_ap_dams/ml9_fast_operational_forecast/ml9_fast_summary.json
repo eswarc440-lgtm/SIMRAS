@@ -1,0 +1,26 @@
+{
+  "version": "ml9_fast_operational_forecast_v1",
+  "as_of_date": "2026-09-04",
+  "exact_mapped_stations": 2,
+  "assets_evaluated": 2,
+  "validated_assets": 0,
+  "persisted_prediction_assets": 0,
+  "prediction_semantics": "next-day operational reservoir level/storage forecast",
+  "structural_prediction": false,
+  "results": [
+    {
+      "asset_code": "AP_DAM_NWDP_AP01HH0040",
+      "asset_name": "Kalyani Dam",
+      "station": "KALYANI DAM",
+      "common_days": 44,
+      "status": "WITHHELD_LESS_THAN_90_COMMON_DAYS"
+    },
+    {
+      "asset_code": "AP_DAM_NWDP_AP01HH0049",
+      "asset_name": "Pedderu",
+      "station": "PEDDERU",
+      "common_days": 79,
+      "status": "WITHHELD_LESS_THAN_90_COMMON_DAYS"
+    }
+  ]
+}

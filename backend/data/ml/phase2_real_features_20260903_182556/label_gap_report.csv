@@ -1,0 +1,6 @@
+asset_type,canonical_assets,real_structural_labels,health_target_ready,risk_target_ready,rul_target_ready,production_training_allowed,reason
+bridge,23119,0,NO,NO,NO,NO,No real structural inspection/condition labels currently available in SIMRAS DB.
+dam,167,0,NO,NO,NO,NO,No real structural inspection/condition labels currently available in SIMRAS DB.
+barrage,10,0,NO,NO,NO,NO,No real structural inspection/condition labels currently available in SIMRAS DB.
+airport,8,0,NO,NO,NO,NO,No real structural inspection/condition labels currently available in SIMRAS DB.
+temple,7,0,NO,NO,NO,NO,No real structural inspection/condition labels currently available in SIMRAS DB.

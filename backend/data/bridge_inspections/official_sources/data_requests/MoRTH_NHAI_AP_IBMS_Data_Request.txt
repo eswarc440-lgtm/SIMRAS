@@ -1,0 +1,35 @@
+Subject: Request for Andhra Pradesh bridge inventory and condition-survey data for academic research
+
+Requested scope:
+Bridges located in Andhra Pradesh, prioritising National Highways and major bridges.
+
+Requested IBMS / inspection fields:
+
+- bridge identifier
+- GPS / chainage
+- bridge name
+- inventory date
+- inspection date
+- inspection authority
+- bridge element
+- defect / distress type
+- defect extent
+- defect severity
+- element condition rating
+- overall bridge condition rating
+- Bridge Health Index, if releasable
+- maintenance priority
+- recommended intervention
+- rehabilitation history
+- source / verification status
+
+Purpose:
+Academic SIMRAS infrastructure digital-twin research.
+
+Data integrity policy:
+Only official inspection / condition-survey records will be used as structural
+condition labels. OSM geometry, asset age, generic inventory condition and synthetic
+records will not be used as ground-truth structural labels.
+
+Preferred format:
+CSV, XLSX, JSON, database export or bridge-level inspection PDFs.

@@ -1,0 +1,165 @@
+{
+  "table": "public.inspections",
+  "read_only": true,
+  "columns": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "is_nullable": "NO",
+      "column_default": "nextval('inspections_id_seq'::regclass)"
+    },
+    {
+      "column_name": "asset_id",
+      "data_type": "integer",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "column_name": "inspection_date",
+      "data_type": "date",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "column_name": "inspection_type",
+      "data_type": "character varying",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "column_name": "condition",
+      "data_type": "character varying",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "column_name": "score",
+      "data_type": "double precision",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "inspector",
+      "data_type": "character varying",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "notes",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "source_id",
+      "data_type": "integer",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "column_name": "quality_flag",
+      "data_type": "character varying",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "column_name": "is_synthetic",
+      "data_type": "boolean",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "column_name": "updated_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    }
+  ],
+  "total_rows": 1,
+  "samples": [
+    {
+      "id": 2,
+      "notes": "Replace with an approved inspection record.",
+      "score": 82,
+      "asset_id": 2,
+      "condition": "GOOD",
+      "inspector": "Synthetic seed",
+      "source_id": 1,
+      "created_at": "2026-08-26T15:31:16.267444+00:00",
+      "updated_at": "2026-08-26T15:31:16.267444+00:00",
+      "is_synthetic": true,
+      "quality_flag": "SYNTHETIC",
+      "inspection_date": "2026-02-27",
+      "inspection_type": "DEMONSTRATION"
+    }
+  ],
+  "asset_link_column": "asset_id",
+  "ap_bridge_inspection_rows": 1,
+  "ap_bridges_with_inspections": 1,
+  "suspicious_text_rows": 1,
+  "candidate_evidence_fields": [
+    "inspection_date",
+    "inspection_type",
+    "inspector",
+    "source_id",
+    "quality_flag",
+    "condition",
+    "is_synthetic",
+    "notes"
+  ],
+  "distinct_values": {
+    "inspection_type": [
+      {
+        "value": "DEMONSTRATION",
+        "row_count": 1
+      }
+    ],
+    "source_id": [
+      {
+        "value": "1",
+        "row_count": 1
+      }
+    ],
+    "quality_flag": [
+      {
+        "value": "SYNTHETIC",
+        "row_count": 1
+      }
+    ],
+    "condition": [
+      {
+        "value": "GOOD",
+        "row_count": 1
+      }
+    ],
+    "is_synthetic": [
+      {
+        "value": "true",
+        "row_count": 1
+      }
+    ]
+  },
+  "godavari_existing_inspections": [
+    {
+      "id": 2,
+      "notes": "Replace with an approved inspection record.",
+      "score": 82,
+      "asset_id": 2,
+      "condition": "GOOD",
+      "inspector": "Synthetic seed",
+      "source_id": 1,
+      "created_at": "2026-08-26T15:31:16.267444+00:00",
+      "updated_at": "2026-08-26T15:31:16.267444+00:00",
+      "is_synthetic": true,
+      "quality_flag": "SYNTHETIC",
+      "inspection_date": "2026-02-27",
+      "inspection_type": "DEMONSTRATION"
+    }
+  ]
+}

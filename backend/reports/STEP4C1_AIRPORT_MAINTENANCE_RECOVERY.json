@@ -1,0 +1,45 @@
+{
+  "generated_at": "2026-09-03T13:11:09.829985+00:00",
+  "airports_covered": 6,
+  "records": 9,
+  "high_significance": 3,
+  "summary": [
+    {
+      "icao_code": "VOBZ",
+      "event_count": 2,
+      "high_count": 1,
+      "known_cost_inr": 9067500.0
+    },
+    {
+      "icao_code": "VOCP",
+      "event_count": 2,
+      "high_count": 0,
+      "known_cost_inr": 10309215.0
+    },
+    {
+      "icao_code": "VOKU",
+      "event_count": 1,
+      "high_count": 1,
+      "known_cost_inr": 0.0
+    },
+    {
+      "icao_code": "VORY",
+      "event_count": 2,
+      "high_count": 1,
+      "known_cost_inr": 0.0
+    },
+    {
+      "icao_code": "VOTP",
+      "event_count": 1,
+      "high_count": 0,
+      "known_cost_inr": 12500000.0
+    },
+    {
+      "icao_code": "VOVZ",
+      "event_count": 1,
+      "high_count": 0,
+      "known_cost_inr": 12216040.0
+    }
+  ],
+  "interpretation": "Official procurement evidence, not condition labels."
+}

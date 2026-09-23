@@ -1,0 +1,3 @@
+station,asset_code,asset_name,asset_type,district,identity_status,match_method
+KALYANI DAM,AP_DAM_NWDP_AP01HH0040,Kalyani Dam,dam,Tirupati,VERIFIED,EXACT_NORMALIZED_NAME
+PEDDERU,AP_DAM_NWDP_AP01HH0049,Pedderu,dam,Annamayya,VERIFIED,EXACT_NORMALIZED_NAME

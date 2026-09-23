@@ -1,0 +1,115 @@
+=========================================================================================================
+SIMRAS STEP 2 - MATCH AP GOVERNMENT HYDROLOGY TO DAM / BARRAGE ASSETS
+=========================================================================================================
+
+1. GOVERNMENT DATASETS
+---------------------------------------------------------------------------------------------------------
+
+ap_reservoir_level_1970_2025.csv
+  name       : Station
+  code       : State LGD Code
+  latitude   : Latitude
+  longitude  : Longitude
+  parameter  : None
+  date       : None
+
+ap_reservoir_level_2026_2030.csv
+  name       : Station
+  code       : State LGD Code
+  latitude   : Latitude
+  longitude  : Longitude
+  parameter  : None
+  date       : None
+
+ap_reservoir_storage_1970_2025.csv
+  name       : Station
+  code       : State LGD Code
+  latitude   : Latitude
+  longitude  : Longitude
+  parameter  : None
+  date       : None
+
+ap_reservoir_storage_2026_2030.csv
+  name       : Station
+  code       : State LGD Code
+  latitude   : Latitude
+  longitude  : Longitude
+  parameter  : None
+  date       : None
+
+ap_river_discharge_2001_2025.csv
+  name       : Station
+  code       : State LGD Code
+  latitude   : Latitude
+  longitude  : Longitude
+  parameter  : None
+  date       : None
+
+ap_river_discharge_2026_2030.csv
+  name       : Station
+  code       : State LGD Code
+  latitude   : Latitude
+  longitude  : Longitude
+  parameter  : None
+  date       : None
+
+ap_river_velocity_discharge_2021_2025.csv
+  name       : Station
+  code       : State LGD Code
+  latitude   : Latitude
+  longitude  : Longitude
+  parameter  : None
+  date       : None
+
+ap_scada_water_discharge_2023_2025.csv
+  name       : Reservoir
+  code       : Station Code
+  latitude   : Latitude
+  longitude  : Longitude
+  parameter  : Parameter Type
+  date       : None
+
+2. SIMRAS ASSETS
+---------------------------------------------------------------------------------------------------------
+Dams/barrages loaded: 177
+
+3. EXTRACT UNIQUE HYDROLOGY ENTITIES
+---------------------------------------------------------------------------------------------------------
+Reading unique names from ap_reservoir_level_1970_2025.csv ...
+  unique source entities: 21
+Reading unique names from ap_reservoir_level_2026_2030.csv ...
+  unique source entities: 10
+Reading unique names from ap_reservoir_storage_1970_2025.csv ...
+  unique source entities: 16
+Reading unique names from ap_reservoir_storage_2026_2030.csv ...
+  unique source entities: 9
+Reading unique names from ap_river_discharge_2001_2025.csv ...
+  unique source entities: 22
+Reading unique names from ap_river_discharge_2026_2030.csv ...
+  unique source entities: 1
+Reading unique names from ap_river_velocity_discharge_2021_2025.csv ...
+  unique source entities: 2
+Reading unique names from ap_scada_water_discharge_2023_2025.csv ...
+  unique source entities: 30
+
+4. MATCH HYDROLOGY SOURCES TO ASSETS
+---------------------------------------------------------------------------------------------------------
+
+=========================================================================================================
+STEP 2 RESULT
+=========================================================================================================
+Government CSV files        : 8
+Unique hydrology entities   : 111
+SIMRAS dams+barrages        : 177
+Matched SIMRAS assets       : 11
+Asset coverage              : 6.21%
+High-confidence matches     : 33
+Review matches              : 2
+Unmatched source entities   : 76
+
+Database table:
+public.asset_hydrology_source_matches
+
+Match report:
+/app/data/processed/dam_barrage/AP_HYDROLOGY_ASSET_MATCHES.csv
+=========================================================================================================

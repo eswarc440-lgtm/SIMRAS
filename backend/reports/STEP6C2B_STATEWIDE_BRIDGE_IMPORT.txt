@@ -1,0 +1,57 @@
+================================================================================================================
+SIMRAS STEP 6C.2B - STATEWIDE AP BRIDGE IMPORT RESULT
+================================================================================================================
+
+Usable OSM bridge ways             : 23,121
+Non-line exported features skipped : 154
+Duplicate way IDs removed          : 0
+
+Named bridge ways                  : 4,384
+Road bridge ways                   : 21,016
+Rail bridge ways                   : 1,425
+Pedestrian bridge ways             : 305
+
+OSM width reported                 : 14
+OSM material reported              : 0
+OSM construction/start year        : 62
+
+New bridge assets inserted         : 23,117
+Existing OSM assets reused         : 0
+Anchor OSM rows detected           : 4
+Verified anchors linked            : 1 / 2
+
+Canonical BRIDGE assets now        : 23,119
+Digital Twin profiles              : 23,118
+Report readiness rows              : 23,118
+
+Structure grouping keys            : 15,120
+Multi-way groups requiring review  : 946
+
+Database tables:
+ public.bridge_osm_catalog
+ public.bridge_digital_twin_profiles
+ public.bridge_report_readiness
+ public.bridge_structure_groups
+
+Output files:
+ /app/data/processed/bridge/AP_ALL_BRIDGES_OSM.csv
+ /app/data/processed/bridge/AP_NAMED_BRIDGES_OSM.csv
+
+DIGITAL TWIN POLICY:
+ - real OSM bridge alignment is stored
+ - measured/reported width is used when available
+ - estimated width is rendering-only
+ - unknown pier counts remain UNKNOWN_DO_NOT_REPORT
+ - verified Step 6B anchors override OSM engineering fields
+
+REPORT POLICY:
+ - every promoted bridge receives a report-readiness row
+ - Health remains withheld without real structural inspection
+ - structural Risk remains withheld without AP validation labels
+ - RUL remains withheld without validated deterioration/design-life basis
+
+IMPORTANT:
+ OSM bridge ways are statewide mapped bridge segments.
+ Multi-way structures are tracked separately for physical-bridge
+ reconciliation instead of pretending every way is independent.
+================================================================================================================

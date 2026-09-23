@@ -1,0 +1,57 @@
+name: Source-backed twins and real reports
+
+on:
+  push:
+    branches:
+      - feature/source-backed-l2-l3-twins-20260916
+  pull_request:
+    branches:
+      - simras-source-20260912-124514
+
+jobs:
+  backend-feature:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e '.[dev]'
+      - name: Lint source-backed report changes
+        run: >-
+          ruff check
+          app/services/report_truth.py
+          app/services/real_report_service.py
+          app/api/routes/real_reports.py
+          app/api/router.py
+          tests/test_report_truth.py
+          tests/test_real_report_service.py
+      - name: Test source-backed report behavior
+        run: pytest -q tests/test_report_truth.py tests/test_real_report_service.py
+
+  frontend-feature:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm install
+      - name: Test source-backed dimensions, report presentation, and priority
+        run: >-
+          npm run test -- --run
+          src/features/digital-twin/sourceBackedDimensions.test.ts
+          src/pages/reports/realReportPresentation.test.ts
+          src/pages/digital-twin/twinPriority.test.ts
+      - name: TypeScript and production build
+        run: npm run build

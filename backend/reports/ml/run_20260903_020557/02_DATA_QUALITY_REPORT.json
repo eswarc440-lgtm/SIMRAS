@@ -1,0 +1,7 @@
+{
+  "datasets_considered": 2,
+  "models_trained": 0,
+  "trained_results": [],
+  "xgboost_available": true,
+  "lightgbm_available": false
+}

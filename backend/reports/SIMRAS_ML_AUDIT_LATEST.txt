@@ -1,0 +1,55 @@
+==========================================================================================
+SIMRAS ? COMPLETE EXISTING ML MODEL REALITY / QUALITY AUDIT
+==========================================================================================
+ROOT: /app
+
+1. MODEL ARTIFACTS
+------------------------------------------------------------------------------------------
+[FAIL ] model_artifacts: No existing ML model artifacts were discovered.
+
+2. TRAINING / EVALUATION REPORTS
+------------------------------------------------------------------------------------------
+[WARN ] training_reports: No parseable training/evaluation metric reports were found.
+
+3. TRAINING DATA / GROUND-TRUTH AUDIT
+------------------------------------------------------------------------------------------
+[WARN ] training_data: No auditable CSV training/feature datasets were discovered. Ground-truth quality cannot be verified from model artifacts alone.
+[PASS ] asset_split_leakage: No asset overlap detected in datasets exposing both asset ID and split.
+[PASS ] synthetic_ground_truth: No explicit synthetic/demo markers found in scanned training datasets.
+
+4. MODEL ROUTING / FULL ML / SPARSE ML / RULES / ABSTAIN
+------------------------------------------------------------------------------------------
+  full_nbi       4 file(s)
+  sparse_nbi     2 file(s)
+  rules          2 file(s)
+  abstain        4 file(s)
+  rul            12 file(s)
+[PASS ] full_model_route: Full/inspection-aware bridge ML routing code was discovered.
+[PASS ] sparse_model_route: Sparse bridge/NBI model route was discovered.
+[PASS ] abstention_route: Abstain/unavailable/insufficient-evidence handling exists.
+[WARN ] rules_fallback: Rule-based inference exists. Make sure rules are clearly labelled and never presented as trained ML.
+[WARN ] rul_code_present: RUL-related code exists. Confirm unsupported RUL is NULL/withheld rather than forced.
+
+5. EXISTING MODEL METRIC QUALITY GATES
+------------------------------------------------------------------------------------------
+  [WARN] health_mae: metric not found
+  [WARN] health_rmse: metric not found
+  [WARN] risk_roc_auc: metric not found
+  [WARN] risk_brier: metric not found
+  [WARN] risk_ece: metric not found
+  [WARN] risk_pr_auc_beats_prevalence: PR-AUC/prevalence unavailable
+
+6. CURRENT DATABASE PREDICTION AUDIT
+------------------------------------------------------------------------------------------
+[PASS ] database: Connected to PostgreSQL/PostGIS and inspected prediction tables.
+  predictions: 192 rows
+      {'model_version': 'simras_experimental_rul_proxy_v2', 'target': 'rul', 'n': 192, 'avg': 55.088541666666735, 'sd': 18.419675676838903, 'min': 0.0, 'max': 89.5}
+
+7. FINAL ML VERDICT
+==========================================================================================
+NOT READY ? fix FAIL items before presenting predictions as reliable.
+FAIL=1   WARN=10   MODELS_LOADED=0
+
+IMPORTANT: Good held-out metrics alone do NOT prove real Andhra Pradesh accuracy.
+Full bridge ML should require genuine inspection evidence; otherwise sparse ML or ABSTAIN should be used.
+Unsupported RUL should remain NULL/withheld.

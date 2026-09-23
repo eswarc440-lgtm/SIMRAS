@@ -1,0 +1,14 @@
+{
+  "version": "ml8g_bridge_row_extraction_v1",
+  "candidate_pages": 10,
+  "bridge_context_windows": 4,
+  "high_priority_bridge_rows": 1,
+  "likely_project_limit_rows": 0,
+  "needs_review_rows": 3,
+  "training_labels_created": 0,
+  "database_modified": false,
+  "classification_counts": {
+    "BRIDGE_CONTEXT_NEEDS_REVIEW": 3,
+    "POSSIBLE_BRIDGE_INSPECTION_ROW": 1
+  }
+}
