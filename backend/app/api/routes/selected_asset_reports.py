@@ -201,7 +201,7 @@ def _governance_for_asset(
     local_validation = bool(
         (model.get("ap_validation") or {}).get("local_engineering_validation", False)
     )
-    twin_validated = bool(ai.get("model_validated", False))
+    twin_validated = bool(ai.get("model_is_validated", False))
     applicable = asset_type == "bridge" if bridge_only else True
 
     validation_status = (
@@ -217,7 +217,7 @@ def _governance_for_asset(
         "bridge_only_model": bridge_only,
         "applicable_to_selected_asset": applicable,
         "local_engineering_validation": local_validation,
-        "twin_model_validated": twin_validated,
+        "twin_model_is_validated": twin_validated,
         "validation_status": validation_status,
         "decision_use": "DECISION_SUPPORT_ONLY",
         "scope_statement": (
@@ -586,7 +586,7 @@ def _csv_rows(report: dict[str, Any]) -> list[dict[str, Any]]:
         "prediction_method",
         "model_version",
         "feature_version",
-        "model_validated",
+        "model_is_validated",
     ):
         add(
             "ML_DECISION_SUPPORT",
@@ -911,7 +911,7 @@ async def selected_asset_health_assessment_csv(
     public = apply_numeric_assessment(report)
     fields = [
         "asset_code", "name", "category", "health_score", "health_basis",
-        "risk_score", "risk_level", "risk_basis", "confidence", "rul_years",
+        "risk_score", "risk_level", "risk_basis", "rul_years",
         "rul_lower_years", "rul_upper_years", "rul_basis", "prediction_basis",
         "features_used", "features_missing", "feature_version", "model_name",
         "model_version", "limitations",

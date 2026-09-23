@@ -35,16 +35,6 @@ async def list_assets(
         func.lower(Asset.asset_type).in_(
             MAIN_ASSET_TYPES
         ),
-
-        # SIMRAS bridge scope:
-        # expose only Andhra Pradesh bridge assets.
-        #
-        # AP bridge identifiers created by the statewide
-        # AP bridge pipeline use AP_BR_*.
-        or_(
-            func.lower(Asset.asset_type) != "bridge",
-            Asset.asset_code.ilike("AP_BR_%"),
-        ),
     ]
 
     if asset_type:

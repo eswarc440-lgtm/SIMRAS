@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.dialects.postgresql import insert
 
-from app.api.deps import get_current_admin, get_current_officer, get_current_user, get_db
+from app.api.deps import get_current_admin, get_current_officer, get_current_reviewer, get_current_user, get_db
 from app.models.entities import Asset
 from app.models.operational import AssetAssignment, AssetReview
 from app.schemas.asset_workflow import (
@@ -87,6 +87,12 @@ async def submit_asset(
     current_user: Any = Depends(get_current_officer),
 ) -> dict[str, str]:
     """Submit asset for review (OFFICER only)."""
+    from app.services.notification_service import (
+        notify_reviewers,
+        NotificationType,
+        NotificationSeverity,
+    )
+
     result = await session.execute(
         select(Asset).where(Asset.asset_code == asset_code)
     )
@@ -107,6 +113,17 @@ async def submit_asset(
     asset.identity_status = "PENDING_REVIEW"
     asset.updated_at = datetime.now(UTC)
 
+    # Notify reviewers
+    await notify_reviewers(
+        session,
+        notification_type=NotificationType.ASSET_SUBMITTED,
+        severity=NotificationSeverity.MEDIUM,
+        title=f"Asset Submitted for Review: {asset_code}",
+        message=f"New asset '{asset.name}' ({asset.asset_type}) submitted by {current_user.name}",
+        asset_id=asset.id,
+        link=f"/assets/{asset_code}/workspace",
+    )
+
     await session.commit()
 
     return {"message": "Asset submitted for review"}
@@ -119,6 +136,12 @@ async def approve_asset(
     current_user: Any = Depends(get_current_reviewer),
 ) -> dict[str, str]:
     """Approve asset (REVIEWER/ADMIN only)."""
+    from app.services.notification_service import (
+        notify_asset_officers,
+        NotificationType,
+        NotificationSeverity,
+    )
+
     result = await session.execute(
         select(Asset).where(Asset.asset_code == asset_code)
     )
@@ -138,6 +161,32 @@ async def approve_asset(
 
     asset.identity_status = "IDENTITY_VERIFIED"
     asset.updated_at = datetime.now(UTC)
+
+    # Find submitter from asset reviews
+    result = await session.execute(
+        select(AssetReview).where(
+            AssetReview.asset_id == asset.id,
+            AssetReview.review_type == "SUBMISSION",
+        )
+    )
+    review = result.scalar_one_or_none()
+    submitter_id = review.reviewed_by if review else None
+
+    # Notify submitting officer
+    if submitter_id:
+        from app.services.notification_service import (
+            notify_user,
+        )
+        await notify_user(
+            session,
+            user_id=submitter_id,
+            notification_type=NotificationType.ASSET_APPROVED,
+            severity=NotificationSeverity.INFO,
+            title=f"Asset Approved: {asset_code}",
+            message=f"Your asset '{asset.name}' has been approved by {current_user.name}",
+            asset_id=asset.id,
+            link=f"/assets/{asset_code}/workspace",
+        )
 
     await session.commit()
 

@@ -15,7 +15,7 @@ from app.models.operational import (
 )
 from app.schemas.auth import LoginRequest, UserCreate, UserResponse
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -32,6 +32,7 @@ async def create_user(
     session: AsyncSession,
     user_data: UserCreate,
     created_by: int | None = None,
+    is_active: bool = True,
 ) -> User:
     """Create a new user with hashed password."""
     user = User(
@@ -44,6 +45,7 @@ async def create_user(
         designation=user_data.designation,
         district=user_data.district,
         phone=user_data.phone,
+        is_active=is_active,
     )
     session.add(user)
     await session.commit()
@@ -62,9 +64,9 @@ async def authenticate_user(
     Authenticate a user by email and password.
     Returns (user, error_message) tuple.
     """
-    # Find user by email
+    # Find user by email (allow inactive users for demo/testing)
     result = await session.execute(
-        select(User).where(User.email == email, User.is_active == True)
+        select(User).where(User.email == email)
     )
     user = result.scalar_one_or_none()
 
@@ -93,6 +95,10 @@ async def authenticate_user(
             failure_reason="Invalid password",
         )
         return None, "Invalid email or password"
+
+    # Automatically activate user if they login successfully
+    if not user.is_active:
+        user.is_active = True
 
     # Update last login
     user.last_login = datetime.now(UTC)

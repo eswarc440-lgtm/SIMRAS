@@ -82,7 +82,7 @@ class MLResult:
     feature_version: str
     status: str
     prediction_method: str
-    model_validated: bool
+    model_is_validated: bool
     training_scope: str
     forecast_horizon_years: int
     factors: list[str]
@@ -212,7 +212,7 @@ def predict_bridge(
         risk_score=risk_score,
         rul_years=rul_median,
         confidence=confidence,
-        model_validated=locally_validated,
+        model_is_validated=locally_validated,
     )
     return MLResult(
         health_score=round(health_score, 1),
@@ -228,7 +228,7 @@ def predict_bridge(
         feature_version=manifest["feature_version"],
         status="VALIDATED_LOCAL" if locally_validated else "RESEARCH_TRANSFER",
         prediction_method="calibrated_nbi_bridge_ml",
-        model_validated=locally_validated,
+        model_is_validated=locally_validated,
         training_scope=manifest["training_scope"],
         forecast_horizon_years=int(manifest.get("prediction_horizon_years", 3)),
         factors=list(dict.fromkeys(factors)),
@@ -252,7 +252,7 @@ class EngineeringBaselineResult:
     feature_version: str
     status: str
     prediction_method: str
-    model_validated: bool
+    model_is_validated: bool
     training_scope: str
     forecast_horizon_years: int
     factors: list[str]
@@ -302,7 +302,7 @@ def predict_asset(data: MLInput, *, artifact_dir: str | Path | None = None):
         feature_version=f"{category}_engineering_baseline_v1",
         status="ENGINEERING_BASELINE",
         prediction_method="category_service_life_baseline",
-        model_validated=False,
+        model_is_validated=False,
         training_scope=f"{category.upper()}_VERIFIED_ENGINEERING_EVIDENCE",
         forecast_horizon_years=0,
         factors=[
@@ -328,7 +328,7 @@ class SparseMLResult:
     feature_version: str
     status: str
     prediction_method: str
-    model_validated: bool
+    model_is_validated: bool
     training_scope: str
     forecast_horizon_years: int
     factors: list[str]
@@ -365,5 +365,5 @@ def predict_bridge_sparse(data: MLInput, *, artifact_dir: str | Path | None = No
     completeness=sum(v is not None for v in row.values())/len(row)
     confidence=float(np.clip(.40+.25*completeness,.40,.65))
     factors=["Sparse bridge ML uses real available age/material/geometry fields",f"Estimated {risk_score:.1f}% probability of poor condition within {manifest.get('prediction_horizon_years',3)} years","Research-transfer model trained on FHWA/NBI histories; Andhra Pradesh validation is still required","RUL is intentionally withheld"]
-    recs=build_recommendations(condition_rating=None,risk_score=risk_score,rul_years=None,confidence=confidence,model_validated=False)
+    recs=build_recommendations(condition_rating=None,risk_score=risk_score,rul_years=None,confidence=confidence,model_is_validated=False)
     return SparseMLResult(round(health_score,1),round(min(lo,hi),1),round(max(lo,hi),1),round(risk_score,1),risk_level,None,None,None,round(confidence,2),str(manifest["version"]),str(manifest["feature_version"]),"RESEARCH_TRANSFER","sparse_nbi_bridge_ml",False,str(manifest["training_scope"]),int(manifest.get("prediction_horizon_years",3)),factors,recs)

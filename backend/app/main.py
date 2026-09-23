@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
+import asyncio
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,7 +13,17 @@ from app.db.session import SessionLocal
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    # Startup
+    from app.services.notification_scheduler import start_notification_scheduler
+    
+    reconcile_interval = getattr(settings, 'NOTIFICATION_RECONCILE_SECONDS', 60)
+    scheduler_task = await start_notification_scheduler(reconcile_interval)
+    
     yield
+    
+    # Shutdown
+    from app.services.notification_scheduler import stop_notification_scheduler
+    await stop_notification_scheduler(scheduler_task)
 
 
 from app.api.routes.dam_barrage_profile import router as dam_barrage_profile_router
@@ -63,6 +74,14 @@ app.include_router(notifications_router, prefix="/api/v1")
 # AI Assistant routes
 from app.api.routes.ai_assistant import router as ai_assistant_router
 app.include_router(ai_assistant_router, prefix="/api/v1")
+
+# GIS operational layers
+# from app.api.routes.gis_operational import router as gis_operational_router
+# app.include_router(gis_operational_router, prefix="/api/v1")
+
+# Digital twin overlays
+# from app.api.routes.digital_twin_overlays import router as digital_twin_overlays_router
+# app.include_router(digital_twin_overlays_router, prefix="/api/v1")
 
 
 @app.get("/")

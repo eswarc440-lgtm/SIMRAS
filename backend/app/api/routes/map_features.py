@@ -133,7 +133,7 @@ async def list_map_features(
                     ds.licence,
                     ST_AsGeoJSON(mf.geometry)::jsonb AS geometry
                 FROM map_features mf
-                JOIN data_sources ds ON ds.id = mf.source_id
+                LEFT JOIN data_sources ds ON ds.id = mf.source_id
                 {where_clause}
                 ORDER BY mf.feature_type, COALESCE(mf.name, mf.external_id)
                 LIMIT :limit OFFSET :offset

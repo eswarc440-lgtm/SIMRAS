@@ -7,7 +7,7 @@ def build_recommendations(
     risk_score: float | None,
     rul_years: float | None,
     confidence: float | None,
-    model_validated: bool,
+    model_is_validated: bool,
 ) -> list[str]:
     """Return controlled, reviewable actions rather than generated safety advice."""
 
@@ -28,7 +28,7 @@ def build_recommendations(
 
     if rul_years is not None and rul_years <= 5:
         rul_is_actionable = (
-            model_validated
+            model_is_validated
             and confidence is not None
             and confidence >= 0.7
             and risk_score is not None
@@ -44,6 +44,6 @@ def build_recommendations(
             )
     if confidence is not None and confidence < 0.7:
         recommendations.append("Collect missing local evidence before making a maintenance decision")
-    if not model_validated:
+    if not model_is_validated:
         recommendations.append("Treat this as research decision support pending Andhra Pradesh validation")
     return list(dict.fromkeys(recommendations))

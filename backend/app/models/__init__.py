@@ -7,8 +7,8 @@ from app.models.entities import (  # noqa: F401
     DataSource,
     EnvironmentObservation,
     IngestionRun,
-    Inspection as LegacyInspection,
-    Maintenance as LegacyMaintenance,
+    LegacyInspection,
+    LegacyMaintenance,
     ModelRegistry,
     Prediction,
 )

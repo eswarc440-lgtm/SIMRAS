@@ -60,16 +60,7 @@ function text(value: unknown, fallback = "NOT AVAILABLE"): string {
 
 function score(value: unknown): string {
   const n = asNumber(value);
-  return n === undefined ? "WITHHELD" : `${n.toFixed(1)} / 100`;
-}
-
-function percent(value: unknown): string {
-  const n = asNumber(value);
-  if (n === undefined) {
-    return "WITHHELD";
-  }
-  const pct = n <= 1 ? n * 100 : n;
-  return `${pct.toFixed(0)}%`;
+  return n === undefined ? "UNAVAILABLE" : `${n.toFixed(1)} / 100`;
 }
 
 function unit(value: unknown, suffix: string): string {
@@ -801,7 +792,7 @@ export function UnifiedAssetReport({ report }: Props) {
           />
           <SummaryCard
             label="Risk Level"
-            value={text(riskLevel, "WITHHELD")}
+            value={text(riskLevel, "UNAVAILABLE")}
             note="Current structural risk level."
           />
           <SummaryCard
@@ -813,10 +804,10 @@ export function UnifiedAssetReport({ report }: Props) {
             label="Remaining Useful Life"
             value={
               asNumber(rul) === undefined
-                ? "WITHHELD"
+                ? "UNAVAILABLE"
                 : `${asNumber(rul)!.toFixed(1)} years`
             }
-            note="Shown only when evidence supports RUL."
+            note="Estimated remaining useful life."
           />
         </div>
       </Panel>

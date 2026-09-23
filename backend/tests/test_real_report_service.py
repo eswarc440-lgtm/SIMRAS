@@ -47,7 +47,7 @@ def test_ineligible_ai_section_is_omitted_entirely():
         "ai": {
             "health_score": 77,
             "risk_score": 20,
-            "model_validated": False,
+            "model_is_validated": False,
             "training_scope": "ASSET_SPECIFIC_ENGINEERING_RULES",
             "status": "RESEARCH_TRANSFER",
         },
@@ -71,7 +71,7 @@ def test_real_bridge_ml_can_be_included_when_model_is_locally_validated():
             "risk_score": 12,
             "risk_level": "LOW",
             "confidence": 0.81,
-            "model_validated": True,
+            "model_is_validated": True,
             "training_scope": "LOCAL_ANDHRA_PRADESH_VALIDATION",
             "model_version": "validated_bridge_v1",
             "prediction_time": "2026-09-16T12:00:00Z",

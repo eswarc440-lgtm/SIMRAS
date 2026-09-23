@@ -1,42 +1,30 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import './LoginPage.css';
 
-interface LoginFormData {
-  email: string;
-  password: string;
+interface LoginPageProps {
+  onLoginComplete?: () => void;
+  onSignupClick?: () => void;
+  onForgotPasswordClick?: () => void;
 }
 
-export default function LoginPage() {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState<LoginFormData>({
-    email: '',
-    password: '',
-  });
+export function LoginPage({ onLoginComplete, onSignupClick, onForgotPasswordClick }: LoginPageProps) {
+  const { login } = useAuth();
+  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
-    setError('');
 
     try {
-      const response = await fetch('/api/v1/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.detail || 'Login failed');
-      }
-
-      // Redirect to dashboard or previous page
-      navigate('/officer');
+      await login(email, password);
+      // Call the callback to navigate to dashboard
+      onLoginComplete?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
@@ -44,104 +32,132 @@ export default function LoginPage() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900">
-      <div className="max-w-md w-full mx-4">
-        <div className="bg-slate-800 rounded-lg shadow-xl p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">SIMRAS</h1>
-            <p className="text-slate-400">Officer Portal</p>
+    <div className="login-page">
+      <div className="login-container">
+        {/* Left side - Branding */}
+        <div className="login-branding">
+          <div className="branding-content">
+            <div className="logo-section">
+              <div className="logo-icon">🏗️</div>
+              <h1>SIMRAS</h1>
+            </div>
+            <p className="tagline">Smart Infrastructure Monitoring & Risk Assistance System</p>
+            <div className="benefits">
+              <div className="benefit-item">
+                <span className="check-icon">✓</span>
+                <span>Real-time infrastructure monitoring</span>
+              </div>
+              <div className="benefit-item">
+                <span className="check-icon">✓</span>
+                <span>Risk-based asset management</span>
+              </div>
+              <div className="benefit-item">
+                <span className="check-icon">✓</span>
+                <span>Digital twin visualization</span>
+              </div>
+              <div className="benefit-item">
+                <span className="check-icon">✓</span>
+                <span>Integrated workflow management</span>
+              </div>
+            </div>
           </div>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Right side - Login form */}
+        <div className="login-form-section">
+          <div className="form-container">
+            <h2>Officer Portal</h2>
+            <p className="form-subtitle">Sign in to your account</p>
+
             {error && (
-              <div className="bg-red-900/50 border border-red-700 text-red-100 px-4 py-3 rounded">
-                {error}
+              <div className="error-alert">
+                <span className="error-icon">⚠️</span>
+                <span>{error}</span>
               </div>
             )}
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
-                Officer ID / Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="officer@simras.gov.in"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="••••••••"
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label htmlFor="email">Officer ID or Email</label>
                 <input
-                  id="remember"
-                  type="checkbox"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 bg-slate-700 border-slate-600 rounded"
+                  id="email"
+                  type="text"
+                  placeholder="your.email@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                  required
                 />
-                <label htmlFor="remember" className="ml-2 block text-sm text-slate-400">
-                  Remember me
-                </label>
               </div>
 
-              <button
-                type="button"
-                className="text-sm text-blue-400 hover:text-blue-300"
-                onClick={() => navigate('/forgot-password')}
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                  required
+                />
+              </div>
+
+              <button 
+                type="submit" 
+                className="sign-in-button"
+                disabled={loading}
               >
-                Forgot Password?
+                {loading ? 'Signing in...' : 'Sign In'}
+              </button>
+            </form>
+
+            <div className="form-footer">
+              <button 
+                type="button"
+                onClick={onForgotPasswordClick}
+                className="forgot-password-link"
+              >
+                Forgot password?
               </button>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? 'Signing in...' : 'Sign In'}
-            </button>
-          </form>
+            <div className="auth-links">
+              <p className="signup-prompt">
+                Don't have an account?{' '}
+                <button 
+                  type="button"
+                  onClick={onSignupClick}
+                  className="signup-link"
+                >
+                  Create one
+                </button>
+              </p>
+            </div>
 
-          <div className="mt-6 text-center">
-            <p className="text-slate-400 text-sm">
-              Need access? Contact your system administrator.
-            </p>
+            <div className="demo-notice">
+              <p className="notice-title">Demo Credentials</p>
+              <div className="demo-credentials">
+                <div className="demo-user">
+                  <strong>Officer:</strong> officer@demo.com / demo123
+                </div>
+                <div className="demo-user">
+                  <strong>Reviewer:</strong> reviewer@demo.com / demo123
+                </div>
+                <div className="demo-user">
+                  <strong>Admin:</strong> admin@demo.com / demo123
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        <div className="mt-4 text-center">
-          <p className="text-slate-500 text-xs">
-            Government of Andhra Pradesh - Smart Infrastructure Monitoring and Risk Assistance System
-          </p>
-        </div>
       </div>
+
+      {/* Footer */}
+      <footer className="login-footer">
+        <p>&copy; 2026 SIMRAS. Government of Andhra Pradesh.</p>
+      </footer>
     </div>
   );
 }

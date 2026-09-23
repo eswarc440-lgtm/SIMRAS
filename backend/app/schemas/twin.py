@@ -62,6 +62,8 @@ class ModelMetadata(BaseModel):
     heading_deg: float | None = None
     elevation_m: float | None = None
     horizontal_accuracy_m: float | None = None
+    geometry_mode: str = "SCHEMATIC"
+    evidence: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class InspectionState(BaseModel):
@@ -94,7 +96,9 @@ class PredictionState(BaseModel):
     prediction_time: datetime
     status: str
     prediction_method: str = "unknown"
-    model_validated: bool = False
+    model_is_validated: bool = False
+
+    model_config = {"protected_namespaces": ()}
     training_scope: str = "UNKNOWN"
     forecast_horizon_years: int | None = None
     factors: list[str] = Field(default_factory=list)
@@ -114,6 +118,8 @@ class TwinResponse(BaseModel):
     ai: PredictionState
     freshness: dict[str, str]
     generated_at: datetime
+    assessment: dict[str, Any] = Field(default_factory=dict)
+    evidence_state: dict[str, Any] = Field(default_factory=dict)
 
 
 class GeoJSONFeatureCollection(BaseModel):

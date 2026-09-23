@@ -276,6 +276,10 @@ def assess_bridge_from_evidence(asset: dict[str, Any]) -> dict[str, Any]:
         "assessment_basis": "Transparent rule-based assessment using available engineering evidence",
         "features_used": [],
         "features_missing": [],
+        "prediction_basis": "EVIDENCE_DERIVED",
+        "model_name": "evidence_derived_rules",
+        "model_version": "v1",
+        "feature_version": "evidence_proxy_v1",
         "limitations": [
             "No structural inspection condition rating available",
             "No traffic/load evidence available",

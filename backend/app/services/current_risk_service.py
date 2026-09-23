@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.entities import EnvironmentObservation, Prediction
 from app.services.dam_hydrology_risk import score_dam_barrage_operational_risk
+from app.core.assessment_thresholds import get_risk_level
 
 
 def _iso(value: Any) -> str | None:
@@ -19,13 +20,8 @@ def _iso(value: Any) -> str | None:
 
 
 def _risk_level(score: float | None) -> str | None:
-    if score is None:
-        return None
-    if score >= 70:
-        return "HIGH"
-    if score >= 40:
-        return "MEDIUM"
-    return "LOW"
+    """Use centralized threshold from assessment_thresholds."""
+    return get_risk_level(score)
 
 
 def resolve_current_risk_snapshot(

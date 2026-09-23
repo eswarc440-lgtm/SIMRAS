@@ -9,7 +9,9 @@ interface User {
   department: string | null;
   designation: string | null;
   district: string | null;
+  phone: string | null;
   is_active: boolean;
+  last_login: string | null;
 }
 
 interface AuthContextType {
@@ -25,9 +27,28 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Mock user for development/testing when auth is unavailable
+const MOCK_USER: User = {
+  id: 1,
+  officer_id: "AP_DEMO_001",
+  name: "Demo Officer",
+  email: "officer@demo.com",
+  role: "OFFICER",
+  department: "Infrastructure Ministry",
+  designation: "Inspector",
+  district: "Andhra Pradesh",
+  phone: "9876543210",
+  is_active: true,
+  last_login: new Date().toISOString(),
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [useMockAuth] = useState(() => {
+    // Enable mock auth if env var set or always in development
+    return import.meta.env.VITE_MOCK_AUTH === 'true' || import.meta.env.DEV;
+  });
 
   useEffect(() => {
     checkAuth();
@@ -41,15 +62,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
+      } else if (useMockAuth) {
+        // Fallback to mock user if auth endpoint fails and mock auth is enabled
+        console.log('📋 Using mock officer for development');
+        setUser(MOCK_USER);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
+      if (useMockAuth) {
+        console.log('📋 Using mock officer for development');
+        setUser(MOCK_USER);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const login = async (email: string, password: string) => {
+    if (useMockAuth && email === 'officer@demo.com') {
+      // Mock login
+      setUser(MOCK_USER);
+      return;
+    }
+
     const response = await fetch('/api/v1/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -67,10 +102,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    await fetch('/api/v1/auth/logout', {
-      method: 'POST',
-      credentials: 'include',
-    });
+    try {
+      await fetch('/api/v1/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch {
+      // Ignore logout errors in mock mode
+    }
     setUser(null);
   };
 

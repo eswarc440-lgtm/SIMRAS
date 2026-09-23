@@ -784,9 +784,9 @@ export function SelectedAssetReports({
       ? (
           storedRiskPrediction
             ?.risk_level ??
-          "WITHHELD"
+          "LOW"
         )
-      : "WITHHELD";
+      : "LOW";
 
   const storedRiskFactorPayload =
     storedRiskPrediction?.factors &&

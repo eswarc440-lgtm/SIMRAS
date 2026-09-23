@@ -1,7 +1,7 @@
-"""Add operational workflow tables for authentication, inspections, maintenance, plans, notifications
+﻿"""Add operational workflow tables for authentication, inspections, maintenance, plans, notifications
 
 Revision ID: 0006
-Revises: 0005
+Revises: 0005_dam_inspection_ground_truth
 Create Date: 2024-09-20 14:30:00.000000
 
 """
@@ -13,25 +13,36 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = '0006'
-down_revision: Union[str, None] = '0005'
+down_revision: str | None = "0005_dam_inspection_ground_truth"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
-def upgrade() -> None:
-    # Rename existing tables to legacy
-    op.execute('ALTER TABLE inspections RENAME TO legacy_inspections')
-    op.execute('ALTER TABLE maintenance RENAME TO legacy_maintenance')
-    op.execute('ALTER TABLE defects RENAME TO legacy_defects')
+def _rename_table_and_indexes(old_name: str, new_name: str) -> None:
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    index_names = {index['name'] for index in inspector.get_indexes(old_name)}
+    primary_key_name = inspector.get_pk_constraint(old_name).get('name')
+    if primary_key_name:
+        index_names.add(primary_key_name)
 
-    # Update foreign key in legacy_defects
-    op.drop_constraint('defects_inspection_id_fkey', 'legacy_defects', type_='foreignkey')
-    op.create_foreign_key(
-        'legacy_defects_inspection_id_fkey',
-        'legacy_defects', 'legacy_inspections',
-        ['inspection_id'], ['id'],
-        ondelete='CASCADE'
-    )
+    # PostgreSQL keeps foreign keys attached to the same table on rename,
+    # but retains index names (including the primary-key backing index).
+    # Free those names before creating the replacement operational tables.
+    op.rename_table(old_name, new_name)
+    quote = bind.dialect.identifier_preparer.quote
+    for index_name in sorted(index_names):
+        new_index_name = index_name.replace(old_name, new_name, 1)
+        if new_index_name != index_name:
+            op.execute(
+                f'ALTER INDEX {quote(index_name)} RENAME TO {quote(new_index_name)}'
+            )
+
+
+def upgrade() -> None:
+    _rename_table_and_indexes('inspections', 'legacy_inspections')
+    _rename_table_and_indexes('maintenance', 'legacy_maintenance')
+    _rename_table_and_indexes('defects', 'legacy_defects')
 
     # Create users table
     op.create_table(
@@ -108,7 +119,7 @@ def upgrade() -> None:
         sa.Column('success', sa.Boolean(), nullable=False, server_default='true'),
         sa.Column('failure_reason', sa.String(length=200), nullable=True),
         sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-        sa.ForeignKeyConstraint(['user_id'], ['users.id', ondelete='SET NULL']),
+        sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='SET NULL'),
         sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_login_audit_action'), 'login_audit', ['action'], unique=False)
@@ -323,7 +334,6 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(['asset_id'], ['assets.id'], ondelete='CASCADE'),
         sa.ForeignKeyConstraint(['created_by'], ['users.id']),
         sa.ForeignKeyConstraint(['related_inspection_id'], ['inspections.id']),
-        sa.ForeignKeyConstraint(['related_plan_id'], ['asset_plans.id']),
         sa.ForeignKeyConstraint(['reviewed_by'], ['users.id']),
         sa.PrimaryKeyConstraint('id')
     )
@@ -424,6 +434,13 @@ def upgrade() -> None:
     op.create_index(op.f('ix_asset_plans_priority'), 'asset_plans', ['priority'], unique=False)
     op.create_index(op.f('ix_asset_plans_status'), 'asset_plans', ['status'], unique=False)
 
+    # The referenced plan table must exist before this constraint is added.
+    op.create_foreign_key(
+        op.f('fk_maintenance_related_plan_id_asset_plans'),
+        'maintenance', 'asset_plans',
+        ['related_plan_id'], ['id'],
+    )
+
     # Create plan_status_history table
     op.create_table(
         'plan_status_history',
@@ -504,7 +521,7 @@ def upgrade() -> None:
         sa.Column('reason', sa.Text(), nullable=True),
         sa.Column('ip_address', sa.String(length=50), nullable=True),
         sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-        sa.ForeignKeyConstraint(['user_id'], ['users.id', ondelete='SET NULL']),
+        sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='SET NULL'),
         sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_audit_log_action'), 'audit_log', ['action'], unique=False)
@@ -525,7 +542,7 @@ def upgrade() -> None:
         sa.Column('model', sa.String(length=100), nullable=True),
         sa.Column('response', sa.Text(), nullable=True),
         sa.Column('timestamp', sa.DateTime(timezone=True), nullable=False),
-        sa.ForeignKeyConstraint(['user_id'], ['users.id', ondelete='SET NULL']),
+        sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='SET NULL'),
         sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_ai_assistant_audit_asset_code'), 'ai_assistant_audit', ['asset_code'], unique=False)
@@ -564,6 +581,11 @@ def downgrade() -> None:
     op.drop_table('notifications')
     op.drop_table('plan_documents')
     op.drop_table('plan_status_history')
+    op.drop_constraint(
+        op.f('fk_maintenance_related_plan_id_asset_plans'),
+        'maintenance',
+        type_='foreignkey',
+    )
     op.drop_table('asset_plans')
     op.drop_table('maintenance_components')
     op.drop_table('maintenance_progress')
@@ -582,16 +604,9 @@ def downgrade() -> None:
     op.drop_table('user_sessions')
     op.drop_table('users')
 
-    # Restore legacy tables
-    op.execute('ALTER TABLE legacy_inspections RENAME TO inspections')
-    op.execute('ALTER TABLE legacy_maintenance RENAME TO maintenance')
-    op.execute('ALTER TABLE legacy_defects RENAME TO defects')
+    # Restore the original tables and indexes; existing FKs follow the rename.
+    _rename_table_and_indexes('legacy_inspections', 'inspections')
+    _rename_table_and_indexes('legacy_maintenance', 'maintenance')
+    _rename_table_and_indexes('legacy_defects', 'defects')
 
-    # Restore foreign key
-    op.drop_constraint('legacy_defects_inspection_id_fkey', 'defects', type_='foreignkey')
-    op.create_foreign_key(
-        'defects_inspection_id_fkey',
-        'defects', 'inspections',
-        ['inspection_id'], ['id'],
-        ondelete='CASCADE'
-    )
+

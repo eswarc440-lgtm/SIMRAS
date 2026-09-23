@@ -61,6 +61,8 @@ export interface TwinResponse {
     heading_deg?: number | null;
     elevation_m?: number | null;
     horizontal_accuracy_m?: number | null;
+    geometry_mode?: string;
+    evidence?: Array<Record<string, unknown>>;
   };
   environment: Record<string, SourceValue>;
   inspection: {
@@ -107,6 +109,20 @@ export interface TwinResponse {
   };
   freshness: Record<string, string>;
   generated_at: string;
+  assessment?: {
+    health?: { available?: boolean; value?: number | null; source?: string };
+    risk?: { available?: boolean; score?: number | null; level?: string | null; source?: string };
+    rul?: { available?: boolean; years?: number | null; source?: string };
+    confidence?: number | null;
+    evidence_readiness?: number | null;
+    prediction_status?: string;
+    model_name?: string | null;
+    model_version?: string | null;
+    feature_version?: string | null;
+    features_used?: unknown[];
+    features_withheld?: unknown[];
+  };
+  evidence_state?: { status?: string; reason?: string | null };
 }
 export interface MapFeatureProperties {
   external_id: string;

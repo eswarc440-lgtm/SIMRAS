@@ -82,7 +82,7 @@ def test_research_transfer_prediction_is_disclosed(tmp_path: Path) -> None:
     )
     assert result is not None
     assert result.status == "RESEARCH_TRANSFER"
-    assert result.model_validated is False
+    assert result.model_is_validated is False
     assert result.health_lower_bound <= result.health_score <= result.health_upper_bound
     assert result.rul_lower_bound <= result.remaining_life_years <= result.rul_upper_bound
     assert any("not validated" in item.lower() for item in result.factors)

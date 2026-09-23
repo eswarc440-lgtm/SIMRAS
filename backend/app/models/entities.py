@@ -65,9 +65,6 @@ class Asset(Base, TimestampMixin):
     identifiers: Mapped[list[AssetIdentifier]] = relationship(
         back_populates="asset", cascade="all, delete-orphan"
     )
-    models: Mapped[list[AssetModel]] = relationship(
-        back_populates="asset", cascade="all, delete-orphan"
-    )
 
     __table_args__ = (
         Index("ix_assets_representative_geometry_gist", "representative_geometry", postgresql_using="gist"),
@@ -124,23 +121,24 @@ class AssetModel(Base, TimestampMixin):
     __tablename__ = "asset_models"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    asset_id: Mapped[int] = mapped_column(ForeignKey("assets.id", ondelete="CASCADE"), index=True)
-    model_uri: Mapped[str | None] = mapped_column(Text)
-    format: Mapped[str] = mapped_column(String(30), default="procedural")
-    version: Mapped[str] = mapped_column(String(40), default="1")
-    fidelity_level: Mapped[str] = mapped_column(String(10), default="L0")
-    model_source: Mapped[str] = mapped_column(String(200), default="procedural")
+    asset_code: Mapped[str | None] = mapped_column(String(100), index=True)
     source_url: Mapped[str | None] = mapped_column(Text)
-    dimensions: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    # Retain the historical model contract as well as the newer code-based link.
+    # Existing minimal tables are extended by forward migration 0007.
+    asset_id: Mapped[int | None] = mapped_column(ForeignKey("assets.id", ondelete="CASCADE"), index=True)
+    model_uri: Mapped[str | None] = mapped_column(Text)
+    format: Mapped[str] = mapped_column(String(30), default="procedural", server_default="procedural")
+    version: Mapped[str] = mapped_column(String(40), default="1", server_default="1")
+    fidelity_level: Mapped[str] = mapped_column(String(10), default="L0", server_default="L0")
+    model_source: Mapped[str] = mapped_column(String(200), default="procedural", server_default="procedural")
+    dimensions: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")
     capture_date: Mapped[date | None] = mapped_column(Date)
     horizontal_accuracy_m: Mapped[float | None] = mapped_column(Float)
     heading_deg: Mapped[float | None] = mapped_column(Float)
     elevation_m: Mapped[float | None] = mapped_column(Float)
     checksum: Mapped[str | None] = mapped_column(String(100))
-    is_asset_specific: Mapped[bool] = mapped_column(Boolean, default=False)
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-
-    asset: Mapped[Asset] = relationship(back_populates="models")
+    is_asset_specific: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
 
 
 class LegacyInspection(Base, TimestampMixin):
@@ -160,7 +158,7 @@ class LegacyInspection(Base, TimestampMixin):
 
 
 class Defect(Base, TimestampMixin):
-    __tablename__ = "defects"
+    __tablename__ = "legacy_defects"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     inspection_id: Mapped[int] = mapped_column(ForeignKey("legacy_inspections.id", ondelete="CASCADE"), index=True)

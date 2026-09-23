@@ -113,6 +113,44 @@ async def get_current_user_info(
 async def register(
     user_data: UserCreate,
     session: AsyncSession = Depends(get_db),
+) -> UserResponse:
+    """Register a new user (public signup)."""
+    from sqlalchemy import select
+    from app.models.operational import User
+
+    # Check if email already exists
+    result = await session.execute(select(User).where(User.email == user_data.email))
+    existing = result.scalar_one_or_none()
+
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email already registered",
+        )
+
+    # Check if officer_id already exists
+    result = await session.execute(select(User).where(User.officer_id == user_data.officer_id))
+    existing_officer = result.scalar_one_or_none()
+
+    if existing_officer:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Officer ID already exists",
+        )
+
+    # Create user with pending approval status
+    user = await create_user(session, user_data, created_by=None, is_active=False)
+    
+    # TODO: Send welcome email with account pending message
+    # TODO: Notify admins of new registration
+    
+    return UserResponse.model_validate(user)
+
+
+@router.post("/register-admin", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+async def register_admin(
+    user_data: UserCreate,
+    session: AsyncSession = Depends(get_db),
     current_user: Any = Depends(get_current_user),
 ) -> UserResponse:
     """Register a new user (admin only)."""
@@ -125,7 +163,6 @@ async def register(
 
     # Check if email already exists
     from sqlalchemy import select
-
     from app.models.operational import User
 
     result = await session.execute(select(User).where(User.email == user_data.email))
@@ -137,7 +174,7 @@ async def register(
             detail="Email already registered",
         )
 
-    user = await create_user(session, user_data, created_by=current_user.id)
+    user = await create_user(session, user_data, created_by=current_user.id, is_active=True)
     return UserResponse.model_validate(user)
 
 
@@ -212,19 +249,40 @@ async def request_password_reset(
     reset_request: PasswordResetRequest,
     session: AsyncSession = Depends(get_db),
 ) -> dict[str, str]:
-    """Request a password reset token."""
+    """Request a password reset token (forgot password flow)."""
     reset_token = await create_password_reset_token(session, reset_request.email)
 
+    # Don't reveal if email exists for security
     if reset_token is None:
-        # Don't reveal if email exists
-        return {"message": "If the email exists, a reset token has been sent"}
+        return {"message": "If the email exists in our system, a password reset link has been sent"}
 
     # In production, send email with reset token
-    # For now, return the token (development only)
-    return {
-        "message": "Password reset token created",
-        "token": reset_token.token,  # Remove in production
-    }
+    # Email template: "Click here to reset: {frontend_url}/auth/reset-password?token={token}"
+    # TODO: Send email with reset token
+    # TODO: Log password reset request
+    
+    return {"message": "If the email exists in our system, a password reset link has been sent"}
+
+
+@router.post("/forgot-password")
+async def forgot_password(
+    reset_request: PasswordResetRequest,
+    session: AsyncSession = Depends(get_db),
+) -> dict[str, str]:
+    """Forgot password endpoint (alias for password-reset)."""
+    reset_token = await create_password_reset_token(session, reset_request.email)
+
+    # Don't reveal if email exists for security
+    if reset_token is None:
+        return {"message": "If the email exists in our system, a password reset link has been sent"}
+
+    # TODO: Send email with reset token to reset_request.email
+    # Email content:
+    # Subject: "SIMRAS Password Reset Request"
+    # Body: "Click the link below to reset your password (valid for 1 hour): 
+    #        https://simras.gov.in/auth/reset-password?token={reset_token.token}"
+    
+    return {"message": "If the email exists in our system, a password reset link has been sent"}
 
 
 @router.post("/password-reset/confirm")
@@ -233,6 +291,27 @@ async def confirm_password_reset(
     session: AsyncSession = Depends(get_db),
 ) -> dict[str, str]:
     """Reset password using token."""
+    success, error = await reset_password(
+        session,
+        reset_confirm.token,
+        reset_confirm.new_password,
+    )
+
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=error or "Password reset failed",
+        )
+
+    return {"message": "Password reset successfully"}
+
+
+@router.post("/reset-password")
+async def reset_password_endpoint(
+    reset_confirm: PasswordResetConfirm,
+    session: AsyncSession = Depends(get_db),
+) -> dict[str, str]:
+    """Reset password using token (endpoint alias)."""
     success, error = await reset_password(
         session,
         reset_confirm.token,

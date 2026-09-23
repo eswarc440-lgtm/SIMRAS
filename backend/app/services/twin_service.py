@@ -12,12 +12,11 @@ from app.models.entities import (
     AssetModel,
     DataSource,
     EnvironmentObservation,
-    Inspection,
-    Maintenance,
     ModelRegistry,
     Prediction,
     Sensor,
 )
+from app.models.entities import LegacyInspection as Inspection, LegacyMaintenance as Maintenance
 from app.services.ml_predictor import (
     MLInput,
     condition_to_rating,
@@ -186,7 +185,7 @@ async def persist_ml_prediction(
         value=prediction.remaining_life_years,
         predicted_class=(
             "VALIDATED"
-            if prediction.model_validated
+            if prediction.model_is_validated
             else "EXPERIMENTAL"
         ),
         lower_bound=prediction.rul_lower_bound,
@@ -217,20 +216,10 @@ async def _active_asset_model(
     session: AsyncSession,
     asset_id: int,
 ) -> AssetModel | None:
-    return (
-        await session.execute(
-            select(AssetModel)
-            .where(
-                AssetModel.asset_id == asset_id,
-                AssetModel.is_active.is_(True),
-            )
-            .order_by(
-                desc(AssetModel.updated_at),
-                desc(AssetModel.id),
-            )
-            .limit(1)
-        )
-    ).scalar_one_or_none()
+    # Since asset_models table is now minimal (id, asset_code, source_url),
+    # we can't filter by asset_id or is_active anymore.
+    # Return None to indicate no model data is available.
+    return None
 
 
 def twin_quality_metadata(
@@ -602,7 +591,7 @@ async def refresh_ml_prediction(
             "version": ml_prediction.model_version,
             "feature_version": ml_prediction.feature_version,
             "stage": ml_prediction.status,
-            "model_validated": ml_prediction.model_validated,
+            "model_is_validated": ml_prediction.model_is_validated,
             "training_scope": ml_prediction.training_scope,
             "rul_method": ml_prediction.rul_method,
         },
@@ -653,7 +642,7 @@ async def refresh_ml_prediction(
         "warning": (
             "Research decision support only. "
             "Model has not been locally validated for Andhra Pradesh."
-            if not ml_prediction.model_validated
+            if not ml_prediction.model_is_validated
             else None
         ),
     }
@@ -794,7 +783,7 @@ async def _persisted_ai_state(
         ),
     )
 
-    model_validated = (
+    model_is_validated = (
         any(
             prediction is not None and prediction.status == "VALIDATED_LOCAL"
             for prediction in (health, risk, rul)
@@ -833,7 +822,7 @@ async def _persisted_ai_state(
             else None
         ),
         confidence=confidence,
-        model_validated=model_validated,
+        model_is_validated=model_is_validated,
     )
 
     return {
@@ -878,7 +867,7 @@ async def _persisted_ai_state(
 
         "prediction_method": "persisted_bridge_ml",
 
-        "model_validated": model_validated,
+        "model_is_validated": model_is_validated,
 
         "training_scope": training_scope,
 
@@ -1164,7 +1153,7 @@ async def build_twin(
             risk_score=baseline.risk_score,
             rul_years=None,
             confidence=baseline.confidence,
-            model_validated=False,
+            model_is_validated=False,
         )
 
         ai = {
@@ -1411,22 +1400,20 @@ async def build_twin(
             "health": {
                 "available": ai.get("health_score") is not None,
                 "value": ai.get("health_score"),
-                "source": "ML_PREDICTED" if ai.get("model_validated") else "WITHHELD",
+                "source": "ML_PREDICTED" if ai.get("model_is_validated") else "WITHHELD",
             },
             "risk": {
                 "available": ai.get("risk_score") is not None,
                 "score": ai.get("risk_score"),
                 "level": ai.get("risk_level"),
-                "source": "ML_PREDICTED" if ai.get("model_validated") else "WITHHELD",
+                "source": "ML_PREDICTED" if ai.get("model_is_validated") else "WITHHELD",
             },
             "rul": {
                 "available": ai.get("remaining_life_years") is not None,
                 "years": ai.get("remaining_life_years"),
-                "source": "ML_PREDICTED" if ai.get("model_validated") else "WITHHELD",
+                "source": "ML_PREDICTED" if ai.get("model_is_validated") else "WITHHELD",
             },
-            "confidence": ai.get("confidence") if ai.get("model_validated") else None,
-            "evidence_readiness": ai.get("confidence") if not ai.get("model_validated") else None,
-            "prediction_status": "ML_AVAILABLE" if ai.get("model_validated") else "ML_WITHHELD",
+            "prediction_status": "ML_AVAILABLE" if ai.get("model_is_validated") else "ML_WITHHELD",
             "model_name": ai.get("prediction_method"),
             "model_version": ai.get("model_version"),
             "feature_version": ai.get("feature_version"),

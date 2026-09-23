@@ -188,8 +188,6 @@ def _government_source_records(report: dict[str, Any]) -> tuple[list[dict[str, A
             "quality_flag",
             "spatial_method",
             "processing_method",
-            "confidence",
-            "confidence_score",
             "is_estimated",
             "is_official",
         }
@@ -226,7 +224,6 @@ def _government_source_records(report: dict[str, Any]) -> tuple[list[dict[str, A
                 "ingested_at": _text(item.get("ingested_at")),
                 "quality_flag": _text(item.get("quality_flag")),
                 "spatial_method": _text(_first(item, "spatial_method", "processing_method")),
-                "confidence": _num(_first(item, "confidence", "confidence_score")),
                 "is_estimated": item.get("is_estimated"),
                 "is_official": item.get("is_official"),
             }
@@ -270,8 +267,8 @@ def _model_info(report: dict[str, Any], ai: dict[str, Any]) -> dict[str, Any]:
     ) or _text(_first(governance, "model_version", "version"))
 
     validated = bool(
-        ai.get("model_validated") is True
-        or governance.get("model_validated") is True
+        ai.get("model_is_validated") is True
+        or governance.get("model_is_validated") is True
         or stage.upper() == "VALIDATED_LOCAL"
     )
 
@@ -290,15 +287,6 @@ def _is_bridge_ml(method: str | None) -> bool:
     return "nbi_bridge" in text or "bridge_ml" in text or "calibrated_nbi" in text
 
 
-def _confidence(ai: dict[str, Any], model: dict[str, Any], asset_type: str) -> float | None:
-    value = _num(ai.get("confidence"))
-    if value is None and asset_type in {"dam", "barrage"}:
-        value = _num(ai.get("operational_confidence"))
-    if value is None:
-        return None
-    return max(0.0, min(1.0, value))
-
-
 def _rul_summary(ai: dict[str, Any], model: dict[str, Any]) -> dict[str, Any]:
     value = _num(ai.get("remaining_life_years"))
     lower = _num(ai.get("rul_lower_bound"))
@@ -308,17 +296,12 @@ def _rul_summary(ai: dict[str, Any], model: dict[str, Any]) -> dict[str, Any]:
     stage = _upper(model.get("stage"))
     training_scope = _upper(model.get("training_scope"))
 
-    confidence = _num(ai.get("rul_confidence"))
-    if confidence is None:
-        confidence = _num(ai.get("confidence"))
-
     if value is None:
         return {
             "status": "WITHHELD",
             "estimate_years": None,
             "lower_bound_years": None,
             "upper_bound_years": None,
-            "confidence": confidence,
             "mode": "NO_ELIGIBLE_RUL_OUTPUT",
             "reason": (
                 _text(ai.get("rul_basis"))
@@ -338,7 +321,6 @@ def _rul_summary(ai: dict[str, Any], model: dict[str, Any]) -> dict[str, Any]:
             "estimate_years": round(value, 2),
             "lower_bound_years": round(lower, 2) if lower is not None else None,
             "upper_bound_years": round(upper, 2) if upper is not None else None,
-            "confidence": confidence,
             "mode": "CONDITIONAL_DETERIORATION_HORIZON",
             "reason": (
                 "FHWA/NBI longitudinal bridge model output. This is a conditional "
@@ -354,7 +336,6 @@ def _rul_summary(ai: dict[str, Any], model: dict[str, Any]) -> dict[str, Any]:
             "estimate_years": round(value, 2),
             "lower_bound_years": round(lower, 2) if lower is not None else None,
             "upper_bound_years": round(upper, 2) if upper is not None else None,
-            "confidence": confidence,
             "mode": "STRUCTURAL_RUL",
             "reason": "Locally validated longitudinal model output.",
         }
@@ -364,7 +345,6 @@ def _rul_summary(ai: dict[str, Any], model: dict[str, Any]) -> dict[str, Any]:
         "estimate_years": None,
         "lower_bound_years": None,
         "upper_bound_years": None,
-        "confidence": confidence,
         "mode": "UNVALIDATED_OR_PLANNING_PROXY",
         "reason": (
             "A numeric planning/experimental value exists in the source state, but "
@@ -446,7 +426,6 @@ def _actions(
     structural_risk: float | None,
     operational_risk: float | None,
     hazard: float | None,
-    confidence: float | None,
     structural_available: bool,
     government_sources: list[dict[str, Any]],
     rul: dict[str, Any],
@@ -557,14 +536,6 @@ def _actions(
                 "SIMRAS provenance rule",
             )
 
-    if confidence is not None and confidence < 0.65:
-        add(
-            "P2",
-            "Collect the missing high-value evidence and re-run the model before escalating a model-only recommendation.",
-            f"Current model/input confidence is {confidence:.0%}.",
-            "SIMRAS model-governance rule",
-        )
-
     if rul.get("status") == "WITHHELD":
         add(
             "P2",
@@ -614,8 +585,6 @@ def enrich_report_decision_support(report: dict[str, Any]) -> dict[str, Any]:
     risk_raw = _num(ai.get("risk_score"))
     hazard = _num(ai.get("hazard_score"))
     operational_risk = _num(ai.get("operational_risk_score"))
-    operational_confidence = _num(ai.get("operational_confidence"))
-    confidence = _confidence(ai, model, asset_type)
 
     bridge_method_on_nonbridge = asset_type != "bridge" and _is_bridge_ml(method)
 
@@ -654,7 +623,6 @@ def enrich_report_decision_support(report: dict[str, Any]) -> dict[str, Any]:
                 "estimate_years": round(rul_derived, 2),
                 "lower_bound_years": None,
                 "upper_bound_years": None,
-                "confidence": None,
                 "mode": "PLANNING_LIFE_PROXY",
                 "reason": evidence_derived.get("rul_basis", "Evidence-derived planning proxy from age and design life"),
             }
@@ -671,7 +639,6 @@ def enrich_report_decision_support(report: dict[str, Any]) -> dict[str, Any]:
         structural_risk=structural_risk,
         operational_risk=operational_risk,
         hazard=hazard,
-        confidence=confidence,
         structural_available=structural_available,
         government_sources=government_sources,
         rul=rul,

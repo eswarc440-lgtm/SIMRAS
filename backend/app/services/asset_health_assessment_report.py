@@ -15,14 +15,14 @@ from app.models.entities import (
     AssetModel,
     DataSource,
     EnvironmentObservation,
-    Inspection,
-    Maintenance,
     ModelRegistry,
     Observation,
     Prediction,
     Sensor,
 )
+from app.models.entities import LegacyInspection as Inspection, LegacyMaintenance as Maintenance
 from app.services.ml_predictor import condition_to_rating
+from app.services.ml_predictor import REFERENCE_SERVICE_LIFE_YEARS
 from app.services.twin_service import build_twin, get_asset_row
 
 
@@ -264,6 +264,8 @@ def _model_factor_rows(
             "unit": "years",
             "expected_range": "0–200 model input domain",
             "source": "Canonical asset built year",
+            "verification": "SOURCE_REPORTED" if age_years is not None else "WITHHELD",
+            "reason": "Bridge deterioration model age feature" if age_years is not None else "Built year is not available",
             "used_by_model": (full_bridge or sparse_bridge) and age_years is not None,
         },
         {
@@ -272,6 +274,8 @@ def _model_factor_rows(
             "unit": "/9",
             "expected_range": "0–9 model input domain",
             "source": "Latest eligible non-synthetic inspection",
+            "verification": "VERIFIED" if condition_rating is not None else "WITHHELD",
+            "reason": "Bridge structural condition feature" if condition_rating is not None else "No eligible inspection condition",
             "used_by_model": full_bridge and condition_rating is not None,
         },
         {
@@ -280,6 +284,8 @@ def _model_factor_rows(
             "unit": None,
             "expected_range": None,
             "source": "Canonical asset record",
+            "verification": "SOURCE_REPORTED" if getattr(asset, "material", None) is not None else "WITHHELD",
+            "reason": "Bridge material feature" if getattr(asset, "material", None) is not None else "Material is not available",
             "used_by_model": (
                 full_bridge or sparse_bridge
             ) and getattr(asset, "material", None) is not None,
@@ -290,6 +296,8 @@ def _model_factor_rows(
             "unit": None,
             "expected_range": None,
             "source": "Active asset-model dimensions",
+            "verification": "SOURCE_REPORTED" if dimensions.get("span_count") is not None else "WITHHELD",
+            "reason": "Bridge span-count feature" if dimensions.get("span_count") is not None else "Span count is not available",
             "used_by_model": (
                 full_bridge or sparse_bridge
             ) and dimensions.get("span_count") is not None,
@@ -300,6 +308,8 @@ def _model_factor_rows(
             "unit": "m",
             "expected_range": None,
             "source": "Active asset-model dimensions",
+            "verification": "SOURCE_REPORTED" if (dimensions.get("main_span_m") is not None or dimensions.get("max_span_m") is not None) else "WITHHELD",
+            "reason": "Bridge span-length feature" if (dimensions.get("main_span_m") is not None or dimensions.get("max_span_m") is not None) else "Main span is not available",
             "used_by_model": (
                 full_bridge or sparse_bridge
             ) and (
@@ -313,6 +323,8 @@ def _model_factor_rows(
             "unit": "m",
             "expected_range": None,
             "source": "Active asset-model dimensions",
+            "verification": "SOURCE_REPORTED" if dimensions.get("length_m") is not None else "WITHHELD",
+            "reason": "Bridge structure-length feature" if dimensions.get("length_m") is not None else "Structure length is not available",
             "used_by_model": (
                 full_bridge or sparse_bridge
             ) and dimensions.get("length_m") is not None,
@@ -327,6 +339,7 @@ def _model_factor_rows(
             if item["used_by_model"]
             else "Available context; not used by the active structural model."
         )
+        item["used_by_model"] = bool(item["used_by_model"])
 
     return factors, sum(1 for item in factors if item["used_by_model"])
 
@@ -382,6 +395,204 @@ def _recommendations(ai: dict[str, Any]) -> list[dict[str, Any]]:
             }
         )
     return output
+
+
+def _numeric_proxy_assessment(report: dict[str, Any]) -> dict[str, Any]:
+    """Return a deterministic public assessment when governed ML is absent.
+
+    Every fallback term comes from the selected asset report. The result is a
+    planning estimate, never an official condition rating or validated ML
+    output. Missing fields reduce confidence and are listed explicitly.
+    """
+    asset = _as_dict(report.get("asset"))
+    health = _as_dict(report.get("health"))
+    risk = _as_dict(report.get("risk"))
+    rul = _as_dict(report.get("rul"))
+    transparency = _as_dict(report.get("transparency"))
+    inspection_history = report.get("inspection_history") if isinstance(report.get("inspection_history"), list) else []
+    maintenance_history = report.get("maintenance_history") if isinstance(report.get("maintenance_history"), list) else []
+    supporting = report.get("supporting_data") if isinstance(report.get("supporting_data"), list) else []
+
+    model_is_validated = bool(transparency.get("model_is_validated"))
+    method = str(transparency.get("prediction_method") or "").lower()
+    has_transfer_model = any(marker in method for marker in ("ml", "bridge", "nbi", "transfer"))
+    source_confidence = _num(asset.get("confidence_score"))
+    current_year = datetime.now(UTC).year
+    built_year = _num(asset.get("built_year"))
+    design_life = _num(asset.get("design_life_years"))
+    age_years = max(0.0, current_year - built_year) if built_year is not None else None
+    category = str(asset.get("asset_type") or "").lower()
+    reference_life = REFERENCE_SERVICE_LIFE_YEARS.get(category)
+
+    used: list[str] = []
+    missing: list[str] = []
+    if age_years is not None:
+        used.append("age_years")
+    else:
+        missing.append("age_years")
+    if design_life is not None and design_life > 0:
+        used.append("design_life_years")
+    else:
+        missing.append("design_life_years")
+
+    latest_inspection = inspection_history[0] if inspection_history else None
+    inspection_score = _num(latest_inspection.get("score")) if isinstance(latest_inspection, dict) else None
+    if inspection_score is not None:
+        used.append("inspection_score")
+    else:
+        missing.append("inspection_score")
+    condition = str(latest_inspection.get("condition") or "").upper() if isinstance(latest_inspection, dict) else ""
+    condition_score = {"SATISFACTORY": 90.0, "GOOD": 90.0, "FAIR": 70.0, "POOR": 40.0, "UNSATISFACTORY": 20.0, "CRITICAL": 10.0}.get(condition)
+    if condition_score is not None and inspection_score is None:
+        used.append("condition")
+    elif condition_score is None:
+        missing.append("condition")
+
+    days_since_inspection = None
+    if isinstance(latest_inspection, dict) and latest_inspection.get("date"):
+        try:
+            days_since_inspection = max(0, (datetime.now(UTC).date() - datetime.fromisoformat(str(latest_inspection["date"]).replace("Z", "+00:00")).date()).days)
+        except ValueError:
+            days_since_inspection = None
+    if days_since_inspection is not None:
+        used.append("days_since_inspection")
+    else:
+        missing.append("days_since_inspection")
+
+    days_since_maintenance = None
+    if maintenance_history and isinstance(maintenance_history[0], dict) and maintenance_history[0].get("date"):
+        try:
+            days_since_maintenance = max(0, (datetime.now(UTC).date() - datetime.fromisoformat(str(maintenance_history[0]["date"]).replace("Z", "+00:00")).date()).days)
+        except ValueError:
+            days_since_maintenance = None
+    if days_since_maintenance is not None:
+        used.append("days_since_maintenance")
+    else:
+        missing.append("days_since_maintenance")
+
+    environment: dict[str, Any] = {}
+    for row in supporting:
+        if isinstance(row, dict) and row.get("name") and _num(row.get("current_value")) is not None:
+            environment[str(row["name"]).lower()] = _num(row["current_value"])
+    environmental_penalty = 0.0
+    for name, value in environment.items():
+        if "rainfall_24h" in name:
+            environmental_penalty += max(0.0, min(15.0, (value - 50.0) / 10.0))
+            used.append("rainfall_24h")
+        elif "rainfall_7d" in name:
+            environmental_penalty += max(0.0, min(12.0, (value - 150.0) / 25.0))
+            used.append("rainfall_7d")
+        elif "water_level_anomaly" in name:
+            environmental_penalty += max(0.0, min(15.0, value * 5.0))
+            used.append("water_level_anomaly")
+    for field in ("rainfall_24h", "rainfall_7d", "water_level_anomaly"):
+        if not any(field in name for name in environment):
+            missing.append(field)
+
+    health_value = _num(health.get("raw_score")) or _num(health.get("score"))
+    health_basis = "ML_VALIDATED" if health_value is not None and model_is_validated else "ML_TRANSFER" if health_value is not None and has_transfer_model else None
+    if health_value is None:
+        # FIX: Do NOT default to 100.0
+        # Require sufficient evidence before calculating a fallback health score
+        health_terms = 0
+        health_components: list[float] = []
+        
+        if age_years is not None and (design_life or reference_life):
+            life = design_life or reference_life
+            age_penalty = min(45.0, max(0.0, age_years / life * 45.0))
+            health_components.append(100.0 - age_penalty)
+            health_terms += 1
+        
+        if inspection_score is not None:
+            health_components.append(inspection_score)
+            health_terms += 1
+        elif condition_score is not None:
+            health_components.append(condition_score)
+            health_terms += 1
+        
+        # Only calculate health if we have at least 2 independent evidence inputs
+        if health_terms >= 2:
+            health_value = sum(health_components) / len(health_components)
+            # Apply environmental penalty only if we had 2+ evidence terms
+            if environmental_penalty > 0:
+                health_value -= environmental_penalty
+                health_terms += 1
+            health_value = max(0.0, min(100.0, health_value))
+            health_basis = "EVIDENCE_DERIVED"
+        else:
+            # Insufficient evidence: return None instead of defaulting to 100
+            health_value = None
+            health_basis = "NOT_AVAILABLE"
+
+    risk_value = _num(risk.get("raw_score")) or _num(risk.get("score"))
+    risk_basis = "ML_VALIDATED" if risk_value is not None and model_is_validated else "ML_TRANSFER" if risk_value is not None and has_transfer_model else None
+    if risk_value is None:
+        # FIX: Do NOT default to 100 - health when health is None
+        # Only calculate risk if health is available
+        if health_value is not None:
+            risk_value = max(0.0, min(100.0, 100.0 - health_value + environmental_penalty))
+            risk_basis = "EVIDENCE_DERIVED" if len(used) >= 3 else "ESTIMATED_PROXY"
+        else:
+            # No health value means no risk assessment
+            risk_value = None
+            risk_basis = "NOT_AVAILABLE"
+    
+    risk_level = None
+    if risk_value is not None:
+        risk_level = "HIGH" if risk_value >= 70 else "MEDIUM" if risk_value >= 40 else "LOW"
+
+    rul_value = _num(rul.get("raw_estimate")) or _num(rul.get("estimate"))
+    rul_basis = "VALIDATED_ML_RUL" if rul_value is not None and model_is_validated else "TRANSFER_ML_RUL" if rul_value is not None and has_transfer_model else None
+    if rul_value is None:
+        # Only calculate RUL from evidence if we have age and design life
+        if age_years is not None and (design_life or reference_life):
+            life = design_life or reference_life
+            rul_value = max(0.0, life - age_years)
+            rul_basis = "EVIDENCE_DERIVED"
+        else:
+            rul_value = None
+            rul_basis = "NOT_AVAILABLE"
+
+    completeness = len(set(used)) / max(len(set(used)) + len(set(missing)), 1) if (used or missing) else 0.0
+    reported_confidence = _num(transparency.get("confidence"))
+    if reported_confidence is not None:
+        confidence = reported_confidence * 100.0 if reported_confidence <= 1.0 else reported_confidence
+    else:
+        normalized_source_confidence = 0.5 if source_confidence is None else source_confidence
+        if normalized_source_confidence > 1.0:
+            normalized_source_confidence /= 100.0
+        normalized_source_confidence = max(0.0, min(1.0, normalized_source_confidence))
+        confidence = (completeness * 0.7 + normalized_source_confidence * 0.3) * 100.0
+    
+    # Lower confidence if no evidence available
+    if health_basis == "NOT_AVAILABLE" and risk_basis == "NOT_AVAILABLE":
+        confidence = 0.0
+    elif not model_is_validated:
+        confidence = min(confidence, 80.0)
+    
+    prediction_basis = "ML_VALIDATED" if model_is_validated else "ML_TRANSFER" if has_transfer_model and any(item in (health_basis, risk_basis, rul_basis) for item in ("ML_TRANSFER", "TRANSFER_ML_RUL")) else "EVIDENCE_DERIVED" if "EVIDENCE_DERIVED" in (health_basis, risk_basis, rul_basis) else "NOT_AVAILABLE" if "NOT_AVAILABLE" in (health_basis, risk_basis) else "ESTIMATED_PROXY"
+    feature_version = transparency.get("feature_version") or "evidence_proxy_v1"
+    model_version = transparency.get("model_version")
+    model_name = transparency.get("model_name") or transparency.get("prediction_method")
+    return {
+        "health_score": round(health_value, 1) if health_value is not None else None,
+        "risk_score": round(risk_value, 1) if risk_value is not None else None,
+        "risk_level": risk_level,
+        "confidence": round(max(0.0, min(100.0, confidence)), 1),
+        "rul_years": round(rul_value, 1) if rul_value is not None else None,
+        "prediction_basis": prediction_basis,
+        "health_basis": health_basis or "NOT_AVAILABLE",
+        "risk_basis": risk_basis or "NOT_AVAILABLE",
+        "rul_basis": rul_basis or "NOT_AVAILABLE",
+        "features_used": sorted(set(used)),
+        "features_missing": sorted(set(missing)),
+        "feature_version": feature_version,
+        "model_name": model_name,
+        "model_version": model_version,
+        "rul_lower_years": _num(rul.get("lower_bound")),
+        "rul_upper_years": _num(rul.get("upper_bound")),
+        "limitations": ["Evidence-based assessment returns None when evidence is insufficient.", "Missing evidence is listed in features_missing.", "This assessment is decision support only, not an engineering certificate."],
+    }
 
 
 async def build_asset_health_assessment(
@@ -686,7 +897,23 @@ async def build_asset_health_assessment(
         + sum(len(item["history"]) for item in supporting_data)
     )
 
-    return {
+    transparency = {
+        "prediction": displayed_level if displayed_risk is not None else "NOT_AVAILABLE",
+        "confidence": _rounded(confidence, 3),
+        "model_name": getattr(registry, "model_name", None) or ai.get("model_name"),
+        "model_version": model_version or getattr(registry, "version", None),
+        "feature_version": ai.get("feature_version") or getattr(registry, "feature_version", None),
+        "model_stage": ai.get("status") or getattr(registry, "stage", None),
+        "prediction_method": prediction_method or None,
+        "prediction_generated_at": _iso(latest_prediction_time),
+        "data_points_used": model_input_count,
+        "model_input_count": model_input_count,
+        "evidence_record_count": evidence_record_count,
+        "model_is_validated": bool(ai.get("model_is_validated")),
+        "training_scope": ai.get("training_scope"),
+    }
+
+    report = {
         "schema_version": "simras-asset-health-assessment-v1",
         "report_id": report_id,
         "generated_at": now.isoformat(),
@@ -804,21 +1031,7 @@ async def build_asset_health_assessment(
             }
             for item in maintenance_rows
         ],
-        "transparency": {
-            "prediction": displayed_level if displayed_risk is not None else "NOT_AVAILABLE",
-            "confidence": _rounded(confidence, 3),
-            "model_name": getattr(registry, "model_name", None) or ai.get("model_name"),
-            "model_version": model_version or getattr(registry, "version", None),
-            "feature_version": ai.get("feature_version") or getattr(registry, "feature_version", None),
-            "model_stage": ai.get("status") or getattr(registry, "stage", None),
-            "prediction_method": prediction_method or None,
-            "prediction_generated_at": _iso(latest_prediction_time),
-            "data_points_used": model_input_count,
-            "model_input_count": model_input_count,
-            "evidence_record_count": evidence_record_count,
-            "model_validated": bool(ai.get("model_validated")),
-            "training_scope": ai.get("training_scope"),
-        },
+        "transparency": transparency,
         "quality_boundaries": {
             "no_fake_values": True,
             "missing_values_remain_null": True,
@@ -826,7 +1039,131 @@ async def build_asset_health_assessment(
             "signed_feature_contributions_not_invented": True,
             "failure_probability_not_relabelled_from_poor_condition_probability": True,
         },
+        "prediction_contract": {
+            "asset_id": asset.id,
+            "asset_type": str(asset.asset_type or "").upper(),
+            "health": {
+                "available": health_score is not None,
+                "value": _rounded(health_score, 1),
+                "source": "ML_PREDICTED" if ai.get("prediction_method") == "persisted_bridge_ml" else "NOT_AVAILABLE",
+                "model_name": transparency.get("model_name"),
+                "model_version": transparency.get("model_version"),
+            },
+            "risk": {
+                "available": displayed_risk is not None,
+                "score": _rounded(displayed_risk, 1),
+                "level": displayed_level if displayed_risk is not None else "NOT_AVAILABLE",
+                "source": "ML_PREDICTED" if ai.get("prediction_method") == "persisted_bridge_ml" else "NOT_AVAILABLE",
+                "model_name": transparency.get("model_name"),
+                "model_version": transparency.get("model_version"),
+            },
+            "rul": {
+                "available": _num(ai.get("remaining_life_years")) is not None,
+                "years": _rounded(ai.get("remaining_life_years"), 1),
+                "source": "ML_PREDICTED" if ai.get("prediction_method") == "persisted_bridge_ml" else "NOT_AVAILABLE",
+                "model_name": transparency.get("model_name"),
+                "model_version": transparency.get("model_version"),
+            },
+            "evidence_completeness": _rounded(
+                model_input_count / max(len(model_inputs), 1),
+                3,
+            ),
+            "prediction_status": (
+                "ML_AVAILABLE"
+                if any(item["available"] for item in (
+                    {"available": health_score is not None},
+                    {"available": displayed_risk is not None},
+                    {"available": _num(ai.get("remaining_life_years")) is not None},
+                )) and ai.get("prediction_method") == "persisted_bridge_ml"
+                else "ML_WITHHELD"
+            ),
+            "features": model_inputs,
+        },
     }
+    return apply_numeric_assessment(report)
+
+
+def apply_numeric_assessment(report: dict[str, Any]) -> dict[str, Any]:
+    """Apply numeric assessment, routing AIRPORT/TEMPLE to unified service if needed."""
+    from app.services.unified_assessment_service import build_unified_assessment
+    
+    asset = _as_dict(report.get("asset"))
+    asset_type = str(asset.get("asset_type") or "").upper()
+    
+    # Route AIRPORT and TEMPLE to unified assessment service
+    if asset_type in ("AIRPORT", "TEMPLE"):
+        # Extract features from report
+        inspection_history = report.get("inspection_history", []) if isinstance(report.get("inspection_history"), list) else []
+        maintenance_history = report.get("maintenance_history", []) if isinstance(report.get("maintenance_history"), list) else []
+        supporting = report.get("supporting_data", []) if isinstance(report.get("supporting_data"), list) else []
+        
+        # Convert supporting data to environment dict
+        environment = {}
+        for row in supporting:
+            if isinstance(row, dict) and row.get("name"):
+                value = _num(row.get("current_value"))
+                if value is not None:
+                    environment[str(row["name"]).lower()] = value
+        
+        # Build unified assessment
+        unified_result = build_unified_assessment(
+            asset_type=asset_type,
+            asset=asset,
+            inspection_history=inspection_history,
+            maintenance_history=maintenance_history,
+            environment=environment,
+        )
+        
+        # Convert to legacy report format
+        public = {
+            "health_score": unified_result.health_score,
+            "risk_score": unified_result.risk_score,
+            "risk_level": unified_result.risk_level,
+            "confidence": unified_result.confidence,
+            "rul_years": unified_result.remaining_useful_life,
+            "prediction_basis": unified_result.assessment_basis,
+            "health_basis": unified_result.health_basis,
+            "risk_basis": unified_result.risk_basis,
+            "rul_basis": unified_result.rul_basis,
+            "features_used": unified_result.features_used,
+            "features_missing": unified_result.features_missing,
+            "feature_version": unified_result.feature_version,
+            "model_name": unified_result.model_name,
+            "model_version": unified_result.model_version,
+            "rul_lower_years": None,
+            "rul_upper_years": None,
+            "limitations": unified_result.limitations,
+        }
+    else:
+        # Use original proxy assessment for other types
+        public = _numeric_proxy_assessment(report)
+    
+    report["public_assessment"] = public
+    report["health"].update({"score": public["health_score"], "raw_score": public["health_score"], "available": True, "basis": public["health_basis"]})
+    report["risk"].update({"score": public["risk_score"], "raw_score": public["risk_score"], "level": public["risk_level"], "available": True, "basis": public["risk_basis"]})
+    report["rul"].update({"estimate": public["rul_years"], "raw_estimate": public["rul_years"], "lower_bound": public["rul_lower_years"], "upper_bound": public["rul_upper_years"], "available": True, "basis": public["rul_basis"]})
+    report["prediction_contract"] = {
+        "asset_id": asset.get("id"),
+        "asset_type": str(asset.get("asset_type") or "").upper(),
+        "health": {"available": True, "value": public["health_score"], "source": public["health_basis"], "basis": public["health_basis"], "model_name": public["model_name"], "model_version": public["model_version"]},
+        "risk": {"available": True, "score": public["risk_score"], "level": public["risk_level"], "source": public["risk_basis"], "basis": public["risk_basis"], "model_name": public["model_name"], "model_version": public["model_version"]},
+        "rul": {"available": True, "years": public["rul_years"], "source": public["rul_basis"], "basis": public["rul_basis"], "model_name": public["model_name"], "model_version": public["model_version"]},
+        "evidence_completeness": round(len(public["features_used"]) / max(len(public["features_used"]) + len(public["features_missing"]), 1), 3),
+        "prediction_status": public["prediction_basis"],
+        "prediction_basis": public["prediction_basis"],
+        "features_used": public["features_used"],
+        "features_missing": public["features_missing"],
+        "feature_version": public["feature_version"],
+        "health_basis": public["health_basis"],
+        "risk_basis": public["risk_basis"],
+        "rul_basis": public["rul_basis"],
+        "rul_lower_years": public["rul_lower_years"],
+        "rul_upper_years": public["rul_upper_years"],
+        "limitations": public["limitations"],
+        "features": _as_dict(report.get("explainability")).get("model_inputs", []),
+    }
+    report.update(public)
+    return report
 
 
 def _chart_png(

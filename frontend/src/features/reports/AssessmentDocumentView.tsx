@@ -81,23 +81,7 @@ function valueText(
   return String(value);
 }
 
-function confidenceText(
-  value: unknown,
-): string {
-  const number =
-    Number(value);
 
-  if (!Number.isFinite(number)) {
-    return "WITHHELD";
-  }
-
-  const percentage =
-    number <= 1
-      ? number * 100
-      : number;
-
-  return `${Math.round(percentage)}%`;
-}
 
 function percentageText(
   value: unknown,
@@ -312,10 +296,6 @@ function Kpi({
   value: string;
   detail: string;
 }) {
-  const unavailable =
-    value === "WITHHELD" ||
-    value === "NOT AVAILABLE";
-
   return (
     <div
       style={{
@@ -345,9 +325,7 @@ function Kpi({
       <div
         style={{
           marginTop: 8,
-          color: unavailable
-            ? "#f0c775"
-            : "#f4f9fc",
+          color: "#f4f9fc",
           fontSize: 20,
           fontWeight: 850,
         }}
@@ -1240,12 +1218,6 @@ export function AssessmentDocumentView({
               basis: root.rul_basis ?? "EXPERIMENTAL_PROXY",
             } : {}),
           },
-          prediction_confidence: Number.isFinite(Number(root.confidence))
-            ? (Number(root.confidence) / 100)
-            : rawPredictionContract.prediction_confidence,
-          evidence_readiness: Number.isFinite(Number(root.confidence))
-            ? (Number(root.confidence) / 100)
-            : rawPredictionContract.evidence_readiness,
           features_used: root.features_used ?? rawPredictionContract.features_used ?? [],
           features_missing: root.features_missing ?? rawPredictionContract.features_missing ?? [],
           features: rawPredictionContract.features ?? root.features ?? [],
@@ -1565,33 +1537,31 @@ export function AssessmentDocumentView({
   const riskContract = objectOf(predictionContract.risk);
   const rulContract = objectOf(predictionContract.rul);
 
+  const publicAssessment = objectOf(root.public_assessment);
+
   const healthValue =
-    healthContract.available === true &&
-    Number.isFinite(Number(healthContract.value))
-      ? `${Number(healthContract.value).toFixed(1)}%`
-      : "PREDICTION UNAVAILABLE";
-  const healthBasis = valueText(healthContract.basis, "ESTIMATED").replaceAll("_", " ");
+    Number.isFinite(Number(publicAssessment.health_score))
+      ? `${Number(publicAssessment.health_score).toFixed(1)} / 100`
+      : "UNAVAILABLE";
+  const healthBasis = valueText(publicAssessment.health_basis, "ESTIMATED").replaceAll("_", " ");
 
 
   const riskScore =
-    riskContract.available === true &&
-    Number.isFinite(Number(riskContract.score))
-      ? `${Number(riskContract.score).toFixed(1)}%`
-      : "PREDICTION UNAVAILABLE";
-  const riskBasis = valueText(riskContract.basis, "ESTIMATED").replaceAll("_", " ");
+    Number.isFinite(Number(publicAssessment.risk_score))
+      ? `${Number(publicAssessment.risk_score).toFixed(1)} / 100`
+      : "UNAVAILABLE";
+  const riskBasis = valueText(publicAssessment.risk_basis, "ESTIMATED").replaceAll("_", " ");
 
 
   const riskLevel =
-    riskContract.available === true
-      ? valueText(riskContract.level, "PREDICTION UNAVAILABLE")
-      : "PREDICTION UNAVAILABLE";
+    valueText(publicAssessment.risk_level, "UNAVAILABLE");
 
 
   const rulValue =
-    rulContract.available === true && Number.isFinite(Number(rulContract.years))
-      ? `${Number(rulContract.years).toFixed(1)} years`
-      : "RUL UNAVAILABLE";
-  const rulBasis = valueText(rulContract.basis, "EXPERIMENTAL_PROXY").replaceAll("_", " ");
+    Number.isFinite(Number(publicAssessment.rul_years))
+      ? `${Number(publicAssessment.rul_years).toFixed(1)} years`
+      : "UNAVAILABLE";
+  const rulBasis = valueText(publicAssessment.rul_basis, "EXPERIMENTAL_PROXY").replaceAll("_", " ");
 
 
   const riskRows =
