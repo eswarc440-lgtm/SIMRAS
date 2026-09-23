@@ -6,7 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import require_admin_key
 from app.db.session import get_db
-from app.models.entities import Alert, Asset, DataSource, Inspection, Maintenance, Prediction
+from app.models.entities import Alert, Asset, DataSource, Prediction
+from app.models.entities import LegacyInspection as Inspection, LegacyMaintenance as Maintenance
 from app.schemas.records import AlertAction, AlertCreate, InspectionCreate, MaintenanceCreate
 from app.services.twin_service import refresh_ml_prediction
 

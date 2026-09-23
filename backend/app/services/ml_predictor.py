@@ -61,6 +61,10 @@ class MLInput:
     scour_rating: float | None = None
     waterway_rating: float | None = None
     design_type_code: float | None = None
+    built_year: int | None = None
+    design_life_years: int | None = None
+    current_year: int | None = None
+    evidence_confidence: float | None = None
 
 
 @dataclass(slots=True)
@@ -78,11 +82,12 @@ class MLResult:
     feature_version: str
     status: str
     prediction_method: str
-    model_validated: bool
+    model_is_validated: bool
     training_scope: str
     forecast_horizon_years: int
     factors: list[str]
     recommendations: list[str]
+    rul_method: str = "ML_PREDICTED"
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -207,7 +212,7 @@ def predict_bridge(
         risk_score=risk_score,
         rul_years=rul_median,
         confidence=confidence,
-        model_validated=locally_validated,
+        model_is_validated=locally_validated,
     )
     return MLResult(
         health_score=round(health_score, 1),
@@ -223,11 +228,88 @@ def predict_bridge(
         feature_version=manifest["feature_version"],
         status="VALIDATED_LOCAL" if locally_validated else "RESEARCH_TRANSFER",
         prediction_method="calibrated_nbi_bridge_ml",
-        model_validated=locally_validated,
+        model_is_validated=locally_validated,
         training_scope=manifest["training_scope"],
         forecast_horizon_years=int(manifest.get("prediction_horizon_years", 3)),
         factors=list(dict.fromkeys(factors)),
         recommendations=recommendations,
+        rul_method="ML_PREDICTED",
+    )
+
+
+@dataclass(slots=True)
+class EngineeringBaselineResult:
+    health_score: float | None
+    health_lower_bound: float | None
+    health_upper_bound: float | None
+    risk_score: float | None
+    risk_level: str | None
+    remaining_life_years: float
+    rul_lower_bound: float
+    rul_upper_bound: float
+    confidence: float
+    model_version: str
+    feature_version: str
+    status: str
+    prediction_method: str
+    model_is_validated: bool
+    training_scope: str
+    forecast_horizon_years: int
+    factors: list[str]
+    recommendations: list[str]
+    rul_method: str = "ENGINEERING_RUL_BASELINE"
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+REFERENCE_SERVICE_LIFE_YEARS = {
+    "dam": 100,
+    "barrage": 75,
+    "airport": 40,
+    "temple": 100,
+}
+
+
+def predict_asset(data: MLInput, *, artifact_dir: str | Path | None = None):
+    """Route an asset to its category predictor or explicit RUL baseline."""
+
+    category = (data.asset_type or "").lower()
+    if category == "bridge":
+        return predict_bridge(data, artifact_dir=artifact_dir)
+
+    reference_life = REFERENCE_SERVICE_LIFE_YEARS.get(category)
+    if reference_life is None or data.built_year is None:
+        return None
+
+    current_year = data.current_year or pd.Timestamp.utcnow().year
+    age_years = max(0, current_year - data.built_year)
+    configured_life = data.design_life_years or reference_life
+    remaining_life = float(max(0, configured_life - age_years))
+    confidence = float(np.clip(data.evidence_confidence or 0.25, 0.1, 0.95))
+
+    return EngineeringBaselineResult(
+        health_score=None,
+        health_lower_bound=None,
+        health_upper_bound=None,
+        risk_score=None,
+        risk_level=None,
+        remaining_life_years=remaining_life,
+        rul_lower_bound=remaining_life,
+        rul_upper_bound=remaining_life,
+        confidence=round(confidence, 2),
+        model_version=f"engineering_service_life_{category}_v1",
+        feature_version=f"{category}_engineering_baseline_v1",
+        status="ENGINEERING_BASELINE",
+        prediction_method="category_service_life_baseline",
+        model_is_validated=False,
+        training_scope=f"{category.upper()}_VERIFIED_ENGINEERING_EVIDENCE",
+        forecast_horizon_years=0,
+        factors=[
+            f"Reference service life for {category.upper()} is {configured_life} years",
+            "Remaining life is calculated from built year and is not an ML forecast",
+        ],
+        recommendations=[],
     )
 
 # SIMRAS ML PHASE 1 - sparse bridge research-transfer inference
@@ -246,7 +328,7 @@ class SparseMLResult:
     feature_version: str
     status: str
     prediction_method: str
-    model_validated: bool
+    model_is_validated: bool
     training_scope: str
     forecast_horizon_years: int
     factors: list[str]
@@ -283,5 +365,5 @@ def predict_bridge_sparse(data: MLInput, *, artifact_dir: str | Path | None = No
     completeness=sum(v is not None for v in row.values())/len(row)
     confidence=float(np.clip(.40+.25*completeness,.40,.65))
     factors=["Sparse bridge ML uses real available age/material/geometry fields",f"Estimated {risk_score:.1f}% probability of poor condition within {manifest.get('prediction_horizon_years',3)} years","Research-transfer model trained on FHWA/NBI histories; Andhra Pradesh validation is still required","RUL is intentionally withheld"]
-    recs=build_recommendations(condition_rating=None,risk_score=risk_score,rul_years=None,confidence=confidence,model_validated=False)
+    recs=build_recommendations(condition_rating=None,risk_score=risk_score,rul_years=None,confidence=confidence,model_is_validated=False)
     return SparseMLResult(round(health_score,1),round(min(lo,hi),1),round(max(lo,hi),1),round(risk_score,1),risk_level,None,None,None,round(confidence,2),str(manifest["version"]),str(manifest["feature_version"]),"RESEARCH_TRANSFER","sparse_nbi_bridge_ml",False,str(manifest["training_scope"]),int(manifest.get("prediction_horizon_years",3)),factors,recs)

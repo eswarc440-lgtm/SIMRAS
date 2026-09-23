@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     backend_cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
     public_read_enabled: bool = True
     admin_api_key: str = "development-admin-key"
+    notification_reconcile_seconds: int = 60
 
     @property
     def cors_origins(self) -> list[str]:

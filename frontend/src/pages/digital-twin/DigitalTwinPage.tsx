@@ -1,5 +1,4 @@
 ﻿import { resolveAssetTwinFidelity } from "../../features/digital-twin/damBarrageTwinRegistry";
-import RealityTwinAssetViewer from "../../features/digital-twin/RealityTwinAssetViewer";
 import { useEffect, useMemo, useState } from "react";
 
 import { Search } from "lucide-react";
@@ -145,11 +144,13 @@ export function DigitalTwinPage() {
     Promise.allSettled([
       twinApi.twin(selectedCode),
       twinApi.state(selectedCode),
+      twinApi.assessment(selectedCode),
     ])
       .then(
         ([
           twinResult,
           stateResult,
+          assessmentResult,
         ]) => {
           if (
             twinResult.status ===
@@ -173,6 +174,19 @@ export function DigitalTwinPage() {
             setEvidence(
               stateResult.value,
             );
+          }
+
+          if (
+            twinResult.status === "fulfilled" &&
+            assessmentResult.status === "fulfilled"
+          ) {
+            const contract = assessmentResult.value.prediction_contract;
+            if (contract && typeof contract === "object") {
+              setTwin({
+                ...twinResult.value,
+                assessment: contract as TwinResponse["assessment"],
+              });
+            }
           }
         },
       )
@@ -292,7 +306,6 @@ export function DigitalTwinPage() {
           <div
             className="
               simras-view-mode
-              hidden
               shrink-0
               rounded-lg
               border
@@ -728,7 +741,7 @@ export function DigitalTwinPage() {
                   <>
                     {mode ===
                       "ASSET_MODEL" && (
-                      <RealityTwinAssetViewer assetCode={selectedAsset?.asset_code} />
+                      <TwinViewer3D twin={twin} />
                     )}
 
                     {mode ===
@@ -764,9 +777,17 @@ export function DigitalTwinPage() {
 
         {evidence && (
           <div className="mt-5">
-            
-{/* Evidence dashboard removed */}
-
+            <div className="rounded-xl border bg-card p-4 text-sm">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <strong>Live evidence state</strong>
+                <span className="rounded-full border px-2 py-1 text-xs font-semibold">
+                  {evidence.evidence_strength}
+                </span>
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                The model above is connected to the selected asset record and its current evidence response.
+              </p>
+            </div>
           </div>
         )}
 

@@ -22,7 +22,12 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
+      DB_HOST: db
+      DB_PORT: 5432
       POSTGRES_HOST: db
+      POSTGRES_USER: ${POSTGRES_USER:-simras}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-simras-change-me}
+      POSTGRES_DB: ${POSTGRES_DB:-simras}
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-simras}:${POSTGRES_PASSWORD:-simras-change-me}@db:5432/${POSTGRES_DB:-simras}
       SIMRAS_ML_ARTIFACT_DIR: /artifacts/bridge_nbi
     ports:
@@ -34,7 +39,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: ["sh", "-c", "alembic upgrade head && python -m scripts.seed && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   etl:
     build:
@@ -63,6 +72,7 @@ services:
     restart: unless-stopped
     environment:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000/api/v1}
+      VITE_PROXY_TARGET: http://backend:8000
       VITE_CESIUM_ION_TOKEN: ${VITE_CESIUM_ION_TOKEN:-}
       VITE_DEFAULT_ASSET_ID: ${VITE_DEFAULT_ASSET_ID:-AP_DAM_00001}
     ports:

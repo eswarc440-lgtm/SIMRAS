@@ -8,6 +8,7 @@ import { API_BASE_URL, apiRequest } from "../../services/api";
 import { Label } from "../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 import { displayableReportEntries, labelForReportKey } from "./realReportPresentation";
+import AssessmentDocumentView from "../../features/reports/AssessmentDocumentView";
 
 type Asset = {
   asset_id?: string;
@@ -171,7 +172,7 @@ export function ReportsPage() {
     setError(null);
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/v1/real-reports/${encodeURIComponent(selectedAssetCode)}/pdf`,
+        `${API_BASE_URL}/api/v1/reports/assets/${encodeURIComponent(selectedAssetCode)}/assessment/pdf`,
         { headers: { Accept: "application/pdf" } },
       );
       if (!response.ok) throw new Error(`Report generation failed (${response.status})`);
@@ -179,7 +180,7 @@ export function ReportsPage() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `SIMRAS_${selectedAssetCode}_REAL_REPORT.pdf`;
+      link.download = `SIMRAS_${selectedAssetCode}_ASSET_HEALTH_ASSESSMENT.pdf`;
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -196,12 +197,12 @@ export function ReportsPage() {
       <div className="space-y-6">
         <PageHeader
           eyebrow="Reports"
-          title="Real Infrastructure Evidence Report"
-          description="Selected-asset reports show only source-backed facts, real observations and eligible validated ML results. Empty or insufficient fields are omitted completely."
+          title="Real Infrastructure Evidence and Prediction Report"
+          description="Source-backed evidence, validated prediction values, trend graphs, and explicit data-availability states for the selected asset."
           actions={
             <Button onClick={downloadPdf} disabled={!report || downloading}>
               <Download className="size-4" />
-              {downloading ? "Generating..." : "Download Real PDF"}
+              {downloading ? "Generating..." : "Download Assessment PDF"}
             </Button>
           }
         />
@@ -263,6 +264,15 @@ export function ReportsPage() {
             <MaintenanceSection rows={report.real_maintenance} />
             <EvidenceTable title="Eligible Locally Validated ML Prediction" data={report.ml_prediction} />
             <EvidenceTable title="Evidence Provenance" data={report.evidence} />
+            <section className="rounded-xl border bg-card p-5 shadow-panel">
+              <div className="mb-5 border-b pb-4">
+                <h2 className="text-base font-semibold">Prediction assessment and trends</h2>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Values remain visible as NOT AVAILABLE when the asset does not have sufficient validated data.
+                </p>
+              </div>
+              <AssessmentDocumentView assetCode={selectedAssetCode} />
+            </section>
           </>
         )}
       </div>

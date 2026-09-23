@@ -13,7 +13,8 @@ from sqlalchemy import desc, func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
-from app.models.entities import Asset, Inspection, Maintenance, Prediction
+from app.models.entities import Asset, Prediction
+from app.models.entities import LegacyInspection as Inspection, LegacyMaintenance as Maintenance
 
 router = APIRouter(tags=["ui-compat"])
 

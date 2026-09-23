@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
+import asyncio
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,7 +13,17 @@ from app.db.session import SessionLocal
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    # Startup
+    from app.services.notification_scheduler import start_notification_scheduler
+    
+    reconcile_interval = getattr(settings, 'NOTIFICATION_RECONCILE_SECONDS', 60)
+    scheduler_task = await start_notification_scheduler(reconcile_interval)
+    
     yield
+    
+    # Shutdown
+    from app.services.notification_scheduler import stop_notification_scheduler
+    await stop_notification_scheduler(scheduler_task)
 
 
 from app.api.routes.dam_barrage_profile import router as dam_barrage_profile_router
@@ -35,6 +46,42 @@ app.add_middleware(
 )
 
 app.include_router(api_router, prefix="/api/v1")
+
+# Authentication routes
+from app.api.routes.auth import router as auth_router
+app.include_router(auth_router, prefix="/api/v1")
+
+# Asset workflow routes
+from app.api.routes.asset_workflow import router as asset_workflow_router
+app.include_router(asset_workflow_router, prefix="/api/v1")
+
+# Inspection routes
+from app.api.routes.inspections import router as inspections_router
+app.include_router(inspections_router, prefix="/api/v1")
+
+# Maintenance routes
+from app.api.routes.maintenance import router as maintenance_router
+app.include_router(maintenance_router, prefix="/api/v1")
+
+# Plans routes
+from app.api.routes.plans import router as plans_router
+app.include_router(plans_router, prefix="/api/v1")
+
+# Notifications routes
+from app.api.routes.notifications import router as notifications_router
+app.include_router(notifications_router, prefix="/api/v1")
+
+# AI Assistant routes
+from app.api.routes.ai_assistant import router as ai_assistant_router
+app.include_router(ai_assistant_router, prefix="/api/v1")
+
+# GIS operational layers
+# from app.api.routes.gis_operational import router as gis_operational_router
+# app.include_router(gis_operational_router, prefix="/api/v1")
+
+# Digital twin overlays
+# from app.api.routes.digital_twin_overlays import router as digital_twin_overlays_router
+# app.include_router(digital_twin_overlays_router, prefix="/api/v1")
 
 
 @app.get("/")

@@ -12,21 +12,25 @@ from app.models.entities import (
     AssetModel,
     DataSource,
     EnvironmentObservation,
-    Inspection,
-    Maintenance,
     ModelRegistry,
     Prediction,
     Sensor,
 )
+from app.models.entities import LegacyInspection as Inspection, LegacyMaintenance as Maintenance
 from app.services.ml_predictor import (
     MLInput,
     condition_to_rating,
+    predict_asset,
     predict_bridge,
     predict_bridge_sparse,
 )
 from app.services.recommendation_engine import build_recommendations
 from app.services.risk_engine import RiskInput, score_risk
 from app.services.dam_hydrology_risk import score_dam_barrage_operational_risk
+from app.services.current_risk_service import (
+    load_latest_environment,
+    resolve_current_risk_snapshot,
+)
 
 
 BRIDGE_MODEL_NAME = "simras_nbi_bridge_deterioration"
@@ -181,7 +185,7 @@ async def persist_ml_prediction(
         value=prediction.remaining_life_years,
         predicted_class=(
             "VALIDATED"
-            if prediction.model_validated
+            if prediction.model_is_validated
             else "EXPERIMENTAL"
         ),
         lower_bound=prediction.rul_lower_bound,
@@ -212,20 +216,10 @@ async def _active_asset_model(
     session: AsyncSession,
     asset_id: int,
 ) -> AssetModel | None:
-    return (
-        await session.execute(
-            select(AssetModel)
-            .where(
-                AssetModel.asset_id == asset_id,
-                AssetModel.is_active.is_(True),
-            )
-            .order_by(
-                desc(AssetModel.updated_at),
-                desc(AssetModel.id),
-            )
-            .limit(1)
-        )
-    ).scalar_one_or_none()
+    # Since asset_models table is now minimal (id, asset_code, source_url),
+    # we can't filter by asset_id or is_active anymore.
+    # Return None to indicate no model data is available.
+    return None
 
 
 def twin_quality_metadata(
@@ -304,6 +298,53 @@ def twin_quality_metadata(
         "twin_template": representation,
     }
 
+
+def _geometry_mode(model: AssetModel | None) -> str:
+    if model is None:
+        return "SCHEMATIC"
+    model_format = str(model.format or "").lower()
+    fidelity = str(model.fidelity_level or "L0").upper()
+    if model_format in {"glb", "gltf"} and model.model_uri:
+        return "GLB"
+    if "TILES" in model_format or "CESIUM" in model_format:
+        return "GOOGLE_3D_TILES"
+    if fidelity in {"L1", "L2", "L3", "L4"} and model.is_asset_specific:
+        return "PROCEDURAL_SOURCE_BACKED"
+    return "SCHEMATIC"
+
+
+def _dimension_evidence(model: AssetModel | None) -> list[dict[str, Any]]:
+    if model is None:
+        return []
+    dimensions = model.dimensions or {}
+    evidence: list[dict[str, Any]] = []
+    for key, raw_value in dimensions.items():
+        metadata = raw_value if isinstance(raw_value, dict) else {}
+        value = metadata.get("numeric_value", metadata.get("value", raw_value))
+        if value is None or isinstance(value, (dict, list)):
+            continue
+        status = str(
+            metadata.get("verification_status")
+            or metadata.get("verification")
+            or ("SOURCE_REPORTED" if model.source_url else "WITHHELD")
+        ).upper()
+        if status not in {"VERIFIED", "SOURCE_REPORTED", "MODEL_DERIVED", "EXPERIMENTAL", "WITHHELD"}:
+            status = "WITHHELD"
+        evidence.append(
+            {
+                "parameter": key,
+                "value": value,
+                "unit": metadata.get("unit") or ("m" if key.endswith("_m") else None),
+                "source_url": metadata.get("source_url") or model.source_url,
+                "source_authority": metadata.get("source_authority") or model.model_source,
+                "source_title": metadata.get("source_title") or model.model_source,
+                "retrieved_at": metadata.get("retrieved_at") or (model.updated_at.isoformat() if model.updated_at else None),
+                "verification_status": status,
+                "reason": metadata.get("reason") or (None if status != "WITHHELD" else "AUTHORITATIVE_EVIDENCE_NOT_AVAILABLE"),
+                "model_usage": "GEOMETRY_USED" if status != "WITHHELD" else "NOT_USED",
+            }
+        )
+    return evidence
 
 # ============================================================
 # Latest inspection
@@ -448,8 +489,9 @@ async def refresh_ml_prediction(
 
     asset, _, _ = row
 
-    # Current ML artifact is bridge-only.
-    if not asset.asset_type or asset.asset_type.lower() != "bridge":
+    supported_types = {"bridge", "dam", "barrage", "airport", "temple"}
+    asset_type = (asset.asset_type or "").lower()
+    if asset_type not in supported_types:
         raise HTTPException(
             status_code=400,
             detail={
@@ -457,8 +499,7 @@ async def refresh_ml_prediction(
                 "asset_code": asset.asset_code,
                 "asset_type": asset.asset_type,
                 "message": (
-                    "The currently registered deterioration model "
-                    "supports bridges only."
+                    "No category-specific predictor supports this asset type."
                 ),
             },
         )
@@ -473,13 +514,31 @@ async def refresh_ml_prediction(
         asset_id=asset.id,
     )
 
-    ml_input = _build_bridge_ml_input(
-        asset=asset,
-        model=model,
-        inspection=inspection,
-    )
+    if asset_type == "bridge":
+        ml_input = _build_bridge_ml_input(
+            asset=asset,
+            model=model,
+            inspection=inspection,
+        )
+    else:
+        ml_input = MLInput(
+            asset_type=asset.asset_type,
+            age_years=(
+                datetime.now(UTC).year - asset.built_year
+                if asset.built_year is not None
+                else None
+            ),
+            condition_rating=condition_to_rating(
+                inspection.condition if inspection is not None else None,
+                inspection.score if inspection is not None else None,
+            ),
+            material=asset.material,
+            built_year=asset.built_year,
+            design_life_years=asset.design_life_years,
+            evidence_confidence=asset.confidence_score,
+        )
 
-    ml_prediction = predict_bridge(ml_input)
+    ml_prediction = predict_asset(ml_input)
 
     if ml_prediction is None:
         missing_fields: list[str] = []
@@ -500,7 +559,7 @@ async def refresh_ml_prediction(
                 "asset_name": asset.name,
                 "missing_fields": missing_fields,
                 "message": (
-                    "The bridge ML model could not produce a "
+                    "The category-specific predictor could not produce a "
                     "prediction using the currently available evidence."
                 ),
             },
@@ -528,12 +587,13 @@ async def refresh_ml_prediction(
         },
 
         "model": {
-            "model_name": BRIDGE_MODEL_NAME,
+            "model_name": ml_prediction.prediction_method,
             "version": ml_prediction.model_version,
             "feature_version": ml_prediction.feature_version,
             "stage": ml_prediction.status,
-            "model_validated": ml_prediction.model_validated,
+            "model_is_validated": ml_prediction.model_is_validated,
             "training_scope": ml_prediction.training_scope,
+            "rul_method": ml_prediction.rul_method,
         },
 
         "prediction": {
@@ -552,6 +612,7 @@ async def refresh_ml_prediction(
 
             "confidence": ml_prediction.confidence,
             "prediction_method": ml_prediction.prediction_method,
+            "rul_method": ml_prediction.rul_method,
             "forecast_horizon_years": (
                 ml_prediction.forecast_horizon_years
             ),
@@ -581,7 +642,7 @@ async def refresh_ml_prediction(
         "warning": (
             "Research decision support only. "
             "Model has not been locally validated for Andhra Pradesh."
-            if not ml_prediction.model_validated
+            if not ml_prediction.model_is_validated
             else None
         ),
     }
@@ -610,6 +671,24 @@ async def build_asset_summary(
     )
     quality = twin_quality_metadata(model, asset.asset_type)
 
+    environment: dict[str, dict[str, Any]] = {}
+    if str(asset.asset_type or "").lower() in {"dam", "barrage"}:
+        environment = await load_latest_environment(
+            session=session,
+            asset_id=asset.id,
+        )
+
+    current_risk = resolve_current_risk_snapshot(
+        asset_type=asset.asset_type,
+        persisted_risk=risk,
+        environment=environment,
+        dimensions=(
+            model.dimensions
+            if model is not None and model.dimensions
+            else {}
+        ),
+    )
+
     return {
         "asset_code": asset.asset_code,
         "name": asset.name,
@@ -618,6 +697,9 @@ async def build_asset_summary(
         "district": asset.district,
         "identity_status": asset.identity_status,
         "condition": asset.condition,
+        "built_year": asset.built_year,
+        "material": asset.material,
+        "design_life_years": asset.design_life_years,
 
         "geometry": {
             "type": "Point",
@@ -627,17 +709,9 @@ async def build_asset_summary(
             ),
         },
 
-        "risk_score": (
-            risk.value
-            if risk is not None
-            else None
-        ),
+        "risk_score": current_risk["risk_score"],
 
-        "risk_level": (
-            risk.predicted_class
-            if risk is not None
-            else None
-        ),
+        "risk_level": current_risk["risk_level"],
 
         "data_confidence": asset.confidence_score,
         **quality,
@@ -661,29 +735,26 @@ async def _persisted_ai_state(
     risk = predictions.get("risk")
     rul = predictions.get("rul")
 
-    if health is None or risk is None:
+    if health is None and risk is None and rul is None:
         return None
-
 
     # SIMRAS_REAL_EVIDENCE_PERSISTED_GUARD
     if (
         condition_rating is None
-        and str(health.model_version or "").startswith("nbi_transfer_")
+        and any(
+            str(prediction.model_version or "").startswith("nbi_transfer_")
+            for prediction in (health, risk, rul)
+            if prediction is not None
+        )
     ):
-        return None
-    # Health and risk must belong to the same model run/model
-    # before they are combined into one AI state.
-    if health.model_version != risk.model_version:
-        return None
-
-    if health.feature_version != risk.feature_version:
         return None
 
     # Do not accidentally interpret an older rule model
     # as the current NBI bridge ML model.
+    model_anchor = health or risk or rul
     is_bridge_ml = (
-        health.model_version.startswith("nbi_transfer_")
-        or health.status in {
+        str(model_anchor.model_version or "").startswith("nbi_transfer_")
+        or model_anchor.status in {
             "RESEARCH_TRANSFER",
             "VALIDATED_LOCAL",
         }
@@ -692,16 +763,9 @@ async def _persisted_ai_state(
     if not is_bridge_ml:
         return None
 
-    # RUL is used only if it came from the same model version.
-    if (
-        rul is not None
-        and rul.model_version != health.model_version
-    ):
-        rul = None
-
     registry = await _registered_model(
         session=session,
-        version=health.model_version,
+        version=model_anchor.model_version,
     )
 
     metrics = (
@@ -714,22 +778,30 @@ async def _persisted_ai_state(
         "training_scope",
         (
             "FHWA_NBI_US_BRIDGES_RESEARCH_TRANSFER"
-            if health.status == "RESEARCH_TRANSFER"
+            if model_anchor.status == "RESEARCH_TRANSFER"
             else "LOCAL_ANDHRA_PRADESH_VALIDATION"
         ),
     )
 
-    model_validated = (
-        health.status == "VALIDATED_LOCAL"
+    model_is_validated = (
+        any(
+            prediction is not None and prediction.status == "VALIDATED_LOCAL"
+            for prediction in (health, risk, rul)
+        )
     )
 
-    factors = health.factors or risk.factors or []
+    factors = (
+        (health.factors if health is not None else None)
+        or (risk.factors if risk is not None else None)
+        or (rul.factors if rul is not None else None)
+        or []
+    )
 
     confidence_values = [
         value
         for value in [
-            health.confidence_score,
-            risk.confidence_score,
+            health.confidence_score if health is not None else None,
+            risk.confidence_score if risk is not None else None,
             rul.confidence_score if rul is not None else None,
         ]
         if value is not None
@@ -743,23 +815,23 @@ async def _persisted_ai_state(
 
     recommendations = build_recommendations(
         condition_rating=condition_rating,
-        risk_score=risk.value,
+        risk_score=risk.value if risk is not None else None,
         rul_years=(
             rul.value
             if rul is not None
             else None
         ),
         confidence=confidence,
-        model_validated=model_validated,
+        model_is_validated=model_is_validated,
     )
 
     return {
-        "health_score": health.value,
-        "health_lower_bound": health.lower_bound,
-        "health_upper_bound": health.upper_bound,
+        "health_score": health.value if health is not None else None,
+        "health_lower_bound": health.lower_bound if health is not None else None,
+        "health_upper_bound": health.upper_bound if health is not None else None,
 
-        "risk_score": risk.value,
-        "risk_level": risk.predicted_class,
+        "risk_score": risk.value if risk is not None else None,
+        "risk_level": risk.predicted_class if risk is not None else None,
 
         "hazard_score": baseline.hazard_score,
         "hazard_level": baseline.hazard_level,
@@ -784,18 +856,18 @@ async def _persisted_ai_state(
 
         "confidence": confidence,
 
-        "model_version": health.model_version,
-        "feature_version": health.feature_version,
+        "model_version": model_anchor.model_version,
+        "feature_version": model_anchor.feature_version,
 
         # Critical:
         # this is the persisted DB prediction timestamp.
-        "prediction_time": health.prediction_time,
+        "prediction_time": model_anchor.prediction_time,
 
-        "status": health.status,
+        "status": model_anchor.status,
 
         "prediction_method": "persisted_bridge_ml",
 
-        "model_validated": model_validated,
+        "model_is_validated": model_is_validated,
 
         "training_scope": training_scope,
 
@@ -966,11 +1038,7 @@ async def build_twin(
     # Structural condition
     # --------------------------------------------------------
 
-    condition = (
-        inspection.condition
-        if inspection is not None
-        else asset.condition
-    )
+    condition = inspection.condition if inspection is not None else None
 
     inspection_score = (
         inspection.score
@@ -1085,7 +1153,7 @@ async def build_twin(
             risk_score=baseline.risk_score,
             rul_years=None,
             confidence=baseline.confidence,
-            model_validated=False,
+            model_is_validated=False,
         )
 
         ai = {
@@ -1243,6 +1311,9 @@ async def build_twin(
                 if model is not None
                 else None
             ),
+
+            "geometry_mode": _geometry_mode(model),
+            "evidence": _dimension_evidence(model),
         },
 
         "environment": environment,
@@ -1325,4 +1396,32 @@ async def build_twin(
         },
 
         "generated_at": datetime.now(UTC),
+        "assessment": {
+            "health": {
+                "available": ai.get("health_score") is not None,
+                "value": ai.get("health_score"),
+                "source": "ML_PREDICTED" if ai.get("model_is_validated") else "WITHHELD",
+            },
+            "risk": {
+                "available": ai.get("risk_score") is not None,
+                "score": ai.get("risk_score"),
+                "level": ai.get("risk_level"),
+                "source": "ML_PREDICTED" if ai.get("model_is_validated") else "WITHHELD",
+            },
+            "rul": {
+                "available": ai.get("remaining_life_years") is not None,
+                "years": ai.get("remaining_life_years"),
+                "source": "ML_PREDICTED" if ai.get("model_is_validated") else "WITHHELD",
+            },
+            "prediction_status": "ML_AVAILABLE" if ai.get("model_is_validated") else "ML_WITHHELD",
+            "model_name": ai.get("prediction_method"),
+            "model_version": ai.get("model_version"),
+            "feature_version": ai.get("feature_version"),
+            "features_used": [],
+            "features_withheld": ai.get("factors", []),
+        },
+        "evidence_state": {
+            "status": "VERIFIED" if model is not None and model.source_url else "WITHHELD",
+            "reason": None if model is not None and model.source_url else "AUTHORITATIVE_EVIDENCE_NOT_AVAILABLE",
+        },
     }

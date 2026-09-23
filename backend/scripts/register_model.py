@@ -37,7 +37,7 @@ async def register() -> None:
                     **manifest["metrics"],
                     "gates": manifest["gates"],
                     "training_scope": manifest["training_scope"],
-                    "model_validated": manifest["model_validated"],
+                    "model_is_validated": manifest["model_is_validated"],
                     "limitations": manifest["limitations"],
                     "evaluation_protocol": manifest.get("evaluation_protocol"),
                     "evaluation_counts": manifest.get("evaluation_counts"),

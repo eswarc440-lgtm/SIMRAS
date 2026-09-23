@@ -59,6 +59,9 @@ function dimName(key: string) {
 
 export function TwinPanels({ twin }: { twin: TwinResponse }) {
   const backed = sourceBacked(twin);
+  const assessment = twin.assessment;
+  const healthAvailable = assessment?.health?.available === true;
+  const riskAvailable = assessment?.risk?.available === true;
 
   const dimensions = Object.entries(twin.twin.dimensions).filter(
     ([key, value]) =>
@@ -75,16 +78,16 @@ export function TwinPanels({ twin }: { twin: TwinResponse }) {
       <section className="panel score-panel score-panel-four">
         <div>
           <span>SIMRAS predicted health</span>
-          <strong>{score(twin.ai.health_score)}</strong>
-          <small>{healthLabel(twin.ai.health_score)}</small>
+            <strong>{healthAvailable ? score(assessment?.health?.value) : "UNAVAILABLE"}</strong>
+            <small>{healthAvailable ? "ML PREDICTED" : "PREDICTION UNAVAILABLE"}</small>
         </div>
 
         <div>
           <span>SIMRAS risk score</span>
-          <strong style={{ color: riskColor(twin.ai.risk_level) }}>
-            {score(twin.ai.risk_score)}
+            <strong style={{ color: riskColor(assessment?.risk?.level as any) }}>
+              {riskAvailable ? score(assessment?.risk?.score) : "UNAVAILABLE"}
           </strong>
-          <small>{twin.ai.risk_level ?? "UNAVAILABLE"}</small>
+            <small>{riskAvailable ? `${assessment?.risk?.level ?? "UNAVAILABLE"} · ML PREDICTED` : "PREDICTION UNAVAILABLE"}</small>
         </div>
 
         <div>
@@ -105,20 +108,11 @@ export function TwinPanels({ twin }: { twin: TwinResponse }) {
             </strong>
             <small>
               {twin.ai.operational_risk_score != null
-                ? `${(twin.ai.operational_risk_level ?? "N/A").replaceAll("_", " ")} · ${twin.ai.operational_confidence != null ? `${Math.round(twin.ai.operational_confidence * 100)}% input confidence` : "confidence N/A"}`
+                ? `${(twin.ai.operational_risk_level ?? "N/A").replaceAll("_", " ")}`
                 : "Insufficient hydrology inputs"}
             </small>
           </div>
         )}
-        <div>
-          <span>Prediction confidence</span>
-          <strong>
-            {twin.ai.confidence != null
-              ? `${Math.round(twin.ai.confidence * 100)}%`
-              : empty}
-          </strong>
-          <small>Prediction confidence Â· not official condition</small>
-        </div>
       </section>
 
       <section className="panel">
@@ -134,9 +128,7 @@ export function TwinPanels({ twin }: { twin: TwinResponse }) {
           <div>
             <dt>Geometry status</dt>
             <dd>
-              {backed
-                ? "Source-driven asset-specific parametric representation"
-                : "Illustrative only; no source-backed dimensions linked"}
+              {twin.twin.geometry_mode ?? (backed ? "PROCEDURAL_SOURCE_BACKED" : "SCHEMATIC")}
             </dd>
           </div>
 
@@ -183,6 +175,20 @@ export function TwinPanels({ twin }: { twin: TwinResponse }) {
                 <div key={key}>
                   <dt>{dimName(key)}</dt>
                   <dd>{String(value).replaceAll("_", " ")}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )}
+
+        {twin.twin.evidence && twin.twin.evidence.length > 0 && (
+          <div className="dimension-list">
+            <h4>Digital Twin Evidence</h4>
+            <dl>
+              {twin.twin.evidence.map((item, index) => (
+                <div key={`${String(item.parameter ?? "parameter")}-${index}`}>
+                  <dt>{String(item.parameter ?? "Parameter")}</dt>
+                  <dd>{String(item.value ?? "WITHHELD")} · {String(item.verification_status ?? "WITHHELD")}</dd>
                 </div>
               ))}
             </dl>

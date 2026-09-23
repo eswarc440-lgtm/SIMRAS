@@ -306,7 +306,7 @@ async def overlay_assessment_with_latest_predictions(
                     else None
                 ),
 
-            "model_validated":
+            "model_is_validated":
                 False,
 
             "training_scope":

@@ -31,7 +31,7 @@ class RiskResult:
     feature_version: str
     status: str
     prediction_method: str
-    model_validated: bool
+    model_is_validated: bool
     factors: list[str]
 
     def to_dict(self) -> dict:
@@ -205,6 +205,6 @@ def score_risk(data: RiskInput, *, current_year: int | None = None) -> RiskResul
         feature_version="asset_state_v1",
         status="DECISION_SUPPORT" if has_structural_evidence else "INSUFFICIENT_DATA",
         prediction_method="transparent_engineering_rules",
-        model_validated=False,
+        model_is_validated=False,
         factors=factors,
     )

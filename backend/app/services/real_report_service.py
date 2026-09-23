@@ -181,7 +181,7 @@ def _eligible_ml(ai: dict[str, Any] | None) -> dict[str, Any]:
     # Public reports must not turn a transfer model or transparent engineering
     # rules into a locally validated condition assessment. A prediction is
     # published here only after the runtime explicitly marks local validation.
-    if ai.get("model_validated") is not True:
+    if ai.get("model_is_validated") is not True:
         return {}
     if str(ai.get("training_scope") or "") != "LOCAL_ANDHRA_PRADESH_VALIDATION":
         return {}

@@ -25,6 +25,20 @@ function s(d: Dims, key: string): string {
   return String(d[key] ?? "");
 }
 
+function assetSeed(code: string): number {
+  return [...code].reduce((hash, character) => (hash * 31 + character.charCodeAt(0)) >>> 0, 17);
+}
+
+function assetVariant(twin: TwinResponse) {
+  const seed = assetSeed(twin.asset.asset_code);
+  return {
+    seed,
+    phase: (seed % 360) * (Math.PI / 180),
+    proportion: 0.88 + (seed % 23) / 100,
+    accent: seed % 3,
+  };
+}
+
 function sourceBacked(twin: TwinResponse): boolean {
   const representation = String(
     twin.twin.dimensions["representation"] ?? "",
@@ -152,10 +166,11 @@ function DimensionText({ twin }: { twin: TwinResponse }) {
 
 function GirderBridge({ twin, colour }: Props) {
   const d = twin.twin.dimensions;
+  const variant = assetVariant(twin);
   const spans = Math.max(2, Math.min(18, Math.round(n(d, ["span_count"], 5))));
   const width = Math.max(2.2, Math.min(5.0, n(d, ["width_m", "deck_width_m"], 12) / 4));
   const height = Math.max(1.8, Math.min(4.0, n(d, ["pier_height_m", "height_m"], 12) / 4));
-  const length = 18;
+  const length = 15.5 + spans * 0.75;
 
   return (
     <group>
@@ -174,7 +189,7 @@ function GirderBridge({ twin, colour }: Props) {
         );
       })}
 
-      <Water z={0} />
+      <Water z={Math.sin(variant.phase) * 1.4} />
       <DimensionText twin={twin} />
     </group>
   );
@@ -182,6 +197,7 @@ function GirderBridge({ twin, colour }: Props) {
 
 function CurvedFlyover({ twin, colour }: Props) {
   const d = twin.twin.dimensions;
+  const variant = assetVariant(twin);
   const lanes = Math.max(2, Math.min(8, Math.round(n(d, ["lane_count"], 4))));
   const width = Math.max(2.8, Math.min(6.4, lanes * 0.78));
   const sourceSpan = n(d, ["typical_span_m", "span_m"], 45);
@@ -194,7 +210,7 @@ function CurvedFlyover({ twin, colour }: Props) {
   const curve = useMemo(
     () =>
       new CatmullRomCurve3([
-        new Vector3(-11, 0.8, -3.6),
+        new Vector3(-11, 0.8, -3.6 + Math.sin(variant.phase) * 1.5),
         new Vector3(-7.5, 1.0, -1.8),
         new Vector3(-3.5, 1.15, 0.4),
         new Vector3(0.5, 1.2, 1.25),
@@ -351,6 +367,7 @@ function ArchBridge({ twin, colour }: Props) {
 
 function GravityDam({ twin, colour }: Props) {
   const d = twin.twin.dimensions;
+  const variant = assetVariant(twin);
   const gates = Math.max(3, Math.min(24, Math.round(n(d, ["gate_count"], 8))));
   const damLengthM = n(d, ["length_m"], 400);
   const damHeightM = n(d, ["height_m"], 45);
@@ -361,18 +378,37 @@ function GravityDam({ twin, colour }: Props) {
   const spillway = Math.max(5, Math.min(13, (spillwayM / damLengthM) * length));
   const side = (length - spillway) / 2;
   const bay = spillway / gates;
+  const damType = `${s(d, "dam_type")} ${s(d, "structural_form")} ${twin.asset.subtype ?? ""} ${twin.asset.name}`.toLowerCase();
+  const embankment = damType.includes("earth") || damType.includes("embankment");
+  const crestOffset = (variant.accent - 1) * 0.08;
+  const buttressCount = variant.accent === 2 ? 5 : variant.accent === 1 ? 3 : 0;
 
   return (
     <group>
-      <mesh position={[-(spillway / 2 + side / 2), 0, 0]} castShadow>
-        <boxGeometry args={[side, height, 2.6]} />
-        <meshStandardMaterial color="#969fa4" roughness={0.92} />
-      </mesh>
+      {embankment ? (
+        <>
+          <mesh position={[-(spillway / 2 + side / 2), 0, 0]} rotation={[0, 0, -0.12]} castShadow>
+            <boxGeometry args={[side, height, 2.6]} />
+            <meshStandardMaterial color="#766c58" roughness={1} />
+          </mesh>
+          <mesh position={[-(spillway / 2 + side / 2), height * 0.18, 0]} rotation={[0, 0, -0.12]} castShadow>
+            <boxGeometry args={[side * 0.92, height * 0.72, 2.2]} />
+            <meshStandardMaterial color="#9a8a68" roughness={1} />
+          </mesh>
+        </>
+      ) : (
+        <mesh position={[-(spillway / 2 + side / 2), crestOffset, 0]} castShadow>
+          <boxGeometry args={[side, height, 2.6]} />
+          <meshStandardMaterial color="#969fa4" roughness={0.92} />
+        </mesh>
+      )}
 
-      <mesh position={[spillway / 2 + side / 2, 0, 0]} castShadow>
-        <boxGeometry args={[side, height, 2.6]} />
-        <meshStandardMaterial color="#969fa4" roughness={0.92} />
-      </mesh>
+      {!embankment && (
+        <mesh position={[spillway / 2 + side / 2, crestOffset, 0]} castShadow>
+          <boxGeometry args={[side, height, 2.6]} />
+          <meshStandardMaterial color="#969fa4" roughness={0.92} />
+        </mesh>
+      )}
 
       <mesh position={[0, -0.35, 0]} castShadow>
         <boxGeometry args={[spillway, height * 0.86, 2.45]} />
@@ -394,7 +430,17 @@ function GravityDam({ twin, colour }: Props) {
         <meshStandardMaterial color="#404a50" roughness={0.72} />
       </mesh>
 
-      <Water z={-5.1} depth={7} />
+      {Array.from({ length: buttressCount }, (_, index) => {
+        const x = -length * 0.34 + (index * length * 0.68) / Math.max(buttressCount - 1, 1);
+        return (
+          <mesh key={`buttress-${index}`} position={[x, height * 0.42, 1.42]} rotation={[0, 0, -0.22]} castShadow>
+            <boxGeometry args={[0.28, height * 0.82, 0.7]} />
+            <meshStandardMaterial color="#747f85" roughness={0.9} />
+          </mesh>
+        );
+      })}
+
+      <Water z={-5.1 + Math.cos(variant.phase) * 0.8} depth={7 + variant.accent} />
       <DimensionText twin={twin} />
     </group>
   );
@@ -402,13 +448,16 @@ function GravityDam({ twin, colour }: Props) {
 
 function GatedBarrage({ twin, colour }: Props) {
   const d = twin.twin.dimensions;
+  const variant = assetVariant(twin);
   const gates = Math.max(4, Math.min(80, Math.round(n(d, ["gate_count"], 12))));
-  const sceneLength = 22;
+  const sourceLength = n(d, ["total_length_m", "length_m", "crest_length_m"], 1000);
+  const sceneLength = Math.max(16, Math.min(34, 15 + Math.log10(sourceLength) * 4.2));
   const bay = sceneLength / gates;
+  const deckHeight = 1.35 + variant.accent * 0.18;
 
   return (
     <group>
-      <mesh position={[0, 1.55, 0]} castShadow>
+      <mesh position={[0, deckHeight, 0]} castShadow>
         <boxGeometry args={[sceneLength + 0.2, 0.26, 1.55]} />
         <meshStandardMaterial color="#c9d2d7" roughness={0.82} />
       </mesh>
@@ -433,7 +482,7 @@ function GatedBarrage({ twin, colour }: Props) {
         );
       })}
 
-      <Water width={28} depth={10} />
+      <Water width={30 + variant.accent * 2} depth={10 + (variant.seed % 4)} />
       <DimensionText twin={twin} />
     </group>
   );
@@ -441,10 +490,12 @@ function GatedBarrage({ twin, colour }: Props) {
 
 function Airport({ twin }: Props) {
   const d = twin.twin.dimensions;
+  const variant = assetVariant(twin);
   const lengthM = n(d, ["runway_length_m", "length_m"], 2400);
   const widthM = n(d, ["runway_width_m", "width_m"], 45);
   const aspect = Math.max(12, Math.min(24, lengthM / 150));
-  const width = Math.max(1.2, Math.min(3.2, widthM / 20));
+  const width = Math.max(1.2, Math.min(3.2, widthM / 20)) * variant.proportion;
+  const terminalSide = 2.1 + (variant.seed % 4) * 0.45;
 
   return (
     <group rotation={[0, -0.25, 0]}>
@@ -468,13 +519,13 @@ function Airport({ twin }: Props) {
         );
       })}
 
-      <mesh position={[0, 0.18, width * 1.7]}>
-        <boxGeometry args={[aspect * 0.5, 0.12, width * 0.45]} />
+      <mesh position={[aspect * 0.08, 0.18, width * 1.7]}>
+        <boxGeometry args={[aspect * (0.35 + variant.accent * 0.08), 0.12, width * 0.45]} />
         <meshStandardMaterial color="#666f75" />
       </mesh>
 
-      <mesh position={[aspect * 0.15, 0.8, width * 2.9]} castShadow>
-        <boxGeometry args={[4.8, 1.6, 2.0]} />
+      <mesh position={[aspect * (variant.accent - 1) * 0.16, 0.8, width * 2.9]} castShadow>
+        <boxGeometry args={[4.8 * terminalSide / 2.1, 1.6 + variant.accent * 0.35, 2.0 * terminalSide / 2.1]} />
         <meshStandardMaterial color="#7a8b94" roughness={0.72} />
       </mesh>
 
@@ -520,23 +571,26 @@ function Port({ twin }: Props) {
 
 function Temple({ twin }: Props) {
   const d = twin.twin.dimensions;
+  const variant = assetVariant(twin);
   const gopuramM = n(d, ["gopuram_height_m", "height_m"], 24);
+  const reportedTiers = Math.round(n(d, ["gopuram_tiers"], 6));
   const scale = Math.max(2.6, Math.min(5.5, gopuramM / 7));
 
   return (
     <group>
       <mesh position={[0, -1.25, 0]} castShadow>
-        <boxGeometry args={[8, 1.2, 6]} />
+        <boxGeometry args={[8 * variant.proportion, 1.2, 6 * (2 - variant.proportion)]} />
         <meshStandardMaterial color="#c9ad74" roughness={0.94} />
       </mesh>
 
-      {Array.from({ length: 6 }, (_, index) => {
-        const t = index / 5;
+      {Array.from({ length: Math.max(5, Math.min(9, reportedTiers || 6)) }, (_, index) => {
+        const courses = Math.max(5, Math.min(9, reportedTiers || 6));
+        const t = index / Math.max(courses - 1, 1);
         const w = scale * (1 - t * 0.62);
         return (
           <mesh
             key={index}
-            position={[0, -0.3 + index * 0.72, -1.9]}
+            position={[(variant.accent - 1) * 0.35, -0.3 + index * 0.72, -1.9]}
             castShadow
           >
             <boxGeometry args={[w, 0.62, w * 0.45]} />
@@ -545,8 +599,8 @@ function Temple({ twin }: Props) {
         );
       })}
 
-      <mesh position={[0, 0.05, 0.8]} castShadow>
-        <boxGeometry args={[3.3, 2.0, 2.6]} />
+      <mesh position={[(variant.accent - 1) * 0.55, 0.05, 0.8]} castShadow>
+        <boxGeometry args={[3.3 * variant.proportion, 2.0, 2.6 * (2 - variant.proportion)]} />
         <meshStandardMaterial color="#b99a61" roughness={0.92} />
       </mesh>
 
@@ -598,7 +652,7 @@ export function AssetSpecificModel(props: Props) {
           ? "arch_bridge"
           : type === "bridge"
             ? "girder_bridge"
-            : type === "barrage"
+            : type === "barrage" || name.includes("barrage")
               ? "gated_barrage"
               : type === "dam"
                 ? "gravity_dam"

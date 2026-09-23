@@ -8,29 +8,54 @@ import type {
   TwinResponse,
 } from "../types/twin";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-if (!API_BASE_URL) {
-  throw new Error("VITE_API_BASE_URL is not configured");
-}
+// Use relative URLs to leverage Vite proxy during development
+// The proxy is configured in vite.config.ts to forward /api to the backend
+const API_BASE_URL = "/api/v1";
 
 async function request<T>(path: string): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    method: "GET",
-    cache: "no-store",
-    headers: {
-      Accept: "application/json",
-    },
-  });
+  const url = `${API_BASE_URL}${path}`;
+  
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+      },
+    });
 
-  if (!response.ok) {
-    const detail = await response.text();
-    throw new Error(
-      `${response.status} ${response.statusText}: ${detail}`,
-    );
+    if (!response.ok) {
+      let detail = `HTTP ${response.status}`;
+      
+      const contentType = response.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        try {
+          const json = await response.json();
+          detail = json?.detail || json?.message || detail;
+        } catch {
+          // JSON parse failed, use text
+          detail = await response.text() || detail;
+        }
+      } else {
+        detail = await response.text() || detail;
+      }
+      
+      throw new Error(`${url} ${response.statusText}: ${detail}`);
+    }
+
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      const text = await response.text();
+      throw new Error(`Expected JSON response from ${url}, got: ${contentType}`);
+    }
+
+    return response.json() as Promise<T>;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error(`Request to ${url} failed: ${String(error)}`);
   }
-
-  return response.json() as Promise<T>;
 }
 
 export const api = {
@@ -94,6 +119,8 @@ export const api = {
     request<AssetListResponse["items"]>("/assets/high-risk?limit=10"),
   twin: (assetCode: string) =>
     request<TwinResponse>(`/assets/${assetCode}/twin`),
+  assessment: (assetCode: string) =>
+    request<Record<string, unknown>>(`/reports/assets/${encodeURIComponent(assetCode)}/assessment`),
   state: (assetCode: string) =>
     request<EvidenceStateResponse>(`/assets/${assetCode}/state`),
   summary: () => request<Record<string, number>>("/analytics/summary"),

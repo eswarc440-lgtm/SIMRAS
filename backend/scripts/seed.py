@@ -15,7 +15,7 @@ from app.models.entities import (
     AssetModel,
     DataSource,
     EnvironmentObservation,
-    Inspection,
+    LegacyInspection as Inspection,
     Prediction,
 )
 from app.services.risk_engine import RiskInput, score_risk
@@ -195,4 +195,3 @@ async def seed() -> None:
 
 if __name__ == "__main__":
     asyncio.run(seed())
-

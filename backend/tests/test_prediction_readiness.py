@@ -17,7 +17,7 @@ def test_environmental_hazard_is_separate_from_structural_health():
     assert result.hazard_score > 0
     assert result.hazard_level in {"LOW", "MEDIUM", "HIGH"}
     assert result.status == "INSUFFICIENT_DATA"
-    assert result.model_validated is False
+    assert result.model_is_validated is False
 
 
 def test_inspection_enables_engineering_decision_support():
@@ -37,4 +37,4 @@ def test_inspection_enables_engineering_decision_support():
     assert result.risk_score is not None
     assert result.status == "DECISION_SUPPORT"
     assert result.prediction_method == "transparent_engineering_rules"
-    assert result.model_validated is False
+    assert result.model_is_validated is False
