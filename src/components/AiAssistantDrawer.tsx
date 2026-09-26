@@ -21,6 +21,8 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [choices,setChoices] = useState<Array<{asset_code:string;name:string;district?:string}>>([]);
+  const [advisorAssetCode,setAdvisorAssetCode] = useState<string|null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   // Auto-scroll to bottom of messages
@@ -36,6 +38,8 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
 
   // Set initial greeting when asset changes or opens
   useEffect(() => {
+    setAdvisorAssetCode(null);
+    setChoices([]);
     if (currentAsset) {
       setMessages([
         {
@@ -57,7 +61,7 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
 
   if (!isOpen) return null;
 
-  const handleSend = async (queryText?: string) => {
+  const handleSend = async (queryText?: string, resolvedCode?: string) => {
     const text = queryText || input.trim();
     if (!text) return;
 
@@ -73,31 +77,32 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
 
     try {
       if (!currentAsset?.asset_code) throw new Error("Select an asset first");
-      const assetCode = currentAsset.asset_code;
+      const assetCode = resolvedCode || advisorAssetCode || currentAsset.asset_code;
       const token = localStorage.getItem("simras_token");
       const res = await fetch(`/api/v1/ai/assets/${encodeURIComponent(assetCode)}/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({ prompt: text, selected_asset_code: assetCode, history: [...messages, userMsg].map(({ role, content }) => ({ role, content })) }),
+        body: JSON.stringify({ prompt: text, selected_asset_code: assetCode, history: messages.filter((_,index) => index > 0).map(({ role, content }) => ({ role, content })) }),
       });
 
-      if (!res.ok) {
-        throw new Error("AI service error");
-      }
-
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
+      if (res.status === 409 && Array.isArray(data?.choices)) setChoices(data.choices);
+      if (!res.ok) throw new Error(data?.error || data?.detail || `Engineering Advisor request failed (${res.status}).`);
+      setAdvisorAssetCode(data.asset_code);
+      setChoices([]);
+      if (typeof data.answer !== "string" || !data.answer.trim()) throw new Error("Engineering Advisor returned no answer.");
       const aiMsg: Message = {
         role: "assistant",
-        content: data.answer || "Analysis completed according to standard engineering criteria.",
+        content: data.answer,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, aiMsg]);
-    } catch (err: any) {
+    } catch (err) {
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: "The engineering advisor is currently unavailable. No assessment or maintenance recommendation was generated.",
+          content: err instanceof Error ? err.message : "The engineering advisor is currently unavailable.",
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
@@ -130,6 +135,7 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
         aria-modal="true"
         aria-label="SIMRAS AI Engineering Advisor"
       >
+        {choices.length > 0 && <div className="p-3 border-b border-cyan-700"><p>Select the matching asset:</p>{choices.map(choice => <button className="block p-2 text-cyan-300" key={choice.asset_code} onClick={() => void handleSend(`Explain asset ${choice.asset_code}`,choice.asset_code)}>{choice.name} — {choice.district} ({choice.asset_code})</button>)}</div>}
         {/* Header */}
         <div className="p-4 border-b border-cyan-500/20 bg-[#0a1827] flex items-center justify-between shrink-0 shadow-md">
           <div className="flex items-center gap-3">
@@ -142,7 +148,7 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
                   SIMRAS AI Engineering Advisor
                 </h3>
                 <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-cyan-900/80 text-cyan-300 border border-cyan-500/40">
-                  EVIDENCE GROUNDED
+                  SIMRAS CONTEXT
                 </span>
               </div>
               <p className="text-[11px] text-cyan-300/80 font-mono mt-0.5 truncate max-w-[280px]">
@@ -178,7 +184,7 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
               </span>
             </div>
             <span className="text-[10px] text-emerald-400 flex items-center gap-1 font-semibold">
-              <CheckCircle2 className="w-3 h-3" /> Grounded
+              <CheckCircle2 className="w-3 h-3" /> Stored data
             </span>
           </div>
         )}
@@ -235,7 +241,7 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
           {loading && (
             <div className="flex items-center gap-2 text-xs text-cyan-400 p-3 rounded-xl bg-[#0c1c2e] border border-cyan-500/20 max-w-[85%]">
               <RefreshCw className="w-4 h-4 animate-spin text-cyan-400" />
-              <span>Analyzing structural telemetry, geotechnical baseline, and CWC safety guidelines...</span>
+              <span>Retrieving SIMRAS records and asking Gemini...</span>
             </div>
           )}
 
@@ -273,7 +279,7 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
             </button>
           </form>
           <div className="mt-2 text-[10px] text-gray-400 text-center">
-            Decision support AI grounded in verified engineering parameters. Does not replace statutory physical audits.
+            Decision support from SIMRAS records. Verify sources before official decisions; this does not replace physical audits.
           </div>
         </div>
       </aside>

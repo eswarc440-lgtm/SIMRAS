@@ -303,11 +303,12 @@ function engineeringRows(asset: UnknownRecord): string[][] {
 
   return Object.entries(dimensions).slice(0, 20).map(([key, raw]) => {
     if (raw && typeof raw === "object") {
+      const record = raw as UnknownRecord;
       return [
         titleize(key),
         display(raw),
-        display(raw.verification_status ?? raw.status, "NOT AVAILABLE"),
-        display(raw.source_code ?? raw.source ?? raw.source_name, "NOT AVAILABLE"),
+        display(record.verification_status ?? record.status, "NOT AVAILABLE"),
+        display(record.source_code ?? record.source ?? record.source_name, "NOT AVAILABLE"),
       ];
     }
     return [titleize(key), display(raw), "NOT AVAILABLE", "NOT AVAILABLE"];

@@ -1,10 +1,14 @@
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore", case_sensitive=False)
+    model_config = SettingsConfigDict(
+        env_file=(Path(__file__).resolve().parents[3] / ".env", Path(__file__).resolve().parents[2] / ".env"),
+        extra="ignore", case_sensitive=False,
+    )
 
     project_name: str = "SIMRAS Digital Twin"
     environment: str = "development"
@@ -15,6 +19,7 @@ class Settings(BaseSettings):
     backend_cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
     public_read_enabled: bool = True
     admin_api_key: str = "development-admin-key"
+    gemini_api_key: str | None = None
 
     @property
     def cors_origins(self) -> list[str]:

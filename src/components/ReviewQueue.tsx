@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { RegistrationReviewQueue } from './RegistrationReviewQueue';
 import { CheckCircle2, XCircle, Clock, AlertTriangle, MessageSquare, Shield } from "lucide-react";
 
 interface InspectionRecord {
@@ -18,7 +19,7 @@ interface InspectionRecord {
   reviewed_by?: string;
 }
 
-export function ReviewQueue() {
+export function ReviewQueue({ onRegistrationsChanged }: { onRegistrationsChanged?: () => Promise<unknown> }) {
   const [items, setItems] = useState<InspectionRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState<InspectionRecord | null>(null);
@@ -80,6 +81,7 @@ export function ReviewQueue() {
 
   return (
     <div className="space-y-6">
+      <RegistrationReviewQueue onReviewed={onRegistrationsChanged} />
       <div className="bg-[#0e1d2c] p-4 rounded-xl border border-gray-800 flex items-center justify-between">
         <div>
           <h3 className="text-base font-bold text-white flex items-center gap-2">

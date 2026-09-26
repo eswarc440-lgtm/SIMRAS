@@ -108,13 +108,39 @@ export function generateAssetReportJson(
   assetCode: string,
   customInputs?: Partial<EnvironmentalPredictionInputs>
 ) {
-  const asset = db.getAsset(assetCode);
+  const asset = db.getPublicAsset(assetCode);
   if (!asset) {
     throw new Error(`Asset ${assetCode} not found`);
   }
 
   const inspections = db.getInspections(assetCode);
   const maintenance = db.getMaintenance(assetCode);
+  if (asset.assessment_status === 'WITHHELD') {
+    return {
+      metadata: { generated_at: new Date().toISOString(), system: 'SIMRAS research decision support' },
+      asset_profile: {
+        asset_code: asset.asset_code, name: asset.name, asset_type: asset.asset_type,
+        subtype: asset.subtype, district: asset.district, latitude: asset.latitude,
+        longitude: asset.longitude, built_year: asset.built_year, material: asset.material,
+        current_condition: asset.condition, identity_status: asset.identity_status,
+      },
+      assessment: {
+        status: 'WITHHELD', health_score: null, risk_score: null, risk_level: null, rul_years: null,
+        assessment_basis: asset.assessment_basis,
+        governance: 'Registration approval verifies identity; assessment evidence is still required.',
+      },
+      engineering_dimensions: { authority: asset.dimension_authority, dimension_status: asset.dimension_status, metrics: asset.dimensions },
+      environmental_conditions: null,
+      multi_variable_prediction: null,
+      environmental_time_series: [],
+      seven_day_forecast: [],
+      infra_health_care_assist: null,
+      inspection_history: inspections,
+      maintenance_history: maintenance,
+      provenance: { source_reference: asset.source_url ?? null },
+      limitations: ['Health, risk, RUL, environmental observations and projections are withheld until sufficient evidence is available.'],
+    };
+  }
   const telemetry = db.getTelemetry(assetCode);
 
   // Baseline telemetry and environmental parameters
@@ -260,6 +286,7 @@ export function generateAssetReportJson(
       metrics: asset.dimensions,
     },
     assessment: {
+      status: 'STORED_UNVERIFIED',
       health_score: asset.health_score,
       risk_score: asset.risk_score,
       risk_level: asset.risk_level,
@@ -338,6 +365,18 @@ export function generateAssetReportJson(
 
 export function generateAssetReportCsv(assetCode: string): string {
   const data = generateAssetReportJson(assetCode);
+  if (data.assessment.status === 'WITHHELD') {
+    const rows = [
+      ['SECTION', 'FIELD', 'VALUE'],
+      ['IDENTITY', 'Asset Code', data.asset_profile.asset_code],
+      ['IDENTITY', 'Asset Name', data.asset_profile.name],
+      ['ASSESSMENT', 'Status', 'WITHHELD'],
+      ['ASSESSMENT', 'Health Score', 'WITHHELD'],
+      ['ASSESSMENT', 'Risk Score', 'WITHHELD'],
+      ['ASSESSMENT', 'Remaining Useful Life', 'WITHHELD'],
+    ];
+    return rows.map(row => row.map(value => `"${value.replace(/"/g, '""')}"`).join(',')).join('\n');
+  }
   const a = data.asset_profile;
   const ass = data.assessment;
   const env = data.environmental_conditions;
@@ -403,4 +442,3 @@ export function generateAssetReportCsv(assetCode: string): string {
 
   return rows.map((r) => r.join(",")).join("\n");
 }
-

@@ -827,7 +827,7 @@ export default function RealityTwinAssetViewer({ assetCode }: Props) {
     setObservations((prev) => [newObs, ...prev]);
     // Refresh telemetry to sync sensor counts
     if (assetCode) {
-      api.telemetry(assetCode).then((t) => setTelemetry(t)).catch(() => {});
+      api.telemetry(assetCode).then((t) => setTelemetry(t)).catch((error) => console.error("Telemetry load failed:", error));
     }
   };
 

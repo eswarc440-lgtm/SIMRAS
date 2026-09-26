@@ -1,23 +1,21 @@
 import { describe, expect, it } from "vitest";
-import { buildAiContext, trimConversationHistory } from "./aiContext";
+import { buildApplicationAiContext, trimConversationHistory } from "./aiContext";
 
 describe("AI context retrieval", () => {
-  it("loads selected asset evidence for follow-up questions", () => {
-    const context = buildAiContext("AP_DAM_00001", "What was its latest inspection?");
-    expect(context.asset?.asset_code).toBe("AP_DAM_00001");
-    expect(context.missing_evidence).not.toContain("asset_registry");
+  it("loads selected asset evidence without synthetic live data", () => {
+    const context = buildApplicationAiContext("AP_DAM_00001", "What was its latest inspection?");
+    expect(context.focus_asset.asset_code).toBe("AP_DAM_00001");
     expect(context.inspections.length).toBeGreaterThan(0);
+    expect(context).not.toHaveProperty("telemetry");
+    expect(context.missing_evidence).toContain("verified_live_sensor_hydrology_weather_observations");
+    expect(context.government_evidence_documents).toEqual([]);
+    expect(context.registry_summary.high_risk_count).toBe(0);
   });
 
-  it("reports unavailable evidence instead of inventing it", () => {
-    const context = buildAiContext("AP_DAM_00001", "Show evidence");
-    if (context.telemetry === null) expect(context.missing_evidence).toContain("telemetry");
-  });
-
-  it("retains only recent valid session messages", () => {
+  it("keeps recent valid session messages", () => {
     const history = Array.from({ length: 20 }, (_, index) => ({ role: index % 2 ? "assistant" : "user", content: `message ${index}` })) as any;
     const trimmed = trimConversationHistory(history);
-    expect(trimmed).toHaveLength(10);
-    expect(trimmed[0].content).toBe("message 10");
+    expect(trimmed).toHaveLength(8);
+    expect(trimmed[0].content).toBe("message 12");
   });
 });

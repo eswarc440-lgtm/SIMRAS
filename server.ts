@@ -1,17 +1,39 @@
+import "dotenv/config";
 import express from "express";
 import path from "node:path";
 import fs from "node:fs";
 import { createServer as createViteServer } from "vite";
 import { db, type AssetRecord } from "./server/db";
 import { authenticateUser, verifyToken } from "./server/auth";
-import { askAssetAssistant } from "./server/ai";
+import { AdvisorUnavailableError, askAssetAssistant, getAiHealth } from "./server/ai";
 import { generateAssetReportJson, generateAssetReportCsv } from "./server/reports";
+import { AmbiguousAssetError, buildApplicationAiContext } from "./server/aiContext";
+import { normalizeAssetRegistrationPayload } from "./server/assetRegistration";
+import { backendReads } from './server/backendReads';
+
+function storedPrediction(asset: AssetRecord) {
+  return {
+    asset_id: asset.asset_code, asset_name: asset.name,
+    health_score: asset.health_score ?? null, risk_score: asset.risk_score ?? null,
+    predicted_failure_risk: null, remaining_useful_life_years: asset.rul_years ?? null,
+    confidence_interval: null, risk_factors: [], last_prediction_date: null,
+    status: asset.assessment_status ?? 'STORED_UNVERIFIED',
+  };
+}
 
 async function startServer() {
   const app = express();
   const PORT = Number(process.env.PORT ?? 3000);
 
   app.use(express.json());
+
+  app.use((error: any, _req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (error instanceof SyntaxError && "body" in error) {
+      res.status(400).json({ error: "Request body must be valid JSON" });
+      return;
+    }
+    next(error);
+  });
 
   // CORS middleware for API routes
   app.use((req, res, next) => {
@@ -52,6 +74,8 @@ async function startServer() {
 
   app.get("/health", healthHandler);
   app.get("/api/v1/health", healthHandler);
+  app.get("/api/v1/ai/health", (_req,res) => res.json(getAiHealth()));
+  if (!getAiHealth().configured) console.error("GEMINI_API_KEY is not configured; advisor will return retrieved evidence without AI interpretation.");
 
   // ==========================================
   // AUTHENTICATION ROUTES
@@ -78,7 +102,7 @@ async function startServer() {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
-    res.json({ user });
+    res.json(user);
   });
 
   app.post("/api/v1/auth/logout", (_req, res) => {
@@ -138,7 +162,27 @@ async function startServer() {
   // ==========================================
   // ASSET REGISTRY ROUTES
   // ==========================================
-  app.get("/api/v1/assets", (req, res) => {
+  app.use(backendReads(() => process.env.SIMRAS_BACKEND_URL, () => process.env.SIMRAS_BACKEND_ADMIN_API_KEY));
+  app.get("/api/v1/assets", async (req, res) => {
+    const configuredBackend = process.env.SIMRAS_BACKEND_URL?.replace(/\/$/, "");
+    if (configuredBackend) {
+      try {
+        const endpoint = new URL(configuredBackend.endsWith("/api/v1") ? `${configuredBackend}/assets` : `${configuredBackend}/api/v1/assets`);
+        for (const [key, value] of Object.entries(req.query)) {
+          if (value !== undefined && !Array.isArray(value)) endpoint.searchParams.set(key, String(value));
+        }
+        const backendResponse = await fetch(endpoint);
+        const body = await backendResponse.json().catch(() => ({ detail: "Database backend returned an invalid response" }));
+        if (!backendResponse.ok) {
+          res.status(backendResponse.status).json({ error: body.detail || body.error || "Asset registry database request failed" });
+          return;
+        }
+        res.json(body);
+      } catch (error: any) {
+        res.status(502).json({ error: `Database backend unavailable: ${error.message || "connection failed"}` });
+      }
+      return;
+    }
     const {
       asset_type,
       district,
@@ -168,7 +212,7 @@ async function startServer() {
     res.json(result.items);
   });
 
-  app.get("/api/v1/search", (req, res) => {
+  app.get("/api/v1/search", async (req, res) => {
     const user = extractUser(req);
     if (!user) {
       res.status(401).json({ error: "Authentication required" });
@@ -179,11 +223,71 @@ async function startServer() {
       res.json({ groups: { assets: [], inspections: [], maintenance: [], reports: [] } });
       return;
     }
+    const configuredBackend = process.env.SIMRAS_BACKEND_URL?.replace(/\/$/, "");
+    if (configuredBackend) {
+      try {
+        const endpoint = configuredBackend.endsWith("/api/v1") ? `${configuredBackend}/assets?search=${encodeURIComponent(query)}&limit=100` : `${configuredBackend}/api/v1/assets?search=${encodeURIComponent(query)}&limit=100`;
+        const backendResponse = await fetch(endpoint);
+        const body = await backendResponse.json().catch(() => ({ detail: "Database backend returned an invalid response" }));
+        if (!backendResponse.ok) {
+          res.status(backendResponse.status).json({ error: body.detail || body.error || "Asset registry search failed" });
+          return;
+        }
+        const items = Array.isArray(body?.items) ? body.items : [];
+        res.json({ groups: { assets: items.map((asset: any) => ({ type: "asset", id: asset.asset_code, title: asset.name, subtitle: `${asset.asset_code} · ${asset.district ?? "Location not available"}`, asset_code: asset.asset_code, action_url: `/digital-twin?asset=${encodeURIComponent(asset.asset_code)}` })), inspections: [], maintenance: [], reports: [] } });
+      } catch (error: any) {
+        res.status(502).json({ error: `Database backend unavailable: ${error.message || "connection failed"}` });
+      }
+      return;
+    }
     res.json({ groups: db.search(query) });
   });
 
-  app.get("/api/v1/assets/:asset_code", (req, res) => {
-    const asset = db.getAsset(req.params.asset_code);
+  app.get('/api/v1/registrations', async (req,res) => {
+    const user = extractUser(req);
+    if (!user) { res.status(401).json({error:'Authentication required'}); return; }
+    if (!['OFFICER','REVIEWER','ADMIN'].includes(user.role)) { res.status(403).json({error:'Officer, Reviewer or Admin authorization required'}); return; }
+    const base = process.env.SIMRAS_BACKEND_URL?.replace(/\/$/, '');
+    if (base) {
+      try {
+        const r = await fetch((base.endsWith('/api/v1') ? base : base+'/api/v1')+'/assets/registrations',{headers:{'X-Admin-API-Key':process.env.SIMRAS_BACKEND_ADMIN_API_KEY ?? ''},signal:AbortSignal.timeout(15000)});
+        const data = await r.json(); res.status(r.status).json(data); return;
+      } catch { res.status(502).json({error:'Registration database unavailable'}); return; }
+    }
+    res.json(db.getRegistrations());
+  });
+  app.patch('/api/v1/registrations/:asset_code', async (req,res) => {
+    const user = extractUser(req);
+    if (!user) { res.status(401).json({error:'Authentication required'}); return; }
+    if (!['REVIEWER','ADMIN'].includes(user.role)) { res.status(403).json({error:'Reviewer or Admin authorization required'}); return; }
+    const base = process.env.SIMRAS_BACKEND_URL?.replace(/\/$/, '');
+    try {
+      if (base) {
+        const r = await fetch((base.endsWith('/api/v1') ? base : base+'/api/v1')+'/assets/registrations/'+encodeURIComponent(req.params.asset_code),{method:'PATCH',headers:{'Content-Type':'application/json','X-Admin-API-Key':process.env.SIMRAS_BACKEND_ADMIN_API_KEY ?? ''},body:JSON.stringify({...req.body,reviewed_by:user.id,reviewer_role:user.role}),signal:AbortSignal.timeout(15000)});
+        const data = await r.json(); res.status(r.status).json(data); return;
+      }
+      res.json(db.reviewRegistration(req.params.asset_code,user,req.body.status,String(req.body.comments ?? '')));
+    } catch (e:any) { res.status(e.message.includes('own') ? 403 : 400).json({error:e.message}); }
+  });
+
+  app.get("/api/v1/assets/:asset_code", async (req, res) => {
+    const configuredBackend = process.env.SIMRAS_BACKEND_URL?.replace(/\/$/, "");
+    if (configuredBackend) {
+      try {
+        const endpoint = configuredBackend.endsWith("/api/v1") ? `${configuredBackend}/assets/${encodeURIComponent(req.params.asset_code)}` : `${configuredBackend}/api/v1/assets/${encodeURIComponent(req.params.asset_code)}`;
+        const backendResponse = await fetch(endpoint);
+        const body = await backendResponse.json().catch(() => ({ detail: "Database backend returned an invalid response" }));
+        if (!backendResponse.ok) {
+          res.status(backendResponse.status).json({ error: body.detail || body.error || "Asset database request failed" });
+          return;
+        }
+        res.json(body);
+      } catch (error: any) {
+        res.status(502).json({ error: `Database backend unavailable: ${error.message || "connection failed"}` });
+      }
+      return;
+    }
+    const asset = db.getPublicAsset(req.params.asset_code);
     if (!asset) {
       res.status(404).json({ error: `Asset ${req.params.asset_code} not found` });
       return;
@@ -193,7 +297,7 @@ async function startServer() {
 
   // Digital Twin Contract Endpoint
   app.get("/api/v1/assets/:asset_code/twin", (req, res) => {
-    const asset = db.getAsset(req.params.asset_code);
+    const asset = db.getPublicAsset(req.params.asset_code);
     if (!asset) {
       res.status(404).json({ error: `Asset ${req.params.asset_code} not found` });
       return;
@@ -250,7 +354,12 @@ async function startServer() {
       },
       static: {},
       environment: {},
-      ai: {
+      ai: asset.assessment_status === 'WITHHELD' ? {
+        health_score:null, risk_score:null, risk_level:null, hazard_score:null, hazard_level:null,
+        operational_risk_score:null, operational_risk_level:null, operational_confidence:null,
+        confidence:null, remaining_life_years:null, model_version:null, feature_version:null,
+        prediction_time:null, status:'WITHHELD', factors:[], recommendations:[],
+      } : {
         health_score: asset.health_score ?? 82,
         risk_score: asset.risk_score ?? 24,
         risk_level: asset.risk_level ?? "LOW",
@@ -274,7 +383,7 @@ async function startServer() {
           "Ensure monsoon pre-discharge clearance protocols are in effect",
         ],
       },
-      inspection: {
+      inspection: asset.assessment_status === 'WITHHELD' ? null : {
         inspection_date: new Date().toISOString(),
         condition: asset.condition || "GOOD",
         score: asset.health_score ?? 82,
@@ -293,7 +402,7 @@ async function startServer() {
 
   // State / Telemetry Endpoint
   app.get("/api/v1/assets/:asset_code/state", (req, res) => {
-    const asset = db.getAsset(req.params.asset_code);
+    const asset = db.getPublicAsset(req.params.asset_code);
     if (!asset) {
       res.status(404).json({ error: `Asset ${req.params.asset_code} not found` });
       return;
@@ -358,7 +467,7 @@ async function startServer() {
   });
 
   app.post("/api/v1/assets/:asset_code/observations", (req, res) => {
-    const asset = db.getAsset(req.params.asset_code);
+    const asset = db.getPublicAsset(req.params.asset_code);
     if (!asset) {
       res.status(404).json({ error: `Asset ${req.params.asset_code} not found` });
       return;
@@ -396,7 +505,7 @@ async function startServer() {
 
   // Assessment & Risk Prediction (Phase 11 Compliance: No Confidence Card, No 100/0 default)
   const assessmentHandler = (req: express.Request, res: express.Response) => {
-    const asset = db.getAsset(req.params.asset_code);
+    const asset = db.getPublicAsset(req.params.asset_code);
     if (!asset) {
       res.status(404).json({ error: `Asset ${req.params.asset_code} not found` });
       return;
@@ -410,9 +519,10 @@ async function startServer() {
       risk_level: asset.risk_level,
       rul_years: asset.rul_years,
       assessment_basis: asset.assessment_basis,
-      basis_type: asset.assessment_basis.startsWith("ML_VALIDATED") ? "ML_VALIDATED" : "EVIDENCE_DERIVED",
-      calculated_at: new Date().toISOString(),
-      governance: "State Disaster Authority Evidence Engine (No unvalidated synthetic defaults)",
+      basis_type: asset.assessment_status === "WITHHELD" ? "WITHHELD" : "STORED_UNVERIFIED",
+      status: asset.assessment_status ?? "STORED_UNVERIFIED",
+      calculated_at: null,
+      governance: "SIMRAS research decision support; not an official government assessment",
     });
   };
 
@@ -421,7 +531,7 @@ async function startServer() {
 
   // Specialized Profiles
   app.get("/api/v1/assets/:asset_code/dam-barrage-profile", (req, res) => {
-    const asset = db.getAsset(req.params.asset_code);
+    const asset = db.getPublicAsset(req.params.asset_code);
     if (!asset) {
       res.status(404).json({ error: "Asset not found" });
       return;
@@ -441,7 +551,7 @@ async function startServer() {
   });
 
   app.get("/api/v1/assets/:asset_code/bridge-report-profile", (req, res) => {
-    const asset = db.getAsset(req.params.asset_code);
+    const asset = db.getPublicAsset(req.params.asset_code);
     if (!asset) {
       res.status(404).json({ error: "Asset not found" });
       return;
@@ -469,7 +579,7 @@ async function startServer() {
       limit: 1000,
     });
 
-    const features = all.items.map((a) => ({
+    const features = all.items.filter(a => a.identity_status === "VERIFIED").map((a) => ({
       type: "Feature",
       geometry: a.geometry,
       properties: {
@@ -577,20 +687,47 @@ async function startServer() {
   });
 
   // Add Infrastructure Asset (Phase 15: Officer Workflow)
-  app.post("/api/v1/assets", (req, res) => {
+  app.post("/api/v1/assets", async (req, res) => {
     const user = extractUser(req);
-    if (!user || (user.role !== "OFFICER" && user.role !== "ADMIN")) {
+    if (!user) { res.status(401).json({error:"Authentication required. Sign in again."}); return; }
+    if (user.role !== "OFFICER" && user.role !== "ADMIN") {
       res.status(403).json({ error: "Officer or Admin authorization required to register assets" });
       return;
     }
 
-    const b = req.body;
-    if (!b.name || !b.asset_type || !b.district || !b.latitude || !b.longitude) {
-      res.status(400).json({ error: "Missing required asset registration fields" });
+    let b;
+    try {
+      b = normalizeAssetRegistrationPayload(req.body ?? {});
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Invalid asset registration fields" });
       return;
     }
 
-    const code = b.asset_code || `AP_${b.asset_type.toUpperCase().slice(0, 3)}_${Date.now().toString().slice(-5)}`;
+    const configuredBackend = process.env.SIMRAS_BACKEND_URL?.replace(/\/$/, "");
+    if (configuredBackend) {
+      try {
+        const endpoint = configuredBackend.endsWith("/api/v1") ? `${configuredBackend}/assets` : `${configuredBackend}/api/v1/assets`;
+        const backendResponse = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(process.env.SIMRAS_BACKEND_ADMIN_API_KEY ? { "X-Admin-API-Key": process.env.SIMRAS_BACKEND_ADMIN_API_KEY } : {}),
+          },
+          body: JSON.stringify({...b, submitted_by:user.id, submitted_role:user.role}),
+        });
+        const body = await backendResponse.json().catch(() => ({ detail: "Backend returned an invalid response" }));
+        if (!backendResponse.ok) {
+          res.status(backendResponse.status).json({ error: body.detail || body.error || "Database asset registration failed" });
+          return;
+        }
+        res.status(201).json(body);
+      } catch (error: any) {
+        res.status(502).json({ error: `Database backend unavailable: ${error.message || "connection failed"}` });
+      }
+      return;
+    }
+
+    const code = b.asset_code || `AP_${b.asset_type.toUpperCase().slice(0, 3)}_${crypto.randomUUID().slice(0,8)}`;
 
     const newAsset: AssetRecord = {
       asset_code: code,
@@ -598,11 +735,11 @@ async function startServer() {
       asset_type: b.asset_type,
       subtype: b.subtype || `standard_${b.asset_type}`,
       district: b.district,
-      latitude: Number(b.latitude),
-      longitude: Number(b.longitude),
+      latitude: b.latitude,
+      longitude: b.longitude,
       geometry: {
         type: "Point",
-        coordinates: [Number(b.longitude), Number(b.latitude)],
+        coordinates: [b.longitude, b.latitude],
       },
       priority: b.priority ? Number(b.priority) : 2,
       visual_strategy: "PHOTOREALISTIC_3D_CONTEXT_PLUS_SOURCE_DIMENSIONS",
@@ -610,16 +747,17 @@ async function startServer() {
       fidelity_status: "L1_SOURCE_BACKED_PENDING_ASSET_MODEL",
       dimension_status: "USE_ONLY_SOURCE_BACKED_VALUES",
       dimensions: b.dimensions || {},
-      built_year: b.built_year ? Number(b.built_year) : 2020,
-      material: b.material || "Reinforced Concrete",
-      condition: b.condition || "Operational",
-      health_score: b.health_score ? Number(b.health_score) : 78.0,
-      risk_score: b.risk_score ? Number(b.risk_score) : 22.0,
-      risk_level: b.risk_score && b.risk_score >= 70 ? "HIGH" : b.risk_score && b.risk_score >= 40 ? "MEDIUM" : "LOW",
-      rul_years: b.rul_years ? Number(b.rul_years) : 45.0,
-      assessment_basis: b.assessment_basis || `OFFICER_REGISTERED: Verified by ${user.name} (${user.department})`,
+      built_year: b.built_year ?? null,
+      material: b.material || "Not provided",
+      condition: b.condition || "Not assessed",
+      health_score: null,
+      risk_score: null,
+      risk_level: null,
+      rul_years: null,
+      assessment_basis: `OFFICER_REGISTERED: Entered by ${user.name} (${user.department}); source verification pending`,
       source_url: b.source_url,
-      identity_status: "VERIFIED",
+      identity_status: "PENDING_VERIFICATION",
+      status: "PENDING_REVIEW", created_by: user.id, created_at: new Date().toISOString(), assessment_status: "WITHHELD",
     };
 
     try {
@@ -733,24 +871,28 @@ async function startServer() {
 
   // Notifications
   app.get("/api/v1/notifications", (req, res) => {
-    if (!extractUser(req)) { res.status(401).json({ error: "Authentication required" }); return; }
-    res.json(db.getNotifications());
+    const user = extractUser(req);
+    if (!user) { res.status(401).json({ error: "Authentication required" }); return; }
+    res.json(db.getNotifications(user.role));
   });
 
   app.get("/api/v1/notifications/unread-count", (req, res) => {
-    if (!extractUser(req)) { res.status(401).json({ error: "Authentication required" }); return; }
-    res.json({ count: db.getUnreadCount() });
+    const user = extractUser(req);
+    if (!user) { res.status(401).json({ error: "Authentication required" }); return; }
+    res.json({ count: db.getUnreadCount(user.role) });
   });
 
   app.post("/api/v1/notifications/:id/read", (req, res) => {
-    if (!extractUser(req)) { res.status(401).json({ error: "Authentication required" }); return; }
-    const ok = db.markNotificationRead(req.params.id);
+    const user = extractUser(req);
+    if (!user) { res.status(401).json({ error: "Authentication required" }); return; }
+    const ok = db.markNotificationRead(req.params.id, user.role);
     res.json({ success: ok });
   });
 
   app.post("/api/v1/notifications/read-all", (req, res) => {
-    if (!extractUser(req)) { res.status(401).json({ error: "Authentication required" }); return; }
-    db.markAllNotificationsRead();
+    const user = extractUser(req);
+    if (!user) { res.status(401).json({ error: "Authentication required" }); return; }
+    db.markAllNotificationsRead(user.role);
     res.json({ success: true });
   });
 
@@ -763,16 +905,35 @@ async function startServer() {
     }
     const { prompt, question, history = [] } = req.body;
     const userPrompt = String(prompt || question || "").trim();
-    if (!userPrompt) {
+    if (!userPrompt || userPrompt.length > 4000) {
       res.status(400).json({ error: "Prompt is required" });
       return;
     }
 
     try {
-      const result = await askAssetAssistant(req.params.asset_code, userPrompt, history);
+      const retrieve = async (code: string, query: string) => {
+        const base = process.env.SIMRAS_BACKEND_URL?.replace(/\/$/, '');
+        if (!base) return buildApplicationAiContext(code,query);
+        const endpoint = (base.endsWith('/api/v1') ? base : base+'/api/v1') + '/ai/assets/'+encodeURIComponent(code)+'/context';
+        const response = await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','X-Admin-API-Key':process.env.SIMRAS_BACKEND_ADMIN_API_KEY ?? ''},body:JSON.stringify({prompt:query}),signal:AbortSignal.timeout(30000)});
+        const body = await response.json();
+        if (response.status === 409 && body.detail?.choices) throw new AmbiguousAssetError(body.detail.choices);
+        if (!response.ok) throw Object.assign(new Error('Evidence retrieval failed'),{status:response.status});
+        return body;
+      };
+      const result = await askAssetAssistant(req.params.asset_code, userPrompt, history, undefined, retrieve);
       res.json(result);
     } catch (e: any) {
-      res.status(500).json({ error: e.message });
+      if (e instanceof AmbiguousAssetError) {
+        res.status(409).json({error:e.message,choices:e.choices});
+      } else if (e instanceof AdvisorUnavailableError) {
+        res.status(503).json({ error: e.message });
+      } else if (e instanceof Error && e.message.includes("not found")) {
+        res.status(404).json({ error: e.message });
+      } else {
+        console.error("SIMRAS evidence retrieval failed", {asset_code:req.params.asset_code,status:e.status ?? null,type:e.name});
+        res.status(502).json({ error: "SIMRAS evidence retrieval failed. Check the configured database backend and server logs." });
+      }
     }
   });
 
@@ -781,7 +942,7 @@ async function startServer() {
   // ==========================================
   app.get("/api/v1/assets/:asset_code/operational-forecast", (req, res) => {
     const { asset_code } = req.params;
-    const asset = db.getAsset(asset_code);
+    const asset = db.getPublicAsset(asset_code);
 
     if (!asset) {
       res.status(404).json({
@@ -801,13 +962,21 @@ async function startServer() {
     const today = new Date().toISOString().split("T")[0];
     const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0];
 
-    if (!isHydraulic) {
+    if (!isHydraulic || asset.assessment_status === 'WITHHELD') {
       res.json({
         asset_code: asset.asset_code,
         asset_name: asset.name,
         district: asset.district,
         status: "WITHHELD",
-        reason: "Operational reservoir forecast applies exclusively to dams, barrages, and hydrologic reservoirs.",
+        reason: !isHydraulic
+          ? "Operational reservoir forecast applies exclusively to dams, barrages, and hydrologic reservoirs."
+          : "No validated operational forecast evidence is available for this registration.",
+        observed_level_m: null,
+        predicted_level_m: null,
+        observed_storage_mcm: null,
+        predicted_storage_mcm: null,
+        confidence: null,
+        model_status: "WITHHELD",
         prediction_semantics: "NEXT_DAY_RESERVOIR_OPERATIONAL_FORECAST",
         structural_prediction: false,
       });
@@ -857,7 +1026,7 @@ async function startServer() {
 
   const bridgeProfileHandler = (req: any, res: any) => {
     const { asset_code } = req.params;
-    const asset = db.getAsset(asset_code);
+    const asset = db.getPublicAsset(asset_code);
     if (!asset) {
       res.status(404).json({ error: "Asset not found" });
       return;
@@ -1143,7 +1312,7 @@ async function startServer() {
         age: 2026 - (a.built_year || 1990),
         design_life: 100,
         material: a.material,
-        remaining_useful_life: Math.max(5, 100 - (2026 - (a.built_year || 1990))),
+        remaining_useful_life: a.rul_years,
         latitude: a.geometry.coordinates[1],
         longitude: a.geometry.coordinates[0],
       },
@@ -1165,6 +1334,7 @@ async function startServer() {
     const maxLng = parseFloat(max_lng as string) || 180;
 
     const filtered = all.filter((a) => {
+      if (a.identity_status !== "VERIFIED") return false;
       const [lng, lat] = a.geometry.coordinates;
       return lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng;
     });
@@ -1189,7 +1359,7 @@ async function startServer() {
   });
 
   app.get("/api/v1/gis/assets/:asset_id", (req, res) => {
-    const asset = db.getAsset(req.params.asset_id);
+    const asset = db.getPublicAsset(req.params.asset_id);
     if (!asset) {
       res.status(404).json({ error: "Asset not found" });
       return;
@@ -1226,8 +1396,8 @@ async function startServer() {
       district: a.district,
       latitude: a.geometry.coordinates[1],
       longitude: a.geometry.coordinates[0],
-      health_score: a.health_score || 75,
-      risk_score: a.risk_score || 25,
+      health_score: a.health_score ?? null,
+      risk_score: a.risk_score ?? null,
       status: a.identity_status,
       condition: a.health_score && a.health_score > 70 ? "Good" : "Fair",
       installation_date: `${a.built_year || 1990}-01-01`,
@@ -1246,9 +1416,8 @@ async function startServer() {
 
   app.get("/api/v1/infrastructure/summary", (_req, res) => {
     const all = db.getAssets({ limit: 1000 }).items;
-    const avgHealth = Math.round(
-      all.reduce((acc, curr) => acc + (curr.health_score || 70), 0) / (all.length || 1),
-    );
+    const assessed = all.filter(asset => asset.health_score != null);
+    const avgHealth = assessed.length ? Math.round(assessed.reduce((sum, asset) => sum + asset.health_score, 0) / assessed.length) : null;
     res.json({
       total: all.length,
       by_type: all.reduce((acc, curr) => {
@@ -1261,7 +1430,7 @@ async function startServer() {
   });
 
   app.get("/api/v1/infrastructure/:id", (req, res) => {
-    const asset = db.getAsset(req.params.id);
+    const asset = db.getPublicAsset(req.params.id);
     if (!asset) {
       res.status(404).json({ error: "Asset not found" });
       return;
@@ -1274,8 +1443,8 @@ async function startServer() {
       district: asset.district,
       latitude: asset.geometry.coordinates[1],
       longitude: asset.geometry.coordinates[0],
-      health_score: asset.health_score || 75,
-      risk_score: asset.risk_score || 25,
+      health_score: asset.health_score ?? null,
+      risk_score: asset.risk_score ?? null,
       status: asset.identity_status,
       condition: asset.health_score && asset.health_score > 70 ? "Good" : "Fair",
       installation_date: `${asset.built_year || 1990}-01-01`,
@@ -1293,17 +1462,7 @@ async function startServer() {
   // Prediction Service APIs
   app.get("/api/v1/predictions", (_req, res) => {
     const all = db.getAssets({ limit: 1000 }).items;
-    const items = all.map((a) => ({
-      asset_id: a.asset_code,
-      asset_name: a.name,
-      health_score: a.health_score || 75,
-      risk_score: a.risk_score || 25,
-      predicted_failure_risk: (a.risk_score || 25) / 100,
-      remaining_useful_life_years: Math.max(5, 100 - (2026 - (a.built_year || 1990))),
-      confidence_interval: [Math.max(0, (a.health_score || 75) - 6), Math.min(100, (a.health_score || 75) + 6)],
-      risk_factors: ["Operational stress", "Environmental degradation", "Scour potential"],
-      last_prediction_date: new Date().toISOString(),
-    }));
+    const items = all.map(storedPrediction);
     res.json({ items, total: items.length });
   });
 
@@ -1334,33 +1493,23 @@ async function startServer() {
   });
 
   app.get("/api/v1/predictions/:id", (req, res) => {
-    const asset = db.getAsset(req.params.id);
+    const asset = db.getPublicAsset(req.params.id);
     if (!asset) {
       res.status(404).json({ error: "Asset not found" });
       return;
     }
-    res.json({
-      asset_id: asset.asset_code,
-      asset_name: asset.name,
-      health_score: asset.health_score || 75,
-      risk_score: asset.risk_score || 25,
-      predicted_failure_risk: (asset.risk_score || 25) / 100,
-      remaining_useful_life_years: Math.max(5, 100 - (2026 - (asset.built_year || 1990))),
-      confidence_interval: [Math.max(0, (asset.health_score || 75) - 6), Math.min(100, (asset.health_score || 75) + 6)],
-      risk_factors: ["Operational wear", "Hydrologic variance"],
-      last_prediction_date: new Date().toISOString(),
-    });
+    res.json(storedPrediction(asset));
   });
 
   app.post("/api/v1/predictions/batch", (req, res) => {
     const { asset_ids } = req.body;
     const ids = Array.isArray(asset_ids) ? asset_ids : [];
     const results = ids.map((id: string) => {
-      const a = db.getAsset(id);
+      const a = db.getPublicAsset(id);
       return {
         asset_id: id,
-        status: a ? "SUCCESS" : "NOT_FOUND",
-        risk_score: a?.risk_score || 0,
+        status: a ? (a.risk_score == null ? "WITHHELD" : "STORED_UNVERIFIED") : "NOT_FOUND",
+        risk_score: a?.risk_score ?? null,
       };
     });
     res.json({ results });
@@ -1399,7 +1548,7 @@ async function startServer() {
   });
 
   app.get("/api/v1/digital-twin/assets/:id", (req, res) => {
-    const asset = db.getAsset(req.params.id);
+    const asset = db.getPublicAsset(req.params.id);
     if (!asset) {
       res.status(404).json({ error: "Asset not found" });
       return;
@@ -1436,6 +1585,7 @@ async function startServer() {
   // ==========================================
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
+      configLoader: "runner",
       server: { middlewareMode: true },
       appType: "spa",
     });

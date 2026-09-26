@@ -25,6 +25,7 @@ import { riskColor } from "../../utils";
 import { EnvironmentalLoadPredictionPanel } from "./EnvironmentalLoadPredictionPanel";
 import { EnvironmentalTelemetryCharts } from "./EnvironmentalTelemetryCharts";
 import { InfraHealthCareAssistPanel } from "./InfraHealthCareAssistPanel";
+import { reportMetrics } from './reportMetrics';
 
 interface ReportsPageViewProps {
   selectedAsset: AssetSummary | null;
@@ -65,7 +66,7 @@ export function ReportsPageView({
           }
         }
       })
-      .catch(() => {});
+      .catch((error) => console.error("Report asset load failed:", error));
   }, []);
 
   // Fetch report data, twin data, and inspections for the activeCode
@@ -73,6 +74,7 @@ export function ReportsPageView({
     if (!activeCode) return;
     let active = true;
     setLoading(true);
+    setLivePrediction(null);
 
     Promise.all([
       fetch(`/api/v1/assets/${encodeURIComponent(activeCode)}/reports/real`)
@@ -81,7 +83,7 @@ export function ReportsPageView({
       fetch(`/api/v1/assets/${encodeURIComponent(activeCode)}/twin`)
         .then((r) => (r.ok ? r.json() : null))
         .catch(() => null),
-      fetch(`/api/v1/inspections?asset_code=${encodeURIComponent(activeCode)}`)
+      fetch(`/api/v1/assets/${encodeURIComponent(activeCode)}/inspections`)
         .then((r) => (r.ok ? r.json() : { items: [] }))
         .catch(() => ({ items: [] })),
     ]).then(([rep, tw, insp]) => {
@@ -89,9 +91,7 @@ export function ReportsPageView({
       setReportData(rep);
       setTwinData(tw);
       setInspections(Array.isArray(insp) ? insp : Array.isArray(insp?.items) ? insp.items : []);
-      if (rep?.multi_variable_prediction) {
-        setLivePrediction(rep.multi_variable_prediction);
-      }
+      setLivePrediction(rep?.multi_variable_prediction ?? null);
       setLoading(false);
     });
 
@@ -137,10 +137,7 @@ export function ReportsPageView({
     activeAsset?.subtype?.toLowerCase().includes("dam") ||
     activeAsset?.subtype?.toLowerCase().includes("barrage");
 
-  const effectiveHealth = livePrediction?.predicted_health_score ?? assessment?.health_score ?? 78.5;
-  const effectiveRisk = livePrediction?.predicted_failure_risk_pct ?? assessment?.risk_score ?? 21.5;
-  const effectiveRul = livePrediction?.predicted_rul_years ?? assessment?.rul_years ?? 39.7;
-  const effectiveRiskTier = livePrediction?.risk_tier ?? assessment?.risk_level ?? "LOW";
+  const {health:effectiveHealth,risk:effectiveRisk,rul:effectiveRul,riskTier:effectiveRiskTier} = reportMetrics(assessment, livePrediction);
 
   return (
     <div className="w-full h-full overflow-y-auto bg-[#07131e] text-white p-4 md:p-6 lg:p-8 space-y-6">
@@ -296,9 +293,9 @@ export function ReportsPageView({
               </span>
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl font-black text-white font-mono">
-                  {effectiveHealth.toFixed(1)}
+                  {effectiveHealth?.toFixed(1) ?? 'WITHHELD'}
                 </span>
-                <span className="text-xs text-gray-500 font-normal">/100</span>
+                {effectiveHealth != null && <span className="text-xs text-gray-500 font-normal">/100</span>}
               </div>
               <span className="inline-block mt-2 text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-500/30">
                 {activeAsset?.condition || activeAsset?.current_condition || "OPERATIONAL"}
@@ -314,7 +311,7 @@ export function ReportsPageView({
                   className="text-3xl font-black font-mono"
                   style={{ color: riskColor(effectiveRiskTier) }}
                 >
-                  {effectiveRisk.toFixed(1)}%
+                  {effectiveRisk == null ? 'WITHHELD' : `${effectiveRisk.toFixed(1)}%`}
                 </span>
               </div>
               <span
@@ -335,12 +332,12 @@ export function ReportsPageView({
               </span>
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl font-black text-white font-mono">
-                  {effectiveRul.toFixed(1)}
+                  {effectiveRul?.toFixed(1) ?? 'WITHHELD'}
                 </span>
-                <span className="text-xs text-gray-400 font-normal">years</span>
+                {effectiveRul != null && <span className="text-xs text-gray-400 font-normal">years</span>}
               </div>
               <span className="inline-block mt-2 text-[10px] font-semibold text-gray-400">
-                Vintage: Built {activeAsset?.built_year || "2010"}
+                Vintage: Built {activeAsset?.built_year ?? "Not available"}
               </span>
             </div>
 
@@ -359,20 +356,20 @@ export function ReportsPageView({
           </div>
 
           {/* Section: Multi-Factor Environmental & Load Prediction Engine */}
-          {(activeSection === "all" || activeSection === "prediction") && (
+          {reportData?.multi_variable_prediction && assessment.health_score != null && assessment.risk_score != null && assessment.status !== 'WITHHELD' && (activeSection === "all" || activeSection === "prediction") && (
             <EnvironmentalLoadPredictionPanel
               assetCode={activeCode}
               assetName={activeAsset?.name}
               assetType={activeAsset?.asset_type}
-              baseHealth={assessment?.health_score || 78.5}
-              baseRisk={assessment?.risk_score || 21.5}
+              baseHealth={assessment.health_score}
+              baseRisk={assessment.risk_score}
               initialInputs={reportData?.environmental_conditions?.current}
               onPredictionChange={(pred) => setLivePrediction(pred)}
             />
           )}
 
           {/* Section: Environmental & Telemetry Charts */}
-          {(activeSection === "all" || activeSection === "charts") && (
+          {!!reportData?.environmental_time_series?.length && (activeSection === "all" || activeSection === "charts") && (
             <EnvironmentalTelemetryCharts
               timeSeriesData={reportData?.environmental_time_series}
               sevenDayForecast={reportData?.seven_day_forecast}
@@ -382,7 +379,7 @@ export function ReportsPageView({
           )}
 
           {/* Section: Infra Health Care Assist */}
-          {(activeSection === "all" || activeSection === "healthcare") && (
+          {reportData?.infra_health_care_assist && (activeSection === "all" || activeSection === "healthcare") && (
             <InfraHealthCareAssistPanel
               data={reportData?.infra_health_care_assist}
               assetName={activeAsset?.name}
@@ -592,19 +589,19 @@ export function ReportsPageView({
                             <td className="py-3 px-3 font-mono text-gray-300">
                               {insp.date ? new Date(insp.date).toLocaleDateString() : "Recent"}
                             </td>
-                            <td className="py-3 px-3 text-white">{insp.inspector_name || "Statutory Officer"}</td>
-                            <td className="py-3 px-3 text-gray-400">{insp.inspection_type || "Periodic Routine"}</td>
+                            <td className="py-3 px-3 text-white">{insp.inspector_name || "Not available"}</td>
+                            <td className="py-3 px-3 text-gray-400">{insp.inspection_type ?? insp.type ?? "Not available"}</td>
                             <td className="py-3 px-3">
                               <span className="px-2 py-0.5 rounded font-bold text-[10px] bg-cyan-950 text-cyan-300 border border-cyan-500/30">
-                                {insp.condition_score ?? "GOOD"}
+                                {insp.condition_score ?? insp.score ?? insp.condition ?? "Not available"}
                               </span>
                             </td>
                             <td className="py-3 px-3 font-mono text-gray-300">
-                              {Array.isArray(insp.defects) ? `${insp.defects.length} defect(s)` : "None"}
+                              {Array.isArray(insp.defects) ? `${insp.defects.length} defect(s)` : "Not available"}
                             </td>
                             <td className="py-3 px-3">
                               <span className="px-2 py-0.5 rounded font-bold text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-500/30">
-                                {insp.status || "VERIFIED"}
+                                {insp.status ?? insp.quality_flag ?? "Unverified"}
                               </span>
                             </td>
                           </tr>
@@ -688,4 +685,3 @@ export function ReportsPageView({
   );
 }
 export default ReportsPageView;
-

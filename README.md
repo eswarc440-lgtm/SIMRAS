@@ -33,6 +33,11 @@ infra/       Nginx and operational configuration
 
 ## Start locally
 
+The root React/Express application uses `npm run dev`. Production configuration,
+registration persistence and gateway verification are documented in
+[the Render deployment guide](docs/render-deployment.md). The Compose instructions
+below run the separate FastAPI/PostGIS stack.
+
 Requirements: Git, Docker Desktop and Docker Compose.
 
 ### PowerShell

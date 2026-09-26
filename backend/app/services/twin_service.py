@@ -81,7 +81,7 @@ async def get_asset_row(
 
     row = (await session.execute(statement)).first()
 
-    if row is None:
+    if row is None or row.Asset.status in {"PENDING_REVIEW", "REJECTED"}:
         raise HTTPException(
             status_code=404,
             detail=f"Asset {asset_code} was not found",

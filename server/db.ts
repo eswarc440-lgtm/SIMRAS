@@ -1,7 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
+import { RegistrationStore } from './registrationStore';
 
 export interface AssetRecord {
+  status?: string;
+  created_by?: string;
+  created_at?: string;
+  assessment_status?: string;
   asset_code: string;
   name: string;
   asset_type: "dam" | "barrage" | "bridge" | "airport" | "temple";
@@ -28,7 +33,7 @@ export interface AssetRecord {
   rul_years: number;
   assessment_basis: string;
   source_url?: string;
-  identity_status: "VERIFIED" | "PENDING_VERIFICATION";
+  identity_status: "VERIFIED" | "PENDING_VERIFICATION" | "REJECTED";
 }
 
 export interface UserRecord {
@@ -171,8 +176,11 @@ class SimrasDatabase {
   private telemetry: Map<string, TelemetryFeedRecord> = new Map();
   private observations: Map<string, CitizenHazardObservationRecord> = new Map();
   private preferences: Map<string, Record<string, any>> = new Map();
+  private registrations: RegistrationStore;
 
   constructor() {
+    if (process.env.NODE_ENV === 'production' && !process.env.SIMRAS_BACKEND_URL && !process.env.SIMRAS_DATA_DIR) throw new Error('SIMRAS_DATA_DIR must point to a persistent disk in production');
+    this.registrations = new RegistrationStore(process.env.VITEST ? ':memory:' : path.resolve(process.env.SIMRAS_DATA_DIR || 'data/runtime', 'registrations.sqlite3'));
     this.initAssets();
     this.initUsers();
     this.initInspections();
@@ -180,6 +188,7 @@ class SimrasDatabase {
     this.initNotifications();
     this.initTelemetry();
     this.initObservations();
+    for (const asset of this.registrations.list()) this.assets.set(asset.asset_code,asset);
   }
 
   private initAssets() {
@@ -396,7 +405,7 @@ class SimrasDatabase {
     limit?: number;
     offset?: number;
   }) {
-    let items = Array.from(this.assets.values());
+    let items = Array.from(this.assets.values()).filter((asset) => asset.identity_status === "VERIFIED");
 
     if (options.asset_type && options.asset_type !== "all") {
       const t = options.asset_type.toLowerCase();
@@ -444,11 +453,24 @@ class SimrasDatabase {
     return this.assets.get(code);
   }
 
+  public getPublicAsset(code: string): AssetRecord | undefined {
+    const asset = this.getAsset(code);
+    return asset?.identity_status === "VERIFIED" ? asset : undefined;
+  }
+
   public addAsset(asset: AssetRecord): AssetRecord {
     if (this.assets.has(asset.asset_code)) {
       throw new Error(`Asset code ${asset.asset_code} already exists.`);
     }
+    this.registrations.create(asset);
     this.assets.set(asset.asset_code, asset);
+    return asset;
+  }
+
+  public getRegistrations() { return this.registrations.list(); }
+  public reviewRegistration(code: string, user: UserRecord, decision: string, comments: string) {
+    const asset = this.registrations.review(code,user,decision,comments);
+    this.assets.set(code,asset);
     return asset;
   }
 
@@ -484,7 +506,7 @@ class SimrasDatabase {
   public search(query: string): Record<"assets" | "inspections" | "maintenance" | "reports", SearchResultRecord[]> {
     const needle = query.trim().toLowerCase();
     const matches = (...values: unknown[]) => values.some((value) => String(value ?? "").toLowerCase().includes(needle));
-    const assets = Array.from(this.assets.values()).filter((asset) => matches(asset.name, asset.asset_code, asset.district, asset.asset_type)).slice(0, 8).map((asset) => ({ type: "asset" as const, id: asset.asset_code, title: asset.name, subtitle: `${asset.asset_code} · ${asset.district}`, asset_code: asset.asset_code, action_url: `/digital-twin?asset=${encodeURIComponent(asset.asset_code)}` }));
+    const assets = Array.from(this.assets.values()).filter((asset) => asset.identity_status === "VERIFIED" && matches(asset.name, asset.asset_code, asset.district, asset.asset_type)).slice(0, 8).map((asset) => ({ type: "asset" as const, id: asset.asset_code, title: asset.name, subtitle: `${asset.asset_code} · ${asset.district}`, asset_code: asset.asset_code, action_url: `/digital-twin?asset=${encodeURIComponent(asset.asset_code)}` }));
     const inspections = Array.from(this.inspections.values()).filter((record) => matches(record.id, record.asset_name, record.inspection_type)).slice(0, 8).map((record) => ({ type: "inspection" as const, id: record.id, title: record.id, subtitle: `${record.asset_name} · ${record.inspection_type}`, asset_code: record.asset_code, action_url: `/inspections?asset=${encodeURIComponent(record.asset_code)}` }));
     const maintenance = Array.from(this.maintenance.values()).filter((record) => matches(record.id, record.title, record.asset_name, record.category)).slice(0, 8).map((record) => ({ type: "maintenance" as const, id: record.id, title: record.id, subtitle: `${record.title} · ${record.asset_name}`, asset_code: record.asset_code, action_url: `/maintenance?asset=${encodeURIComponent(record.asset_code)}` }));
     return { assets, inspections, maintenance, reports: [] };
@@ -595,8 +617,9 @@ class SimrasDatabase {
   }
 
   // Notifications
-  public getNotifications(): NotificationRecord[] {
-    return Array.from(this.notifications.values()).sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+  public getNotifications(role: UserRecord['role']): NotificationRecord[] {
+    const registrationEvents = ['REVIEWER','ADMIN'].includes(role) ? this.registrations.notifications() : [];
+    return [...this.notifications.values(),...registrationEvents].sort((a, b) => b.timestamp.localeCompare(a.timestamp));
   }
 
   public addNotification(notif: Omit<NotificationRecord, "id" | "read" | "timestamp">): NotificationRecord {
@@ -616,7 +639,8 @@ class SimrasDatabase {
     return record;
   }
 
-  public markNotificationRead(id: string): boolean {
+  public markNotificationRead(id: string, role: UserRecord['role']): boolean {
+    if (id.startsWith('REG-')) return ['REVIEWER','ADMIN'].includes(role) && this.registrations.markRead(id);
     const record = this.notifications.get(id);
     if (record) {
       record.read = true;
@@ -626,19 +650,16 @@ class SimrasDatabase {
     return false;
   }
 
-  public markAllNotificationsRead(): void {
+  public markAllNotificationsRead(role: UserRecord['role']): void {
+    if (['REVIEWER','ADMIN'].includes(role)) this.registrations.markRead();
     for (const n of this.notifications.values()) {
       n.read = true;
       n.read_at = new Date().toISOString();
     }
   }
 
-  public getUnreadCount(): number {
-    let count = 0;
-    for (const n of this.notifications.values()) {
-      if (!n.read) count++;
-    }
-    return count;
+  public getUnreadCount(role: UserRecord['role']): number {
+    return this.getNotifications(role).filter((notification) => !notification.read).length;
   }
 
   // ==========================================

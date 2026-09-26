@@ -14,6 +14,10 @@ htmlcov/
 *.log
 *.tsbuildinfo
 *.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+.uv-cache/
+.python-runtime/
 .superpowers/
 .DS_Store
 data/raw/
@@ -35,3 +39,5 @@ mlruns/
 frontend_backup_*/
 frontend_failed_merge_backup_*/
 *_backup_*/
+.vercel
+.env*

@@ -89,11 +89,10 @@ export function OfficerHeader({
             className="flex items-center gap-2.5 cursor-pointer group"
             title="Return to Public View"
           >
-            <GovernmentEmblem className="w-9 h-9 drop-shadow" />
+            <GovernmentEmblem className="w-12 h-12 drop-shadow" />
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <img src="/images/ap-government-emblem.png" alt="Andhra Pradesh Government Emblem" className="h-12 w-12 shrink-0 object-contain" />
-<span className="text-lg font-bold tracking-tight text-white font-sans">
+                <span className="text-lg font-bold tracking-tight text-white font-sans">
                   SIMRAS
                 </span>
                 <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#16689A] text-sky-100 font-bold uppercase tracking-wider">

@@ -2,6 +2,12 @@ node_modules
 dist
 .git
 .env
+.env.*
+.venv
+.uv-cache
+.python-runtime
+data/runtime
+*.sqlite3*
 backend
 frontend
 backup

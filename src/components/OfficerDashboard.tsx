@@ -39,7 +39,7 @@ export function OfficerDashboard({
 }: OfficerDashboardProps) {
   const [inspections, setInspections] = useState<any[]>([]);
   const [maintenance, setMaintenance] = useState<any[]>([]);
-  const [unreadNotifications, setUnreadNotifications] = useState(3);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const officerName = currentUser?.name || "Er. K. V. Raman";
@@ -60,7 +60,7 @@ export function OfficerDashboard({
     Promise.all([
       fetch("/api/v1/inspections").then((r) => (r.ok ? r.json() : [])),
       fetch("/api/v1/maintenance").then((r) => (r.ok ? r.json() : [])),
-      fetch("/api/v1/notifications/unread-count").then((r) => (r.ok ? r.json() : { unread_count: 3 })),
+      fetch("/api/v1/notifications/unread-count").then((r) => (r.ok ? r.json() : { unread_count: 0 })),
     ])
       .then(([insp, maint, notif]) => {
         if (!isMounted) return;
@@ -82,10 +82,10 @@ export function OfficerDashboard({
 
   // Compute metric cards with real backend counts
   const assignedAssetsCount = assets.length;
-  const inspectionsDueCount = inspections.filter((i) => i.status === "SCHEDULED" || i.status === "SUBMITTED").length || 4;
-  const overdueInspectionsCount = inspections.filter((i) => i.status === "OVERDUE").length || 1;
-  const maintenanceScheduledCount = maintenance.filter((m) => m.status === "PLANNED" || m.status === "SCHEDULED").length || 5;
-  const pendingReviewsCount = inspections.filter((i) => i.status === "SUBMITTED").length || 2;
+  const inspectionsDueCount = inspections.filter((i) => i.status === "SCHEDULED" || i.status === "SUBMITTED").length;
+  const overdueInspectionsCount = inspections.filter((i) => i.status === "OVERDUE").length;
+  const maintenanceScheduledCount = maintenance.filter((m) => m.status === "PLANNED" || m.status === "SCHEDULED").length;
+  const pendingReviewsCount = inspections.filter((i) => i.status === "SUBMITTED").length;
   const highRiskAssets = assets.filter((a) => (a.risk_score ?? 0) >= 50);
 
   return (

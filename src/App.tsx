@@ -1,3 +1,4 @@
+import { fetchSession } from "./services/session";
 ﻿import React, { useEffect, useState } from "react";
 import { PublicHeader, PublicTab } from "./components/common/PublicHeader";
 import { OfficerHeader } from "./components/common/OfficerHeader";
@@ -42,6 +43,8 @@ export default function App() {
 
   // Asset State
   const [assets, setAssets] = useState<AssetSummary[]>([]);
+  const [registryCount, setRegistryCount] = useState(0);
+  const [assetSuccess, setAssetSuccess] = useState<string | null>(null);
   const { selectedAsset, selectAsset } = useSelectedAsset(assets);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
@@ -62,14 +65,13 @@ export default function App() {
     name: string;
     role: "PUBLIC" | "OFFICER" | "REVIEWER" | "ADMIN";
     department: string;
-  } | null>(() => {
-    try {
-      const stored = localStorage.getItem("simras_user");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  } | null>(null);
+  useEffect(() => {
+    if (!localStorage.getItem('simras_token')) return;
+    let active = true;
+    fetchSession().then(user => { if (active) { setCurrentUser(user); if (user.role !== 'PUBLIC') setWorkspace('OFFICER'); } }).catch(() => { if (active) setCurrentUser(null); });
+    return () => { active = false; };
+  },[]);
 
   // 1. Initial Data Ingestion
   useEffect(() => {
@@ -81,15 +83,14 @@ export default function App() {
         .then(async (r) => {
           if (!r.ok) throw new Error(`Asset registry request failed: ${r.status}`);
           const data = await r.json();
-          return Array.isArray(data)
-            ? data
-            : Array.isArray(data?.items)
-              ? data.items
-              : [];
+          return {
+            items: Array.isArray(data) ? data : Array.isArray(data?.items) ? data.items : [],
+            total: typeof data?.total === "number" ? data.total : Array.isArray(data) ? data.length : 0,
+          };
         })
         .catch((err) => {
           console.error("Asset registry load failed:", err);
-          return [];
+          return { items: [], total: 0 };
         }),
       fetch("/api/v1/map/features?limit=2500")
         .then((r) => (r.ok ? r.json() : emptyMapFeatures))
@@ -98,12 +99,13 @@ export default function App() {
         .then((r) => (r.ok ? r.json() : { count: 0 }))
         .catch(() => ({ count: 0 })),
     ])
-      .then(([assetList, features, notifCount]) => {
+      .then(([assetResult, features, notifCount]) => {
         if (!isMounted) return;
 
-        if (Array.isArray(assetList) && assetList.length > 0) {
-          setAssets(assetList);
-          selectAsset(assetList[0]);
+        if (Array.isArray(assetResult.items) && assetResult.items.length > 0) {
+          setAssets(assetResult.items);
+          setRegistryCount(assetResult.total);
+          selectAsset(assetResult.items[0]);
           setError(null);
         } else {
           setError("Infrastructure registry returned no assets.");
@@ -136,7 +138,7 @@ export default function App() {
     if (!currentUser) return;
     const refresh = () => {
       const token = localStorage.getItem("simras_token");
-      return fetch("/api/v1/notifications/unread-count", { headers: token ? { Authorization: `Bearer ${token}` } : {} }).then((response) => response.ok ? response.json() : { count: 0 }).then((data) => setUnreadNotifications(data.count ?? 0)).catch(() => {});
+      return fetch("/api/v1/notifications/unread-count", { headers: token ? { Authorization: `Bearer ${token}` } : {} }).then((response) => response.ok ? response.json() : { count: 0 }).then((data) => setUnreadNotifications(data.count ?? 0)).catch((error) => { console.error("Notification count refresh failed:", error); });
     };
     const timer = window.setInterval(refresh, 45_000);
     window.addEventListener("focus", refresh);
@@ -147,6 +149,16 @@ export default function App() {
   // Handlers for Navigation
   const handleSelectAsset = (asset: AssetSummary) => {
     selectAsset(asset);
+  };
+
+  const refreshRegistry = async () => {
+    const response = await fetch("/api/v1/assets?limit=1000");
+    if (!response.ok) throw new Error(`Asset registry refresh failed (${response.status})`);
+    const data = await response.json();
+    const items = Array.isArray(data) ? data : Array.isArray(data?.items) ? data.items : [];
+    setAssets(items);
+    setRegistryCount(typeof data?.total === "number" ? data.total : items.length);
+    return items;
   };
 
   const handleOpenAssetDetails = (asset: AssetSummary) => {
@@ -281,7 +293,7 @@ export default function App() {
           {/* Public GIS Command View */}
           {publicTab === "gis" && (
             <GISCommandView
-              assets={assets}
+              assets={assets.filter(a => a.identity_status === "VERIFIED")}
               mapFeatures={mapFeatures}
               selectedAsset={activeAsset}
               onSelectAsset={handleSelectAsset}
@@ -292,7 +304,7 @@ export default function App() {
           {/* Public Digital Twin View */}
           {publicTab === "twin" && (
             <DigitalTwinPage
-              assets={assets}
+              assets={assets.filter(a => a.identity_status === "VERIFIED")}
               selectedAsset={activeAsset}
               onSelectAsset={handleSelectAsset}
               onNavigateToReports={handleNavigateToReports}
@@ -320,10 +332,10 @@ export default function App() {
             isCollapsed={isSidebarCollapsed}
             onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
             counts={{
-              assets: assets.length,
-              inspections: 4,
-              maintenance: 5,
-              reviews: 2,
+              assets: registryCount,
+              inspections: 0,
+              maintenance: 0,
+              reviews: 0,
             }}
             unreadNotificationsCount={unreadNotifications}
           />
@@ -339,7 +351,9 @@ export default function App() {
             )}
 
             {officerTab === "assets" && (
-              <OfficerAssetTable
+              <>
+                {assetSuccess && <div className="mb-4 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800" role="status">{assetSuccess}</div>}
+                <OfficerAssetTable
                 assets={assets}
                 onSelectAsset={handleSelectAsset}
                 onNavigateToTwin={(a) => {
@@ -358,13 +372,14 @@ export default function App() {
                   setOfficerTab("maintenance");
                 }}
                 onAddNewAsset={() => setOfficerTab("add_asset")}
-              />
+                />
+              </>
             )}
 
             {officerTab === "gis" && (
               <div className="h-[calc(100vh-8.5rem)] -m-4 sm:-m-6 lg:-m-8">
                 <GISCommandView
-                  assets={assets}
+                  assets={assets.filter(a => a.identity_status === "VERIFIED")}
                   mapFeatures={mapFeatures}
                   selectedAsset={activeAsset}
                   onSelectAsset={handleSelectAsset}
@@ -398,9 +413,12 @@ export default function App() {
               <div className="py-4">
                 <AddAssetWizard
                   onSuccess={(created) => {
-                    setAssets((prev) => [created, ...prev]);
-                    selectAsset(created);
-                    setOfficerTab("assets");
+                    setAssetSuccess(`Submitted for review: ${created.asset_code}. Assessments remain withheld until sufficient evidence is available.`);
+                    setOfficerTab("reviews");
+                    void refreshRegistry().catch((refreshError) => {
+                      console.error(refreshError);
+                      setError(refreshError instanceof Error ? refreshError.message : "Asset registry refresh failed");
+                    });
                   }}
                   onCancel={() => setOfficerTab("dashboard")}
                 />
@@ -435,7 +453,8 @@ export default function App() {
 
             {officerTab === "reviews" && (
               <div className="bg-white border border-[#D8E2EA] rounded-lg p-6 shadow-sm">
-                <ReviewQueue />
+                {assetSuccess && <p role="status" className="mb-4 text-sm text-emerald-800">{assetSuccess}</p>}
+                <ReviewQueue onRegistrationsChanged={refreshRegistry} />
               </div>
             )}
 
@@ -483,4 +502,3 @@ export default function App() {
     </div>
   );
 }
-

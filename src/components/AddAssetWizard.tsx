@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { fetchSession, type SessionUser } from '../services/session';
 import {
   PlusCircle,
   CheckCircle,
@@ -11,6 +12,7 @@ import {
   ArrowLeft,
   X,
 } from "lucide-react";
+import { normalizeAssetRegistrationPayload } from "../../server/assetRegistration";
 
 interface AddAssetWizardProps {
   onSuccess: (newAsset: any) => void;
@@ -47,9 +49,18 @@ const AP_DISTRICTS = [
 ];
 
 export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
+  const [session,setSession] = useState<SessionUser|null>(null);
+  const [sessionError,setSessionError] = useState<string|null>(null);
+  useEffect(() => {
+    let active = true;
+    fetchSession().then(user => { if (active) { setSession(user); if (!['OFFICER','ADMIN'].includes(user.role)) setSessionError('Your role cannot register assets. Officer or Admin authorization required.'); } }).catch(error => { if (active) setSessionError(error.message); });
+    return () => { active = false; };
+  },[]);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // Form State
   const [assetCode, setAssetCode] = useState("");
@@ -58,24 +69,24 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
   const [subtype, setSubtype] = useState("prestressed_concrete_bridge");
   const [district, setDistrict] = useState("East Godavari");
 
-  const [latitude, setLatitude] = useState("16.9890");
-  const [longitude, setLongitude] = useState("81.7820");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
 
-  const [builtYear, setBuiltYear] = useState("2015");
-  const [material, setMaterial] = useState("Reinforced Concrete & High-Strength Steel");
-  const [dimensionAuthority, setDimensionAuthority] = useState("Roads & Buildings Department / MoRTH");
-  const [lengthM, setLengthM] = useState("450");
-  const [heightM, setHeightM] = useState("18");
-  const [unitsCount, setUnitsCount] = useState("12");
+  const [builtYear, setBuiltYear] = useState("");
+  const [material, setMaterial] = useState("");
+  const [dimensionAuthority, setDimensionAuthority] = useState("");
+  const [lengthM, setLengthM] = useState("");
+  const [heightM, setHeightM] = useState("");
+  const [unitsCount, setUnitsCount] = useState("");
 
-  const [condition, setCondition] = useState("Good");
-  const [healthScore, setHealthScore] = useState("78.5");
-  const [riskScore, setRiskScore] = useState("22.0");
+  const [condition, setCondition] = useState("Not assessed");
 
   const validateStep = (currentStep: number): boolean => {
     setError(null);
+    setFieldErrors({});
     if (currentStep === 1) {
       if (!name.trim()) {
+        setFieldErrors({ name: "Official asset name is required" });
         setError("Please enter the official asset name");
         return false;
       }
@@ -83,10 +94,12 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
       const lat = parseFloat(latitude);
       const lng = parseFloat(longitude);
       if (isNaN(lat) || isNaN(lng)) {
+        setFieldErrors({ [isNaN(lat) ? "latitude" : "longitude"]: "Enter a valid coordinate" });
         setError("Latitude and longitude must be valid floating numbers");
         return false;
       }
       if (lat < 12.0 || lat > 20.0 || lng < 76.0 || lng > 85.0) {
+        setFieldErrors({ latitude: "Latitude must be between 12 and 20", longitude: "Longitude must be between 76 and 85" });
         setError("Coordinates must be within Andhra Pradesh geographic boundary (Lat 12°-20°N, Lng 76°-85°E)");
         return false;
       }
@@ -107,6 +120,7 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!session || !['OFFICER','ADMIN'].includes(session.role)) { setError(sessionError || 'Authentication required. Sign in again.'); return; }
     if (!validateStep(step)) return;
 
     setLoading(true);
@@ -114,7 +128,7 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
 
     const token = localStorage.getItem("simras_token");
 
-    const payload = {
+    const wizardPayload = {
       asset_code: assetCode.trim() || undefined,
       name: name.trim(),
       type: assetType,
@@ -127,7 +141,7 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
         longitude: parseFloat(longitude),
       },
       specifications: {
-        built_year: parseInt(builtYear) || 2010,
+        built_year: builtYear ? parseInt(builtYear) : undefined,
         material,
         dimension_authority: dimensionAuthority,
         length_m: parseFloat(lengthM) || undefined,
@@ -135,12 +149,11 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
         element_count: parseInt(unitsCount) || undefined,
       },
       condition,
-      health_score: parseFloat(healthScore) || 75.0,
-      risk_score: parseFloat(riskScore) || 25.0,
       priority: 2,
     };
 
     try {
+      const payload = normalizeAssetRegistrationPayload(wizardPayload);
       const res = await fetch("/api/v1/assets", {
         method: "POST",
         headers: {
@@ -151,11 +164,17 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to register infrastructure asset");
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || data.detail || `Asset registration failed (${res.status})`);
       }
 
       const created = await res.json();
+      setSuccess(`Submitted for review: ${created.asset_code}. Assessment WITHHELD pending sufficient evidence.`);
+      setError(null);
+      setFieldErrors({});
+      setStep(1);
+      setAssetCode("");
+      setName("");
       onSuccess(created);
     } catch (err: any) {
       setError(err.message || "Failed to submit asset registration");
@@ -166,6 +185,8 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
 
   return (
     <div className="bg-white border border-[#D8E2EA] rounded-lg p-6 sm:p-8 shadow-md text-slate-800 max-w-3xl mx-auto">
+      {sessionError && <p role="alert" className="mb-4 text-red-700">{sessionError}</p>}
+      {!session && !sessionError && <p>Verifying authenticated session...</p>}
       {/* Wizard Header */}
       <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
         <div className="flex items-center gap-3">
@@ -215,6 +236,12 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
         </div>
       )}
 
+      {success && (
+        <div className="mb-4 p-3 rounded-md bg-emerald-50 border border-emerald-200 text-xs text-emerald-800" role="status">
+          {success}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Step 1: Basic Information */}
         {step === 1 && (
@@ -231,6 +258,7 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
                 placeholder="e.g. Gundlakamma Reservoir Spillway"
                 className="w-full bg-white border border-[#D8E2EA] focus:border-[#1268A8] focus:ring-1 focus:ring-[#1268A8] rounded-md px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
               />
+              {fieldErrors.name && <p className="mt-1 text-[11px] text-red-600">{fieldErrors.name}</p>}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -305,6 +333,7 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
                   placeholder="e.g. 16.9890"
                   className="w-full bg-white border border-[#D8E2EA] focus:border-[#1268A8] rounded-md px-3 py-2 text-sm text-slate-900 font-mono focus:outline-none"
                 />
+                {fieldErrors.latitude && <p className="mt-1 text-[11px] text-red-600">{fieldErrors.latitude}</p>}
               </div>
 
               <div>
@@ -317,6 +346,7 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
                   placeholder="e.g. 81.7820"
                   className="w-full bg-white border border-[#D8E2EA] focus:border-[#1268A8] rounded-md px-3 py-2 text-sm text-slate-900 font-mono focus:outline-none"
                 />
+                {fieldErrors.longitude && <p className="mt-1 text-[11px] text-red-600">{fieldErrors.longitude}</p>}
               </div>
             </div>
           </div>
@@ -372,6 +402,7 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
           <div className="space-y-4">
             <div className="p-4 bg-slate-50 border border-[#D8E2EA] rounded-md space-y-2 text-xs">
               <h4 className="font-bold text-slate-900 border-b border-slate-200 pb-2">Review Summary</h4>
+              <p>Status after submission: PENDING_REVIEW. Health, risk and RUL remain WITHHELD until sufficient evidence exists.</p>
               <div className="flex justify-between"><span className="text-slate-500">Asset Name:</span> <span className="font-bold text-slate-900">{name}</span></div>
               <div className="flex justify-between"><span className="text-slate-500">Category:</span> <span className="font-semibold capitalize text-slate-800">{assetType}</span></div>
               <div className="flex justify-between"><span className="text-slate-500">District:</span> <span className="font-semibold text-slate-800">{district}</span></div>
@@ -408,7 +439,7 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
           ) : (
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !session || !['OFFICER','ADMIN'].includes(session.role)}
               className="flex items-center gap-1.5 px-5 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-md transition shadow-sm disabled:opacity-50"
             >
               {loading ? (
@@ -416,7 +447,7 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
               ) : (
                 <>
                   <CheckCircle className="w-4 h-4" />
-                  <span>Submit Official Registration</span>
+                  <span>Submit for Review</span>
                 </>
               )}
             </button>
