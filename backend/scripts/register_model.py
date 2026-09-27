@@ -12,7 +12,7 @@ from app.models.entities import ModelRegistry
 
 
 async def register() -> None:
-    artifact_dir = Path(os.getenv("SIMRAS_ML_ARTIFACT_DIR", "/artifacts/bridge_nbi"))
+    artifact_dir = Path(os.getenv("SIMRAS_ML_ARTIFACT_DIR", "/ML/bridge_nbi"))
     manifest_path = artifact_dir / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if manifest["stage"] not in {"RESEARCH_TRANSFER", "VALIDATED_LOCAL"}:

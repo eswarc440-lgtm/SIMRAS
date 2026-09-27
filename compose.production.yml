@@ -20,8 +20,10 @@ services:
     restart: always
     env_file: .env
     environment:
-      SIMRAS_ML_ARTIFACT_DIR: /artifacts/bridge_nbi
+      SIMRAS_ML_ARTIFACT_DIR: /ML/bridge_nbi
+      SIMRAS_SPARSE_ML_ARTIFACT_DIR: /ML/bridge_nbi_sparse
     volumes:
+      - ./ML:/ML:ro
       - ./artifacts:/artifacts:ro
     depends_on:
       db:

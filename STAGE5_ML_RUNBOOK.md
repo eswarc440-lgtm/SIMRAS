@@ -46,7 +46,7 @@ docker compose --profile ml run --rm ml prepare `
 ```powershell
 docker compose --profile ml run --rm ml train `
   --panel /data/ml/nbi_panel.csv.gz `
-  --artifact-dir /artifacts/bridge_nbi `
+  --artifact-dir /ML/bridge_nbi `
   --min-rows 100000 `
   --min-bridges 20000 `
   --min-years 5 `
@@ -59,7 +59,7 @@ Do not change thresholds merely to force acceptance.
 ## 5. Inspect, register, rebuild and verify
 
 ```powershell
-Get-Content .\artifacts\bridge_nbi\manifest.json
+Get-Content .\ML\bridge_nbi\manifest.json
 
 docker compose build backend frontend
 docker compose run --rm backend python -m scripts.register_model
@@ -80,7 +80,8 @@ inspection is entered.
 
 ## Data and Git safety
 
-- Do not commit `data/ml/`, `artifacts/`, `.env`, tokens or the source-review ZIP.
+- Do not commit `data/ml/`, transient `artifacts/`, `.env`, tokens or the source-review ZIP.
+- Keep promoted model bundles and their manifests under `ML/`.
 - Preserve model manifests and metrics for the project report.
 - An AP model may be promoted to `VALIDATED_LOCAL` only after asset/time-separated
   evaluation on approved AP inspection history and documented domain review.

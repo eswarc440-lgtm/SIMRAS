@@ -155,7 +155,7 @@ def predict_bridge(
     if not 0 <= data.condition_rating <= 9:
         return None
 
-    root = Path(artifact_dir or os.getenv("SIMRAS_ML_ARTIFACT_DIR", "/artifacts/bridge_nbi"))
+    root = Path(artifact_dir or os.getenv("SIMRAS_ML_ARTIFACT_DIR", "/ML/bridge_nbi"))
     loaded = _load_artifacts(root)
     if loaded is None:
         return None
@@ -339,7 +339,7 @@ class SparseMLResult:
 def predict_bridge_sparse(data: MLInput, *, artifact_dir: str | Path | None = None) -> SparseMLResult | None:
     if (data.asset_type or "").lower() != "bridge": return None
     if data.age_years is None or not 0 <= float(data.age_years) <= 200: return None
-    root = Path(artifact_dir or os.getenv("SIMRAS_SPARSE_ML_ARTIFACT_DIR","/artifacts/bridge_nbi_sparse"))
+    root = Path(artifact_dir or os.getenv("SIMRAS_SPARSE_ML_ARTIFACT_DIR","/ML/bridge_nbi_sparse"))
     mp = root/"manifest.json"
     if not mp.exists(): return None
     manifest = json.loads(mp.read_text(encoding="utf-8"))

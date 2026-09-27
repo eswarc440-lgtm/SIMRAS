@@ -24,12 +24,14 @@ services:
     environment:
       POSTGRES_HOST: db
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-simras}:${POSTGRES_PASSWORD:-simras-change-me}@db:5432/${POSTGRES_DB:-simras}
-      SIMRAS_ML_ARTIFACT_DIR: /artifacts/bridge_nbi
+      SIMRAS_ML_ARTIFACT_DIR: /ML/bridge_nbi
+      SIMRAS_SPARSE_ML_ARTIFACT_DIR: /ML/bridge_nbi_sparse
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
       - ./data:/data
+      - ./ML:/ML:ro
       - ./artifacts:/artifacts:ro
     depends_on:
       db:
@@ -53,6 +55,7 @@ services:
     volumes:
       - ./ml:/app
       - ./data:/data
+      - ./ML:/ML
       - ./artifacts:/artifacts
     command: ["--help"]
 
