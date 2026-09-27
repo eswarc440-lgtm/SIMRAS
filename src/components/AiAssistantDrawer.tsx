@@ -18,11 +18,30 @@ interface Message {
 
 export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiAssistantProps) {
   const currentAsset = selectedAsset || asset;
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() => [{
+    role: 'assistant',
+    content: 'Ask me about SIMRAS, any infrastructure asset, or a comparison. Type an asset name such as Prakasam or Srisailam directly, or ask how to use the system. No page selection is required. I distinguish recorded evidence, model estimates and missing information.',
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+  }]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  const requestGeneration = useRef(0);
+  const [answerAssets, setAnswerAssets] = useState<AssetSummary[] | null>(null);
+  const displayedAsset = answerAssets === null ? currentAsset : answerAssets.length === 1 ? answerAssets[0] : null;
+  const sessionToken = typeof window === 'undefined' ? null : localStorage.getItem('simras_token');
+  const sessionGeneration = useRef(0);
+
+  // Keep global conversation across page selections and drawer closes, but never across logins.
+  useEffect(() => {
+    sessionGeneration.current++;
+    setMessages([{
+      role: 'assistant',
+      content: 'Ask me about SIMRAS, any infrastructure asset, or a comparison. Type an asset name directly or ask how to use the system. No page selection is required.',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    }]);
+    setAnswerAssets(null);
+    setLoading(false);
+  }, [sessionToken]);
 
   // Auto-scroll to bottom of messages
   const scrollToBottom = () => {
@@ -35,35 +54,12 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
     }
   }, [messages, isOpen, loading]);
 
-  // Set initial greeting when asset changes or opens
-  useEffect(() => {
-    requestGeneration.current++;
-    setLoading(false);
-    if (currentAsset) {
-      setMessages([
-        {
-          role: "assistant",
-          content: `SIMRAS Engineering Advisor is ready for **${currentAsset.name}** (\`${currentAsset.asset_code}\`). I will use available registry, assessment, inspection, maintenance, environmental, and source evidence and identify missing information rather than invent it.`,
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        },
-      ]);
-    } else {
-      setMessages([
-        {
-          role: "assistant",
-          content: `Welcome to the **SIMRAS AI Engineering Advisor**. Please select an infrastructure asset from the registry to begin engineering diagnosis, failure mode analysis, or CWC compliance verification.`,
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        },
-      ]);
-    }
-  }, [currentAsset?.asset_code, isOpen]);
-
   if (!isOpen) return null;
 
   const handleSend = async (queryText?: string) => {
     const text = queryText || input.trim();
-    if (!text || loading || !currentAsset?.asset_code) return;
-    const generation = requestGeneration.current;
+    if (!text || loading) return;
+    const generation = sessionGeneration.current;
 
     const userMsg: Message = {
       role: "user",
@@ -76,18 +72,17 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
     setLoading(true);
 
     try {
-      if (!currentAsset?.asset_code) throw new Error("Select an asset first");
-      const assetCode = currentAsset.asset_code;
       const token = localStorage.getItem("simras_token");
-      const res = await fetch(`/api/v1/ai/assets/${encodeURIComponent(assetCode)}/ask`, {
+      const res = await fetch('/api/v1/ai/ask', {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({ question: text, selected_asset_code: assetCode, history: messages.slice(1).map(({ role, content }) => ({ role, content })) }),
+        body: JSON.stringify({ question: text, selected_asset_code: currentAsset?.asset_code, history: messages.slice(1).slice(-10).map(({ role, content }) => ({ role, content })) }),
       });
 
       const data = await res.json();
+      if (generation !== sessionGeneration.current) return;
       if (!res.ok) throw new Error(data.error || (res.status === 401 ? 'Please sign in again to use the advisor.' : 'The engineering advisor is currently unavailable.'));
-      if (generation !== requestGeneration.current) return;
+      setAnswerAssets(Array.isArray(data.context_assets) ? data.context_assets : []);
       const aiMsg: Message = {
         role: "assistant",
         content: data.answer || "No answer was returned. Please try again.",
@@ -95,7 +90,7 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
       };
       setMessages((prev) => [...prev, aiMsg]);
     } catch (err: any) {
-      if (generation !== requestGeneration.current) return;
+      if (generation !== sessionGeneration.current) return;
       setMessages((prev) => [
         ...prev,
         {
@@ -105,16 +100,16 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
         },
       ]);
     } finally {
-      if (generation === requestGeneration.current) setLoading(false);
+      if (generation === sessionGeneration.current) setLoading(false);
     }
   };
 
   const quickPrompts = [
+    "What can SIMRAS do?",
+    "How do I add infrastructure?",
+    "Tell me about Prakasam Barrage",
+    "Compare Prakasam and Srisailam",
     "Explain Health Score & Deterioration",
-    "Explain Risk Level & Hydrologic Factors",
-    "CWC Dam Safety Standards & Compliance",
-    "Inspect 3D Dimensions & Engineering Specs",
-    "Draft Preventive Maintenance Plan",
   ];
 
   return (
@@ -148,8 +143,8 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
                   EVIDENCE GROUNDED
                 </span>
               </div>
-              <p className="text-[11px] text-cyan-300/80 font-mono mt-0.5 truncate max-w-[280px]">
-                Target: {currentAsset ? `${currentAsset.name} (${currentAsset.asset_code})` : "No asset selected"}
+              <p className="text-[11px] text-cyan-300/80 font-mono mt-0.5 truncate max-w-[280px]" title={answerAssets?.map(item => item.name).join(' · ')}>
+                {answerAssets === null ? 'SIMRAS system and all assets' : answerAssets.length ? `Discussing: ${answerAssets.map(item => item.name).join(' · ')}` : 'SIMRAS system and asset registry'}
               </p>
             </div>
           </div>
@@ -164,20 +159,20 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
         </div>
 
         {/* Asset Context Strip (if asset selected) */}
-        {currentAsset && (
+        {displayedAsset && (
           <div className="px-4 py-2 bg-[#0d1f33] border-b border-gray-800 text-xs flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3 text-[11px]">
               <span className="text-gray-400">
-                Health: <strong className="text-white">{currentAsset.health_score?.toFixed(1) ?? "—"}/100</strong>
+                Health: <strong className="text-white">{displayedAsset.health_score?.toFixed(1) ?? "—"}/100</strong>
               </span>
               <span className="text-gray-400">
                 Risk:{" "}
-                <strong style={{ color: riskColor(currentAsset.risk_level) }}>
-                  {currentAsset.risk_score?.toFixed(0) ?? "—"}/100 ({currentAsset.risk_level ?? "UNAVAILABLE"})
+                <strong style={{ color: riskColor(displayedAsset.risk_level) }}>
+                  {displayedAsset.risk_score?.toFixed(0) ?? "—"}/100 ({displayedAsset.risk_level ?? "UNAVAILABLE"})
                 </strong>
               </span>
               <span className="text-gray-400">
-                District: <strong className="text-cyan-300">{currentAsset.district}</strong>
+                District: <strong className="text-cyan-300">{displayedAsset.district}</strong>
               </span>
             </div>
             <span className="text-[10px] text-emerald-400 flex items-center gap-1 font-semibold">
@@ -196,7 +191,7 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
               <button
                 key={q}
                 onClick={() => handleSend(q)}
-                disabled={loading || !currentAsset}
+                disabled={loading}
                 className="text-[11px] py-1 px-3 rounded-full bg-[#122538] hover:bg-cyan-950 border border-cyan-500/30 hover:border-cyan-400 text-cyan-200 transition whitespace-nowrap disabled:opacity-40 font-medium active:scale-95"
               >
                 {q}
@@ -238,7 +233,7 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
           {loading && (
             <div className="flex items-center gap-2 text-xs text-cyan-400 p-3 rounded-xl bg-[#0c1c2e] border border-cyan-500/20 max-w-[85%]">
               <RefreshCw className="w-4 h-4 animate-spin text-cyan-400" />
-              <span>Analyzing structural telemetry, geotechnical baseline, and CWC safety guidelines...</span>
+              <span>Looking up SIMRAS information and relevant asset evidence...</span>
             </div>
           )}
 
@@ -258,17 +253,14 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={
-                asset
-                  ? `Ask engineering question about ${asset.name}...`
-                  : "Ask engineering assessment question..."
-              }
-              disabled={loading || !currentAsset}
+              placeholder="Ask about SIMRAS or any asset..."
+              maxLength={4000}
+              disabled={loading}
               className="flex-1 bg-[#0f2134] border border-gray-700 focus:border-cyan-400 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none transition"
             />
             <button
               type="submit"
-              disabled={!input.trim() || loading || !currentAsset}
+              disabled={!input.trim() || loading}
               className="px-3.5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-black font-bold transition disabled:opacity-40 flex items-center justify-center gap-1.5 text-xs"
             >
               <span>Send</span>

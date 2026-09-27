@@ -736,7 +736,7 @@ async function startServer() {
   });
 
   // AI Assistant (Phase 21: One backend Gemini route)
-  app.post("/api/v1/ai/assets/:asset_code/ask", async (req, res) => {
+  app.post(['/api/v1/ai/ask', '/api/v1/ai/assets/:asset_code/ask'], async (req, res) => {
     const user = extractUser(req);
     if (!user) {
       res.status(401).json({ error: "Authentication required" });
@@ -749,10 +749,11 @@ async function startServer() {
       return;
     }
     const userPrompt = suppliedPrompt.trim();
-    if (!db.getAsset(req.params.asset_code)) { res.status(404).json({ error: 'Selected asset not found' }); return; }
+    const selectedCode = req.params.asset_code ?? req.body?.selected_asset_code;
+    if (selectedCode != null && (typeof selectedCode !== 'string' || !db.getAsset(selectedCode))) { res.status(404).json({ error: 'Selected asset not found' }); return; }
 
     try {
-      const result = await askAssetAssistant(req.params.asset_code, userPrompt, history);
+      const result = await askAssetAssistant(selectedCode || undefined, userPrompt, history);
       res.json(result);
     } catch (e: any) {
       res.status(e instanceof RequestError ? e.status : 500).json({ error: e instanceof RequestError ? e.message : 'The engineering advisor is currently unavailable. Please try again shortly.' });

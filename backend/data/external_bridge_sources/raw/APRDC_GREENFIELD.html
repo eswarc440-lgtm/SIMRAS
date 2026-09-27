@@ -1,0 +1,549 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><title>
+	:: APRDC ::
+</title>
+    
+    <script type="text/javascript">
+        google.load('visualization', '1', { packages: ['corechart'] });
+    </script>
+    <script type="text/javascript">
+        function LoadCharts() {
+            // if (distID == "00") {
+            BindTransactionsChart();  // Pie Chart
+            BindTransactionsChart2();
+            BindTransactionsChart3();         
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if (aa != null) {
+            }
+            else {
+                var aa = 0;
+            }
+        });
+
+        var distname = '';
+        //var aa = 0;
+
+        function BindTransactionsChart() {
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                url: 'GreenFieldExpressReport.aspx/GetData1',
+                data: '{}',
+                success:
+                    function (response) {
+                        aa = response.d;
+                        drawPieChart(response.d);
+
+
+                    },
+                error: function (result) {
+                    ErrorOnFailure('pie_chart');
+                }
+            });
+        }                 
+
+        var options = {
+
+            pieSliceText: 'percentage',
+
+            is3D: true,
+
+            legend: {
+                position: 'left',
+                alignment: 'center'
+            },
+
+            backgroundColor: { fill: 'none',
+                stroke: 'none',
+                strokeWidth: '2'
+            },
+
+            chartArea: {
+                left: 80, width: "200%", height: "110%"
+            },
+
+            series: {
+                0: { color: '#ff9966' },
+                1: { color: '#ccccff' },
+                2: { color: '#0099ff' },
+                3: { color: '#009999' },
+                4: { color: '#666699' }
+            },
+
+            sliceVisibilityThreshold: 0,
+            slices: { 1: { offset: 0.1 },
+                5: { offset: 0.3 },
+                7: { offset: 0.2 },
+                9: { offset: 0.3 }
+            }
+        };
+
+        function drawPieChart(dataValues) {
+
+            if (dataValues.length > 0) {
+
+                var data = new google.visualization.DataTable();
+
+                data.addColumn('string', 'Type');
+                data.addColumn('number', 'Value');
+
+                for (var i = 0; i < dataValues.length; i++) {
+                    data.addRow([dataValues[i].Type1, dataValues[i].Value1]);
+                }
+
+                var formatter = new google.visualization.NumberFormat({ pattern: '#,##,###' });
+                formatter.format(data, 1);
+
+                var ann = '';
+                var view = new google.visualization.DataView(data);
+
+                var chart = new google.visualization.PieChart(document.getElementById('pie_chart'));
+
+
+
+                chart.draw(data, options);
+                // document.getElementById("tblCharts").style.display = "none";
+
+            } else {
+                document.getElementById('pie_chart').innerHTML = "No Data Available";
+            }
+        }     
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if (aa != null) {
+            }
+            else {
+                var aa = 0;
+            }
+        });
+
+        var distname = '';
+        //var aa = 0;
+
+        function BindTransactionsChart2() {
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                url: 'GreenFieldExpressReport.aspx/GetData2',
+                data: '{}',
+                success:
+                    function (response) {
+                        aa = response.d;
+                        drawPieChart2(response.d);
+
+
+                    },
+                error: function (result) {
+                    ErrorOnFailure2('pie_chart2');
+                }
+            });
+        }
+
+        var options = {
+
+            pieSliceText: 'percentage',
+
+            is3D: true,
+
+            legend: {
+                position: 'left',
+                alignment: 'center'
+            },
+
+            backgroundColor: { fill: 'none',
+                stroke: 'none',
+                strokeWidth: '2'
+            },
+
+            chartArea: {
+                left: 80, width: "200%", height: "110%"
+            },
+
+            series: {
+                0: { color: '#ff9966' },
+                1: { color: '#ccccff' },
+                2: { color: '#0099ff' },
+                3: { color: '#009999' },
+                4: { color: '#666699' }
+            },
+
+            sliceVisibilityThreshold: 0,
+            slices: { 1: { offset: 0.1 },
+                5: { offset: 0.3 },
+                7: { offset: 0.2 },
+                9: { offset: 0.3 }
+            }
+        };
+
+        function drawPieChart2(dataValues) {
+
+            if (dataValues.length > 0) {
+
+                var data = new google.visualization.DataTable();
+
+                data.addColumn('string', 'Type');
+                data.addColumn('number', 'Value');
+
+                for (var i = 0; i < dataValues.length; i++) {
+                    data.addRow([dataValues[i].Type1, dataValues[i].Value1]);
+                }
+
+                var formatter = new google.visualization.NumberFormat({ pattern: '#,##,###' });
+                formatter.format(data, 1);
+
+                var ann = '';
+                var view = new google.visualization.DataView(data);
+
+                var chart = new google.visualization.PieChart(document.getElementById('pie_chart2'));
+
+
+
+                chart.draw(data, options);
+                // document.getElementById("tblCharts").style.display = "none";
+
+            } else {
+                document.getElementById('pie_chart2').innerHTML = "No Data Available";
+            }
+        }     
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if (aa != null) {
+            }
+            else {
+                var aa = 0;
+            }
+        });
+
+        var distname = '';
+        //var aa = 0;
+
+        function BindTransactionsChart3() {
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                url: 'GreenFieldExpressReport.aspx/GetData3',
+                data: '{}',
+                success:
+                    function (response) {
+                        aa = response.d;
+                        drawPieChart3(response.d);
+
+
+                    },
+                error: function (result) {
+                    ErrorOnFailure3('pie_chart3');
+                }
+            });
+        }
+
+        var options = {
+
+            pieSliceText: 'percentage',
+
+            is3D: true,
+
+            legend: {
+                position: 'left',
+                alignment: 'center'
+            },
+
+            backgroundColor: { fill: 'none',
+                stroke: 'none',
+                strokeWidth: '2'
+            },
+
+            chartArea: {
+                left: 80, width: "200%", height: "110%"
+            },
+
+            series: {
+                0: { color: '#ff9966' },
+                1: { color: '#ccccff' },
+                2: { color: '#0099ff' },
+                3: { color: '#009999' },
+                4: { color: '#666699' }
+            },
+
+            sliceVisibilityThreshold: 0,
+            slices: { 1: { offset: 0.1 },
+                5: { offset: 0.3 },
+                7: { offset: 0.2 },
+                9: { offset: 0.3 }
+            }
+        };
+
+        function drawPieChart3(dataValues) {
+
+            if (dataValues.length > 0) {
+
+                var data = new google.visualization.DataTable();
+
+                data.addColumn('string', 'Type');
+                data.addColumn('number', 'Value');
+
+                for (var i = 0; i < dataValues.length; i++) {
+                    data.addRow([dataValues[i].Type1, dataValues[i].Value1]);
+                }
+
+                var formatter = new google.visualization.NumberFormat({ pattern: '#,##,###' });
+                formatter.format(data, 1);
+
+                var ann = '';
+                var view = new google.visualization.DataView(data);
+
+                var chart = new google.visualization.PieChart(document.getElementById('pie_chart3'));
+
+
+
+                chart.draw(data, options);
+                // document.getElementById("tblCharts").style.display = "none";
+
+            } else {
+                document.getElementById('pie_chart3').innerHTML = "No Data Available";
+            }
+        }     
+
+    </script>
+    <script type="text/javascript">
+        function ErrorOnFailure(id) {
+            document.getElementById('pie_chart').style.display = "block";
+            document.getElementById(id).innerHTML = "Something went wrong, please try again.";
+        }
+        function ErrorOnFailure2(id) {
+            document.getElementById('pie_chart2').style.display = "block";
+            document.getElementById(id).innerHTML = "Something went wrong, please try again.";
+        }
+        function ErrorOnFailure3(id) {
+            document.getElementById('pie_chart3').style.display = "block";
+            document.getElementById(id).innerHTML = "Something went wrong, please try again.";
+        }           
+    </script>     
+<link id="linkfavicon" rel="Shortcut Icon" href="../images/favicon.ico" type="image/x-icon" /><link href="../css/style.css" rel="stylesheet" type="text/css" /><link href="../css/leftmenu.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="../js/leftmenu.js"></script>
+    <link href="../css/jqueryslidemenu.css" rel="stylesheet" type="text/css" />
+    <script src="../js/jquery.3.4.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../js/jqueryslidemenu.js"></script>
+    <script type="text/javascript" src="../js/MainHeader.js"></script>
+    <script type="text/javascript" src="../js/fadeslide.js"></script>
+    
+   
+    <script    src="../js/bootstrap.js" type="text/javascript"></script>
+    <script src="../js/cdac-gist-translation-snippet.min.js" type="text/javascript"></script>
+    <link href="../css/lskmenu.css" rel="stylesheet" type="text/css" />   
+      <script type="text/javascript">
+                                                                                $('#overlay').modal('show');
+
+                                                                                setTimeout(function () {
+                                                                                    $('#overlay').modal('hide');
+                                                                                }, 5000000);
+</script>
+    <style type="text/css">
+    .footerlinks a 
+    {
+        color:#fff !important;
+    }
+   /* div#overlay {
+    margin-top: 200px;
+}
+     .modal-body {
+    position: relative;
+    padding: 10px 15px;
+    color: blue;
+}
+        .modal-body {
+    position: relative;
+    padding: 10px 15px;
+    color: blue;
+}*/
+    </style>
+    <script src="../js/jquery.lksMenu.js" type="text/javascript"></script>
+
+
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+          
+            setLanguageComboBox("aprdc");
+        });
+    </script>
+    
+
+</head>
+<body>
+                            
+    <form method="post" action="./GreenFieldExpressReport.aspx" id="form1" AutoComplete="off">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="FY4D3PDfyNNE+op03x71C76M9yhidsade9uYXWtZu1NSLqm2w9Msbj9ZZYxcN7ZAywHINpzVpMDIfDEJ8zwpWZVQy57qzHXlue39LqSMvD/MCXb2UuqsZtrJQCZeoE0GVtF0uhys9zv4L/93OdwnCOYdsDGfg9XVddo3E+fZ/rD8oefCtNHc3fvq/GSWQEQlpPjXMIvFQa796/s4WdmJKcni607PoOCFWeat+OXbZfRSRHqESQMg/knzgKq8Ob5mL9nQY3Yip1RWUbVlkk0PwGnmyczINllKKzdru8Zbls1ipDnXWuZq2Lkz2yqhp0dNfLFxPsF9C1Js0rApVGMKyBCdEZzgEj9E9hJsLj8u3PIntWhwcrzk2JsAvXKgjIp75JfHP8+depP63kR975Re5CVCFM5ZQ0CxxjS8f+pL2Aqqi7mLIgNCIy4Ni+ZbwyzydAsXFMEAFIcOPv727xUPhpulU0KVuYlsWwwtB7g/zLCfo2PSBskhI5624wxlRiTxTOrYNdmIcgycN11LDiExnQHO9TMoS2AbqrZTNZa0BjLEXDWi2Q4Fadv+UAnivwsqF7ylouTYljbX2Cvb0+5etxaKjRnyQ0VUR3ZPF4gsHzppsu7Ug/oTEW9u5W8EyRSGmX3Sz8H5fEqjRBO/t6gp3MW9zCAs62I9d0VH7iCyP0CLjp74Lr2Z0/8m95v0KH63awQqUcAy4ue5REJqzDqsFCng+MHxF+im6YHNtkVTINHfeAR8PenTdvWePHfGlHQo77kXe9mD/7RiWAlj8PO0BnxLtUg6tlgCphVCjr3DnSydASLlwEpYG8bODjpRG57u4kU259+SCQQsTkaP7SC06nEfEiXwxUTKIDgFRzzrIno2WNyKd/vPDB9aRTxFcaUA5sV52mQVtlwg8Gdsl7tFoj2fmASRhTxrChzDb4kMn5fmZR5agrPw9GoykfAxqtK8wSrcGDK9Y4CzLIvfGS3T7G6zmY01mbfkaxIKEQFi30wKR0rxbtPEDA+nnR1VNUNHY5XsQ0JM95WIa1KCfPd9nLTwzsB8UD6SbnFaFJ2hWOeHR0K4m0XZeWzXtuF0DMjTdDAZirBgZGEH/W9g5MnD3YmYJqyiZN7Af4itj7lSB7Vaw+a55exSHENMlJmHiQU9hKIgzm7vV2bNzIQYoEkqlg8NsqQ8gjmXg6/lK53ejxugatkGixPMecYOOF2VWulTSvKcz1qf1PrktbUPQQYqxWCNFSsZwRQBcjRC5eaA4yfbwpWwdrHtLHHMp3lPkBiCBVT1AlCF1cC2ekgZT50T0RFcf/GWcQg83cvhoU4aLRtbz7L8jKBDHK+MwsqM4L5aFf59DNnUbiarbGJHlHJJOfRfxmPo0dpDexILSZ7QisI5QTp7b4XRXupzF3B/Khp9F3AobCYmhTazQt8cnclhg+rPE0EAH7pnaEOpAy8EpE9TAX9KOrm8HXicAvJj3LLnRkUoB3qaJcJWRnH4coTaTGmRnNwnOUpX6r5jCjVfYpZe/w6MzM9skSICkAYZK7VLo3v58FGwgl18f0BG+dcRYI+y/vpQxaOOTNHum/IiScXrJ7H4LsF6PkHConZiCivdNYNWgoCoEvJiT51HvpFox/5eLrrXxkyu6YUoL1S6zqAhEMwPqp7WYLw0dxhm57V4C0tW7SGVJt/Gj4MIxCdckAYcypyvxLUfRj/D6BcFbyy5GYnAO/R4ATSBXYZEEUhiatq4Ejwnn9teN8x7d27AAOTjXawQKig2odSkEexcxeNoF8f650FqAHUHXyuynDur" />
+
+<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="5D5CDF64" />
+<input type="hidden" name="__VIEWSTATEENCRYPTED" id="__VIEWSTATEENCRYPTED" value="" />
+   
+
+        
+    <table width="1000" border="0" align="center" cellpadding="0" cellspacing="0" style="min-height: 450px">
+        <tr>
+            <td align="left" valign="top" bgcolor="#FFFFFF">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                        <td align="left" valign="top" style="padding: 5px;">
+                            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td align="left" valign="middle" class="crnr-shd" style="padding: 5px;">
+                                        <div class="" style="overflow: hidden;">
+                                            <div class="col-xs-12">
+                                                <h2 class="report_heading">
+                                                    <span style="margin-right: 130px;">Green Field Express Way (Anantapur to Amaravati)</span><span style="float: right;"><b>Date :</b>
+                                                                <span id="ContentPlaceHolder1_lblDate">27/09/2026</span></span>
+                                                </h2>
+                                                <div class="row-fluid table-responsive">
+                                                    <div>
+	<table class="table_style" cellspacing="0" rules="all" border="1" id="ContentPlaceHolder1_grdGreenField">
+		<tr>
+			<th scope="col" width="3%">S.No.</th><th scope="col">Name</th><th scope="col">Total Length (Km)</th><th scope="col">Total Service Road Length (Km)</th><th scope="col">Traffic (PCU&#39;s)</th><th scope="col">Major Bridges (Nos)</th><th scope="col">Railway Over Bridges (Nos)</th><th scope="col">Interchanges (Nos)</th><th scope="col">Length of Tunnel (KM)</th><th scope="col">Civil Cost (Cr)</th><th scope="col">Land Acquistion Cost (Cr)</th><th scope="col">Forest Land (Km)</th>
+		</tr><tr>
+			<td align="center">
+                                                                    <span id="ContentPlaceHolder1_grdGreenField_lblSNo_0">1</span>
+                                                                </td><td class="alignleft" align="center">Amaravati-Anantapur Express way</td><td class="alignright" align="center">371.03</td><td class="alignright" align="center">260.09</td><td align="center">5246 – 33467</td><td class="alignright" align="center">33</td><td class="alignright" align="center">4</td><td class="alignright" align="center">14</td><td class="alignright" align="center">10</td><td class="alignright" align="center">17111</td><td class="alignright" align="center">1354</td><td class="alignright" align="center">29.3</td>
+		</tr><tr>
+			<td align="center">
+                                                                    <span id="ContentPlaceHolder1_grdGreenField_lblSNo_1">2</span>
+                                                                </td><td class="alignleft" align="center">Kurnool Feeder</td><td class="alignright" align="center">123.7</td><td class="alignright" align="center">71.7</td><td align="center">5936 – 6642</td><td class="alignright" align="center">6</td><td class="alignright" align="center">1</td><td class="alignright" align="center">4</td><td class="alignright" align="center">16</td><td class="alignright" align="center">6970</td><td class="alignright" align="center">323</td><td class="alignright" align="center">27.1</td>
+		</tr><tr>
+			<td align="center">
+                                                                    <span id="ContentPlaceHolder1_grdGreenField_lblSNo_2">3</span>
+                                                                </td><td class="alignleft" align="center">Kadapa Feeder</td><td class="alignright" align="center">104.05</td><td class="alignright" align="center">36.71</td><td align="center">4324 – 5337</td><td class="alignright" align="center">4</td><td class="alignright" align="center">1</td><td class="alignright" align="center">4</td><td class="alignright" align="center">2</td><td class="alignright" align="center">3544</td><td class="alignright" align="center">323</td><td class="alignright" align="center">7.3</td>
+		</tr><tr class="gridhdbgfootleft">
+			<td class="gridhdbgfoot">&nbsp;</td><td class="alignleft"><font color="Red">TOTAL</font></td><td class="alignright"><font color="Red">598.78</font></td><td class="alignright"><font color="Red">368.5</font></td><td class="gridhdbgfoot">&nbsp;</td><td class="alignright"><font color="Red">43</font></td><td class="alignright"><font color="Red">6</font></td><td class="alignright"><font color="Red">22</font></td><td class="alignright"><font color="Red">28</font></td><td class="alignright"><font color="Red">27625</font></td><td class="alignright"><font color="Red">2000</font></td><td class="alignright"><font color="Red">63.7</font></td>
+		</tr>
+	</table>
+</div>
+                                                </div>
+                                                
+                                                <div class="row" style="margin: 0px">
+                                                    <div style="height: 352px; margin: 20px; margin-top: 10px; margin-left: 110px;">
+                                                        <div style="width: 580px; height: 357px; margin: auto; float: left; margin-left: 48px;
+                                                            border: 1px solid black">
+                                                            <h4 style="font-family: Arial; font-size: 12; font-weight: bold; text-decoration: underline;
+                                                                color: #0c77a4; text-align: center;">
+                                                                Total Length (Km)</h4>
+                                                            <div id="pie_chart" style="width: 550px; height: 300px; margin: auto; float: left;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin: 0px">
+                                                    <div style="height: 352px; margin: 20px; margin-top: 10px; margin-left: 110px;">
+                                                        <div style="width: 580px; height: 357px; margin: auto; float: left; margin-left: 48px;
+                                                            border: 1px solid black">
+                                                            <h4 style="font-family: Arial; font-size: 12; font-weight: bold; text-decoration: underline;
+                                                                color: #0c77a4; text-align: center;">
+                                                                Total Service Road Length (Km)</h4>
+                                                            <div id="pie_chart2" style="width: 550px; height: 300px; margin: auto; float: left;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                 <div class="row" style="margin: 0px">
+                                                    <div style="height: 352px; margin: 20px; margin-top: 10px; margin-left: 110px;">
+                                                        <div style="width: 580px; height: 357px; margin: auto; float: left; margin-left: 48px;
+                                                            border: 1px solid black">
+                                                            <h4 style="font-family: Arial; font-size: 12; font-weight: bold; text-decoration: underline;
+                                                                color: #0c77a4; text-align: center;">
+                                                                Civil Cost (Cr)</h4>
+                                                            <div id="pie_chart3" style="width: 550px; height: 300px; margin: auto; float: left;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+        
+        <script type="text/javascript" src="../js/MainFooter.js"></script>
+          
+    <script type="text/javascript">
+        var $affectedElements = $("*");
+        $affectedElements.each(function () {
+            var $this = $(this);
+            $this.data("orig-size", $this.css("font-size"));
+        });
+
+        $("#btn-increase").click(function () {
+            debugger;
+
+            $("p, a, li, td, th, span, label").css("font-size", "15px");
+
+            $("h1, h2, h3, h4, h5, h6").css("font-size", "17px");
+
+        })
+
+        $("#btn-decrease").click(function () {
+            $("p, a, li, td, th, span, label").css("font-size", "12px");
+
+            $("h1, h2, h3, h4, h5, h6").css("font-size", "15px");
+        })
+
+        $("#btn-orig").click(function () {
+            $affectedElements.each(function () {
+                var $this = $(this);
+                $this.css("font-size", $this.data("orig-size"));
+            });
+        })
+
+        function changeFontSize(direction) {
+            $affectedElements.each(function () {
+                var $this = $(this);
+                $this.css("font-size", parseInt($this.css("font-size")) + direction);
+            });
+        }
+
+
+
+        $(".color").click(function () {
+            $("body").css({ "-moz-filter": "grayscale(100%)", "-webkit-filter": "grayscale(100%)", "filter": "gray", "filter": "grayscale(100%)" });
+
+            $("body").css("background", "#000");
+
+        });
+
+
+        $(".nocolor").click(function () {
+            $("body").css({ "-moz-filter": "grayscale(0%)", "-webkit-filter": "grayscale(0%)", "filter": "white", "filter": "grayscale(0%)" });
+
+            $("body").css("background", "url(../images/bg-ts.jpg)");
+
+        });
+
+</script>
+
+    
+<script>LoadCharts();</script></form>
+
+
+</body>
+</html>

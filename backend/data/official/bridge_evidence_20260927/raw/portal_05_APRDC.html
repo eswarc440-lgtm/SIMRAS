@@ -1,0 +1,587 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><title>
+	:: APRDC ::
+</title>
+    <link href="../css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <script language="javascript" type="text/javascript">
+        document.oncontextmenu = RightMouseDown;
+        document.onmousedown = mouseDown;
+
+        function mouseDown(e) {
+            if (e.which == 3) {//righClick
+                alert("Sorry, you do not have permission to right click.");
+            }
+        }
+        function RightMouseDown() {
+            return false;
+        }
+    </script>
+    <style type="text/css">
+        .modal-body {
+            position: relative;
+            padding: 10px 15px;
+            color: blue;
+        }
+
+        .modal-body {
+            position: relative;
+            padding: 10px 15px;
+            color: blue;
+        }
+
+        div#fadeshow2 img {
+            width: 100%;
+        }
+
+        .my-logo {
+            width: 34%;
+            padding: 10px;
+            float: right;
+        }
+
+        .blink_me {
+            -webkit-animation-name: blinker;
+            -webkit-animation-duration: 1s;
+            -webkit-animation-timing-function: linear;
+            -webkit-animation-iteration-count: infinite;
+            -moz-animation-name: blinker;
+            -moz-animation-duration: 1s;
+            -moz-animation-timing-function: linear;
+            -moz-animation-iteration-count: infinite;
+            animation-name: blinker;
+            animation-duration: 1s;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+
+        @-moz-keyframes blinker {
+            0% {
+                color: #37EF50;
+            }
+
+            50% {
+                color: #fff;
+            }
+
+            100% {
+                color: #ffa200;
+            }
+        }
+
+        @-webkit-keyframes blinker {
+            0% {
+                color: #37EF50;
+            }
+
+            50% {
+                color: #fff;
+            }
+
+            100% {
+                color: #ffa200;
+            }
+        }
+
+        @keyframes blinker {
+            0% {
+                color: #37EF50;
+            }
+
+            50% {
+                color: #fff;
+            }
+
+            100% {
+                color: #ffa200;
+            }
+        }
+
+
+        .h1_weltext h1 {
+            text-align: center;
+            font-size: 35px;
+            font-weight: bold;
+        }
+    </style>
+<link id="linkfavicon" rel="Shortcut Icon" href="../images/favicon.ico" type="image/x-icon" /><link href="../css/style.css" rel="stylesheet" type="text/css" /><link href="../css/leftmenu.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="../js/leftmenu.js"></script>
+    <link href="../css/jqueryslidemenu.css" rel="stylesheet" type="text/css" />
+    <script src="../js/jquery.3.4.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../js/jqueryslidemenu.js"></script>
+    <script type="text/javascript" src="../js/MainHeader.js"></script>
+    <script type="text/javascript" src="../js/fadeslide.js"></script>
+    
+   
+    <script    src="../js/bootstrap.js" type="text/javascript"></script>
+    <script src="../js/cdac-gist-translation-snippet.min.js" type="text/javascript"></script>
+    <link href="../css/lskmenu.css" rel="stylesheet" type="text/css" />   
+      <script type="text/javascript">
+                                                                                $('#overlay').modal('show');
+
+                                                                                setTimeout(function () {
+                                                                                    $('#overlay').modal('hide');
+                                                                                }, 5000000);
+</script>
+    <style type="text/css">
+    .footerlinks a 
+    {
+        color:#fff !important;
+    }
+   /* div#overlay {
+    margin-top: 200px;
+}
+     .modal-body {
+    position: relative;
+    padding: 10px 15px;
+    color: blue;
+}
+        .modal-body {
+    position: relative;
+    padding: 10px 15px;
+    color: blue;
+}*/
+    </style>
+    <script src="../js/jquery.lksMenu.js" type="text/javascript"></script>
+
+
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+          
+            setLanguageComboBox("aprdc");
+        });
+    </script>
+    
+
+</head>
+<body>
+                            
+    <form method="post" action="./Home.aspx" id="form1" AutoComplete="off">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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" />
+
+<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="1114A9A7" />
+<input type="hidden" name="__VIEWSTATEENCRYPTED" id="__VIEWSTATEENCRYPTED" value="" />
+<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="X1asPoZqIOcWTgJWpijE0hI0tmYH+kBzcdb8AFOh1Iy8xL+1dQD6QbhL6SU71Cch65q3XI87mq3gO1XuM9dPRfnsXVrBMycJLG2d6l64xOE7PE/+bxGm7dbRcua8Uy4CqwPsaszDevy9+LTVpvdDnOZHItohke2YEUP+xiJS+2jj9FVBCHRSG/1YqGOCN3GUuBg7W8D2r68IlfKq8qEK3rbnUoPZTXT8ZeSmNm++O8I=" />
+   
+
+        
+    <table width="1002" border="0" align="center" cellpadding="0" cellspacing="0">
+        
+        <tr>
+            <td bgcolor="#FFFFFF">
+                <table width="980" border="0" align="center" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td width="230" align="left" valign="top">
+                            <table width="220" border="0" align="center" cellpadding="0" cellspacing="0" style="padding-top: 5px; padding-left: 10px;">
+                                <tr>
+                                    <td width="266" align="left" valign="middle" class="homeheadertitle" style="background-color: #fd6255; height: 25px;">Quick Links
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left" valign="top" bgcolor="#FFFFFF" style="border-bottom: #cbcdcd solid 1px; border-left: #cbcdcd solid 1px; border-right: #cbcdcd solid 1px;">
+                                        <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td align="left" valign="top">
+                                                    <div class="sidebarmenu">
+                                                        <ul id="sidebarmenu1">
+                                                            <li><a href="../UI/Organogram.aspx">Organogram</a></li>
+                                                            <li><a href="CompHndlngSys.aspx" data-toggle="tooltip" title="Hooray!">Complaint Handling
+                                                                Sys. </a></li>
+                                                            <li><a href="https://aprbdrow.ap.gov.in/" target="_blank">Road Cutting/ R.O.W Permissions</a></li>
+                                                            <li><a href="../UI/GazatteNotificationDisplay.aspx">Gazette Notifications</a></li>
+                                                            <li><a href="../UI/DisclosurePage.aspx">Disclosures</a></li>
+                                                            <li><a href="../UI/WorkshopDisplay.aspx">Workshops / Trainings</a></li>
+                                                            <li><a href="../UI/CMPDisplay.aspx">Circulars / Memos</a></li>
+                                                            <li><a href="#">Progress Reports</a>
+                                                                <ul>
+                                                                    <li><a href="#">APRSP</a>
+                                                                        <ul>
+                                                                            <li><a href="../Documents/MPR-July-2016.doc">Monthly</a></li>
+                                                                            <li><a href="../Documents/APRSP_QPR_APR_JUN-2016.doc">Quarterly</a></li>
+                                                                        </ul>
+                                                                        <li><a href="../Documents/State Budget for 2016.docx">State Budget</a>
+                                                                            
+                                                                        </li>
+                                                                    </li>
+                                                                </ul>
+                                                            </li>
+                                                            <li><a href="../UI/ImportantLinks.aspx">Important Links</a></li>
+                                                            <li><a href="../UI/DownloadsDisplay.aspx">Downloads</a></li>
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td width="20" align="left" valign="top">&nbsp;
+                        </td>
+                        <td width="740" align="left" valign="top">
+                            <table width="735" border="0" align="left" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td height="30" align="left" valign="middle" class="headtext">
+                                        <img src="../images/Welcome-Text.png" width="737" height="28" style="margin-top: 15px;"
+                                            alt="APRDC" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left" valign="top">
+                                        <img src="../images/CM_AP.png" class="my-logo" />
+                                        <p style="line-height: 17px; text-align: justify; padding: 5px; padding-left: 0px; margin: 0px; font-family: Arial; font-size: 13px; color: #302f2f;">
+                                            The Andhra Pradesh Road Development Corporation was established on 02.01.1998 through
+                                            the Act No. 1 of 1998 for development and maintenance of Roads in the State of Andhra
+                                            Pradesh and matters connected there with or incidental there to.
+                                        </p>
+                                        <p style="line-height: 17px; text-align: justify; padding: 5px; padding-left: 0px; margin: 0px; font-family: Arial; font-size: 13px; color: #302f2f;">
+                                            <span style="font-size: 15px; color: #944000; font-weight: bold">Functions of the Corporation:</span>
+                                            To develop, maintain and manage the roads and any stretches thereof vested in or
+                                            entrusted to it by the Government Corporation shall be bound to follow and act upon
+                                            the general or special directions of the Government.
+                                        </p>
+                                        <p style="line-height: 17px; text-align: justify; padding: 5px; padding-left: 0px; margin: 0px; font-family: Arial; font-size: 13px; color: #302f2f;">
+                                            <span style="font-size: 15px; color: #944000; font-weight: bold">Administration:</span>
+                                            The Corporation is headed by a Managing Director. Presently the Chief Engineer (R&B)
+                                            State Highways is the Managing Director. He is assisted by two Superintending Engineers(R&B),
+                                            two Executive Engineers and other Engineers.
+                                        </p>
+                                        <p style="line-height: 17px; text-align: justify; padding: 5px; padding-left: 0px; margin: 0px; font-family: Arial; font-size: 13px; color: #302f2f;">
+                                            <span style="font-size: 15px; color: #944000; font-weight: bold">Jurisdiction:</span>
+                                            The Chief Engineer(R&B) State Highways and Managing Director, APRDC looks after
+                                            the State Highways of Andhra Pradesh which comprises of high traffic density corridors
+                                            presently the length of the State Highways in AP is 13500Km.
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left" valign="top">
+                                        <table width="735" border="0" cellspacing="0" cellpadding="0" style="margin-top: 10px;">
+                                            <tr>
+                                                <td height="30" colspan="5" align="center" valign="middle" bgcolor="#87834b" style="color: #fff; font-size: 13px; font-weight: 600 !important; letter-spacing: 1px;">
+                                                    <marquee direction="left" scrollamount="3" scrolldelay="2" width="95%">
+                                                        <a style="margin-right: 100px; text-decoration: none; color: White;"
+                                                            class="blink_me" href="https://aprbdrow.ap.gov.in/" target="_blank">Application for Road Cutting/R.O.W Permission for OFC and Electricity connections -Click Here </a>
+                                                        Excellency Award to A.P. Road Development Corporation from Government of India 
+                                                    </marquee>
+                                                    <br />
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left" valign="top" height="4"></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" align="center" valign="top" height="10"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" align="center" valign="top" style="border-bottom: #ccc solid 1px; border-top: #ccc solid 1px;">
+                            <div class="content">
+                                <div class="content_resizer">
+                                    <div class="columns">
+                                        <div class="small_box">
+                                            <h3 class="serv">
+                                                <a href="http://aproads.cgg.gov.in/home.do" target="_blank" style="font-family: Verdana; font-size: 12px; color: #ff2b01; text-decoration: none; float: left;">
+                                                    <img src="../images/Roads_buildings.png" alt="APRDC" /><div style="float: right; margin-top: 20px;">
+                                                        R&B Department
+                                                    </div>
+                                                </a>
+                                            </h3>
+                                        </div>
+                                        <div class="small_box">
+                                            <h3 class="serv">
+                                                <a href="../UI/PresentationDisplay.aspx" style="font-family: Verdana; font-size: 12px; color: #ff2b01; text-decoration: none; float: left;">
+                                                    <img src="../images/Presentations_Notes.png" alt="APRDC" /><div style="float: right; margin-top: 20px;">
+                                                        Presentations & Notes
+                                                    </div>
+                                                </a>
+                                            </h3>
+                                        </div>
+                                        <div class="small_box">
+                                            <h3 class="serv">
+                                                <a href="../UI/SuggestionsUpload.aspx" style="font-family: Verdana; font-size: 12px; color: #ff2b01; text-decoration: none; float: left;">
+                                                    <img src="../images/Suggestions.png" alt="APRDC" /><div style="float: right; margin-top: 20px;">
+                                                        Suggestions
+                                                    </div>
+                                                </a>
+                                            </h3>
+                                        </div>
+                                        <div class="small_box">
+                                            <h3 class="serv">
+                                                <a href="../UI/EmergencyContacts.aspx" style="font-family: Verdana; font-size: 12px; color: #ff2b01; text-decoration: none; float: left;">
+                                                    <img src="../images/Emergency-Contacts.png" alt="APRDC" /><div style="float: right; margin-top: 20px;">
+                                                        Emergency Contacts
+                                                    </div>
+                                                </a>
+                                            </h3>
+                                        </div>
+                                        <div class="small_box">
+                                            <h3 class="serv">
+                                                <a href="../CMDASHBOARDREPORTS/CMDBReports.aspx" style="font-family: Verdana; font-size: 12px; color: #ff2b01; text-decoration: none; float: left;">
+                                                    <img src="../images/dashboard.png" alt="APRDC" /><div style="float: right; margin-top: 20px;">
+                                                        CM Dashboard Reports
+                                                    </div>
+                                                </a>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                    <!--resizer-->
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left" valign="top">
+                            <table width="100%" border="0" align="left" cellpadding="0" cellspacing="0" style="padding-top: 8px;">
+                                <tr>
+                                    <td align="left" valign="top" class="blk">
+                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td height="25" align="left" valign="middle" class="homeheadertitle" c>What's New
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td align="left" valign="top" class="blk1" style="background-image: url(images/tdp_bg.png); background-repeat: repeat-x;">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr>
+                                                            <td align="left" valign="top">
+                                                                <marquee style="cursor: pointer;" direction="up" scrollamount="3" scrolldelay="2"
+                                                                    height="225" onmouseover='this.stop();' onmouseout='this.start();'>
+                                                                    <ul id="ContentPlaceHolder1_Ul1" style="margin-left: -32px;">
+                                                                        <logic:notempty name="newsEventsDetails">
+                                                                            <logic:iterate name="newsEventsDetails" id="news" scope="request">
+                                                                                <li style="font-size: 13px; line-height: 21px; list-style: none; padding: 10px;">
+
+                                                                                    <a target="_blank">
+                                                                                        <img src="../images/new-icon.gif" alt='New' />
+                                                                                        <a id="ContentPlaceHolder1_lbn1" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$lbn1&#39;,&#39;&#39;)">INFORMATION UNDER SECTION 4(1) (b) OF RIGHT TO INFORMATION ACT 2005 ROADS AND BUILDING DEPARTMENT ANDHRA PRADESH</a>
+                                                                                    </a>
+                                                                                    <br />
+                                                                                    <br />
+                                                                                    <a target="_blank">
+                                                                                        <img src="../images/new-icon.gif" alt='New' />
+                                                                                        <a id="ContentPlaceHolder1_lbn2" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$lbn2&#39;,&#39;&#39;)">16.4 (1)(b)(xvi) the names, designations and other particular of the public Information Officers</a>
+                                                                                    </a>
+                                                                                    <br />
+                                                                                    <br />
+                                                                                    <a target="_blank">
+                                                                                        <img src="../images/new-icon.gif" alt='New' />
+                                                                                        <a id="ContentPlaceHolder1_lbn3" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$lbn3&#39;,&#39;&#39;)">9.4 (1)(b) (ix) a directory of officers and employees of your public authority</a>
+                                                                                    </a>
+                                                                                    <br />
+                                                                                    <br />
+                                                                                    <a target="_blank">
+                                                                                        <img src="../images/new-icon.gif" alt='New' />
+                                                                                        <a id="ContentPlaceHolder1_lbn4" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$lbn4&#39;,&#39;&#39;)">1.4(1)(b)(i) the particulars of your organization, functions and duties</a>
+                                                                                    </a>
+                                                                                    <br />
+                                                                                    <br />
+                                                                                    <a target="_blank">
+                                                                                        <img src="../images/new-icon.gif" alt='New' />
+                                                                                        <a id="ContentPlaceHolder1_lbn5" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$lbn5&#39;,&#39;&#39;)">2.4(1)(b)( (ii) the powers and duties of your officers and employees</a>
+                                                                                    </a>
+                                                                                    <br />
+                                                                                    <br />
+
+                                                                                    <a href="https://aprcrp.apcfss.in/" target="_blank">
+                                                                                        <img src="../images/new-icon.gif" alt='New' />Application for Road Cutting/R.O.W Permission for Electricity connections-Click here  </a>
+                                                                                </li>
+                                                                            </logic:iterate>
+                                                                        </logic:notempty>
+                                                                    </ul>
+                                                                    <ul id="ContentPlaceHolder1_TendersScroll" style="margin-left: -32px;"><logic:notEmpty name='tenderNotice1'><logic:iterate name='tenderNotice1' id='news1' scope='request' ><li style='font-size:13px;line-height:21px; list-style: none;  padding:10px;'><a href='../UI/TendersDisplay.aspx' ><img src='../images/new-icon.gif' alt='New'/>Hiring Notice for Technical Team on a contract basis for (01) year</a></li></logic:iterate></logic:notEmpty><logic:notEmpty name='tenderNotice2'><logic:iterate name='tenderNotice2' id='news2' scope='request' ><li style='font-size:13px;line-height:21px; list-style: none;  padding:10px;'><a href='../UI/TendersDisplay.aspx' ><img src='../images/new-icon.gif' alt='New'/>Full Depth Reclamation Technology</a></li></logic:iterate></logic:notEmpty><logic:notEmpty name='tenderNotice3'><logic:iterate name='tenderNotice3' id='news3' scope='request' ><li style='font-size:13px;line-height:21px; list-style: none;  padding:10px;'><a href='../UI/TendersDisplay.aspx' ><img src='../images/new-icon.gif' alt='New'/>FDR Technology pre bid meeting</a></li></logic:iterate></logic:notEmpty></ul></marquee>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td align="left" valign="top">&nbsp;
+                        </td>
+                        <td align="left" valign="top">
+                            <table width="746" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td align="center" valign="top">&nbsp;
+                                    </td>
+                                    <td align="center" valign="top">&nbsp;
+                                    </td>
+                                    <td align="center" valign="top">&nbsp;
+                                    </td>
+                                    <td align="center" valign="top">&nbsp;
+                                    </td>
+                                    <td align="center" valign="top">&nbsp;
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" valign="top">
+                                        <a href="../UI/ProjectsPage.aspx">
+                                            <img src="../images/Projects.png" width="218" height="114" border="0" alt="APRDC" /></a>
+                                    </td>
+                                    <td align="center" valign="top" style="width: 27px;">&nbsp;
+                                    </td>
+                                    <td align="left" valign="top">
+                                        <a href="../UI/AwardsAppreciationDisplay.aspx">
+                                            <img src="../images/Awards1.png" width="218" height="114" border="0" alt="APRDC" /></a>
+                                    </td>
+                                    <td align="right" valign="top">
+                                        <a href="../UI/SuccessStories.aspx">
+                                            <img src="../images/Success-Stories.png" width="218" height="114" border="0" alt="APRDC" /></a>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table width="740" border="0" cellspacing="0" cellpadding="0" style="padding-top: 8px;">
+                                <tr>
+                                    <td align="left" valign="top">
+                                        <table width="746" border="0" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td colspan="5" align="center" valign="top">
+                                                    <span class="headtext">
+                                                        <img src="../images/About-Sub-TXT.png" width="735" height="26" alt="APRDC" /></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="5" align="left" valign="top">
+                                                    <div>
+                                                        <div style="padding: 10px 0px 0px 0px;">
+                                                            <script src="../js/scroll.js" language="JavaScript" type="text/javascript"></script>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left" valign="top">&nbsp;
+                        </td>
+                        <td align="left" valign="top">&nbsp;
+                        </td>
+                        <td align="left" valign="top">&nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" align="left" valign="top">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td>
+                                        <a href="http://india.gov.in/" target="_blank">
+                                            <img src="../images/indiagov.png" width="237" height="74" alt="APRDC" /></a>
+                                    </td>
+                                    <td align="left">&nbsp;
+                                    </td>
+                                    <td>
+                                        <a href="http://goir.ap.gov.in/" target="_blank">
+                                            <img src="../images/ego.png" width="236" height="67" alt="APRDC" /></a>
+                                    </td>
+                                    <td>&nbsp;
+                                    </td>
+                                    <td>
+                                        <a href="http://www.ap.gov.in/" target="_blank">
+                                            <img src="../images/APgov.png" width="235" height="67" alt="APRDC" /></a>
+                                    </td>
+                                    <td>&nbsp;
+                                    </td>
+                                    <td>
+                                        <a href="http://www.aponline.gov.in/APPortal/index.asp" target="_blank">
+                                            <img src="../images/APol.png" width="235" height="67" alt="APRDC" /></a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    
+    <script type="text/javascript">
+        $('#overlay').modal('show');
+
+        setTimeout(function () {
+            $('#overlay').modal('hide');
+        }, 5000000);
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+
+        
+        <script type="text/javascript" src="../js/MainFooter.js"></script>
+          
+    <script type="text/javascript">
+        var $affectedElements = $("*");
+        $affectedElements.each(function () {
+            var $this = $(this);
+            $this.data("orig-size", $this.css("font-size"));
+        });
+
+        $("#btn-increase").click(function () {
+            debugger;
+
+            $("p, a, li, td, th, span, label").css("font-size", "15px");
+
+            $("h1, h2, h3, h4, h5, h6").css("font-size", "17px");
+
+        })
+
+        $("#btn-decrease").click(function () {
+            $("p, a, li, td, th, span, label").css("font-size", "12px");
+
+            $("h1, h2, h3, h4, h5, h6").css("font-size", "15px");
+        })
+
+        $("#btn-orig").click(function () {
+            $affectedElements.each(function () {
+                var $this = $(this);
+                $this.css("font-size", $this.data("orig-size"));
+            });
+        })
+
+        function changeFontSize(direction) {
+            $affectedElements.each(function () {
+                var $this = $(this);
+                $this.css("font-size", parseInt($this.css("font-size")) + direction);
+            });
+        }
+
+
+
+        $(".color").click(function () {
+            $("body").css({ "-moz-filter": "grayscale(100%)", "-webkit-filter": "grayscale(100%)", "filter": "gray", "filter": "grayscale(100%)" });
+
+            $("body").css("background", "#000");
+
+        });
+
+
+        $(".nocolor").click(function () {
+            $("body").css({ "-moz-filter": "grayscale(0%)", "-webkit-filter": "grayscale(0%)", "filter": "white", "filter": "grayscale(0%)" });
+
+            $("body").css("background", "url(../images/bg-ts.jpg)");
+
+        });
+
+</script>
+
+    </form>
+
+
+</body>
+</html>

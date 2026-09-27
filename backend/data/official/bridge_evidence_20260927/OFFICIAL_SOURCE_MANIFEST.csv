@@ -1,0 +1,12 @@
+authority,portal,role,url,priority
+Government of Andhra Pradesh,APWRIMS,rainfall_hydrology,https://apwrims.ap.gov.in/,HIGH
+Government of Andhra Pradesh,APWRIMS Rainfall,rainfall,https://apwrims.ap.gov.in/mis/rainfall/summary?cType=DISTRICT&endDate=20260927&hierarchyId=RAINFALL_APSDPS_ADMIN&location=AP%23%236f86292b-dd9a-4987-bb8f-c3940263b349&locationHierarchy=ADMIN&locationLevel=STATE&pType=STATE&sourceOfData=AWS&startDate=20260601&timePeriod=monsoon&viewType=ADMIN,HIGH
+Government of Andhra Pradesh,APSAC APSSDI,official_gis,https://apsac.ap.gov.in/?page_id=6966,HIGH
+Government of Andhra Pradesh,APSAC PM GatiShakti,official_gis,https://apsac.ap.gov.in/?page_id=1075,HIGH
+Government of Andhra Pradesh,APRDC,engineering_inspection_project_documents,https://aprdc.ap.gov.in/,HIGH
+Government of Andhra Pradesh,APRDC Administration,roads_buildings_documents,https://aprdc.ap.gov.in/UI/Administration.aspx,HIGH
+Government of India,NHAI Andhra Pradesh,nh_project_dpr_agreements,https://nhai.gov.in/nhai/taxonomy/term/304,HIGH
+Government of India,MoRTH IBMS,bridge_condition,https://morth.gov.in/search/node/ibms,CRITICAL
+Government of India,MoRTH RAMS,road_asset_management,https://morth.gov.in/search/node/rams,HIGH
+Government of India,MoRTH Traffic Census,traffic_aadt,https://morth.gov.in/search/node/traffic%20census,HIGH
+Government of India,MoRTH Bridge Inspection,inspection_condition,https://morth.gov.in/search/node/bridge%20inspection,CRITICAL
