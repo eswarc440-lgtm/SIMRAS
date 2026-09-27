@@ -63,7 +63,8 @@ export function useSelectedAsset(assets: AssetSummary[]) {
     (assetOrCode: AssetSummary | string, view?: AssetView) => {
       const code =
         typeof assetOrCode === "string" ? assetOrCode : assetOrCode.asset_code;
-      if (!assets.some((asset) => asset.asset_code === code)) return;
+      // A successful registration supplies its asset before the list state has rendered.
+      if (typeof assetOrCode === 'string' && !assets.some((asset) => asset.asset_code === code)) return;
       setSelectedAssetCode(code);
       if (typeof window !== "undefined") {
         const current = `${window.location.pathname}${window.location.search}`;

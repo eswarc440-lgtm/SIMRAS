@@ -1,17 +1,26 @@
+import './server/env';
 import express from "express";
 import path from "node:path";
 import fs from "node:fs";
 import { createServer as createViteServer } from "vite";
 import { db, type AssetRecord } from "./server/db";
-import { authenticateUser, verifyToken } from "./server/auth";
+import { authenticateUser, registerOfficer, verifyToken } from "./server/auth";
+import { parseInfrastructure, RequestError } from './server/infrastructure';
 import { askAssetAssistant } from "./server/ai";
 import { generateAssetReportJson, generateAssetReportCsv } from "./server/reports";
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT || 3000);
 
   app.use(express.json());
+  // The dev Vite server shares this workspace; never serve credential stores or server bundles.
+  app.use((req, res, next) => {
+    let pathname: string;
+    try { pathname = decodeURIComponent(req.path).replace(/\\/g, '/'); } catch { res.sendStatus(400); return; }
+    if (/\.sqlite3(?:-|$)|(?:^|\/)data\/runtime(?:\/|$)|(?:^|\/)server(?:\/|\.(?:ts|cjs))|(?:^|\/)safety_backup_|(?:^|\/)\.env(?:\.|$)/i.test(pathname)) { res.sendStatus(404); return; }
+    next();
+  });
 
   // CORS middleware for API routes
   app.use((req, res, next) => {
@@ -56,20 +65,28 @@ async function startServer() {
   // ==========================================
   // AUTHENTICATION ROUTES
   // ==========================================
-  app.post("/api/v1/auth/login", (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      res.status(400).json({ error: "Email and password are required" });
+  app.post(['/api/auth/register', '/api/v1/auth/register'], async (req, res) => {
+    try { res.status(201).json(await registerOfficer(req.body)); }
+    catch (error) {
+      res.status(error instanceof RequestError ? error.status : 500).json({ error: error instanceof RequestError ? error.message : 'Account could not be saved. Please try again.' });
+    }
+  });
+
+  app.post(["/api/v1/auth/login", '/api/auth/login'], async (req, res) => {
+    const { email, username, password } = req.body ?? {};
+    if (typeof (email ?? username) !== 'string' || typeof password !== 'string' || !password) {
+      res.status(400).json({ error: "Email or username and password are required" });
       return;
     }
-
-    const auth = authenticateUser(email, password);
+    try {
+    const auth = await authenticateUser(email ?? username, password);
     if (!auth) {
       res.status(401).json({ error: "Invalid official credentials" });
       return;
     }
 
     res.json(auth);
+    } catch { res.status(500).json({ error: 'Login service unavailable. Please try again.' }); }
   });
 
   app.get("/api/v1/auth/me", (req, res) => {
@@ -228,13 +245,13 @@ async function startServer() {
         risk_level: asset.risk_level,
         health_score: asset.health_score,
         rul_years: asset.rul_years,
-        data_confidence: 0.95,
+        data_confidence: asset.assessment_status === 'MODEL_PENDING' ? null : 0.95,
         twin_quality_score: isL2 ? 92 : 75,
         twin_quality: isL2 ? "VERIFIED_L2" : "SOURCE_BACKED_L1",
         twin_group: asset.asset_type.toUpperCase(),
         twin_quality_label: isL2 ? "Verified Asset Reality Twin" : "Source-backed Engineering Geometry",
         twin_fidelity: isL2 ? "L2" : "L1",
-        twin_source_backed: true,
+        twin_source_backed: asset.identity_status === 'VERIFIED',
         twin_dimension_count: Object.keys(asset.dimensions || {}).length,
         twin_template: asset.subtype || asset.asset_type,
       },
@@ -251,20 +268,20 @@ async function startServer() {
       static: {},
       environment: {},
       ai: {
-        health_score: asset.health_score ?? 82,
-        risk_score: asset.risk_score ?? 24,
-        risk_level: asset.risk_level ?? "LOW",
-        hazard_score: Math.round(asset.risk_score * 0.8),
-        hazard_level: asset.risk_level ?? "LOW",
-        operational_risk_score: Math.round(asset.risk_score * 0.9),
-        operational_risk_level: asset.risk_level ?? "LOW",
-        operational_confidence: 0.92,
-        confidence: 0.95,
-        remaining_life_years: asset.rul_years ?? 35,
+        health_score: asset.health_score,
+        risk_score: asset.risk_score,
+        risk_level: asset.risk_level,
+        hazard_score: asset.risk_score == null ? null : Math.round(asset.risk_score * 0.8),
+        hazard_level: asset.risk_level,
+        operational_risk_score: asset.risk_score == null ? null : Math.round(asset.risk_score * 0.9),
+        operational_risk_level: asset.risk_level,
+        operational_confidence: asset.assessment_status === 'MODEL_PENDING' ? null : 0.92,
+        confidence: asset.assessment_status === 'MODEL_PENDING' ? null : 0.95,
+        remaining_life_years: asset.rul_years,
         model_version: "simras-ai-v2.4",
         feature_version: "features-v2.1",
         prediction_time: new Date().toISOString(),
-        status: "OPTIMAL",
+        status: asset.assessment_status ?? "OPTIMAL",
         factors: [
           `Fidelity Level ${isL2 ? "L2 Source-Matched" : "L1 Parametric"}`,
           `Calibrated for ${asset.district} seismic & hydrologic baseline`,
@@ -277,8 +294,8 @@ async function startServer() {
       inspection: {
         inspection_date: new Date().toISOString(),
         condition: asset.condition || "GOOD",
-        score: asset.health_score ?? 82,
-        quality_flag: "VERIFIED",
+        score: asset.health_score,
+        quality_flag: asset.assessment_status === 'MODEL_PENDING' ? 'UNAVAILABLE' : "VERIFIED",
         is_synthetic: false,
       },
       maintenance: [],
@@ -410,7 +427,9 @@ async function startServer() {
       risk_level: asset.risk_level,
       rul_years: asset.rul_years,
       assessment_basis: asset.assessment_basis,
-      basis_type: asset.assessment_basis.startsWith("ML_VALIDATED") ? "ML_VALIDATED" : "EVIDENCE_DERIVED",
+      basis_type: asset.assessment_status === 'MODEL_PENDING' ? 'MODEL_PENDING' : asset.assessment_basis.startsWith("ML_VALIDATED") ? "ML_VALIDATED" : "EVIDENCE_DERIVED",
+      status: asset.assessment_status ?? 'AVAILABLE',
+      prediction_confidence: asset.prediction_confidence ?? null,
       calculated_at: new Date().toISOString(),
       governance: "State Disaster Authority Evidence Engine (No unvalidated synthetic defaults)",
     });
@@ -576,57 +595,19 @@ async function startServer() {
     }
   });
 
-  // Add Infrastructure Asset (Phase 15: Officer Workflow)
-  app.post("/api/v1/assets", (req, res) => {
+  // Both endpoints use the same validated, durable registration flow.
+  app.post(["/api/v1/infrastructure", "/api/v1/assets"], (req, res) => {
     const user = extractUser(req);
     if (!user || (user.role !== "OFFICER" && user.role !== "ADMIN")) {
       res.status(403).json({ error: "Officer or Admin authorization required to register assets" });
       return;
     }
-
-    const b = req.body;
-    if (!b.name || !b.asset_type || !b.district || !b.latitude || !b.longitude) {
-      res.status(400).json({ error: "Missing required asset registration fields" });
-      return;
-    }
-
-    const code = b.asset_code || `AP_${b.asset_type.toUpperCase().slice(0, 3)}_${Date.now().toString().slice(-5)}`;
-
-    const newAsset: AssetRecord = {
-      asset_code: code,
-      name: b.name,
-      asset_type: b.asset_type,
-      subtype: b.subtype || `standard_${b.asset_type}`,
-      district: b.district,
-      latitude: Number(b.latitude),
-      longitude: Number(b.longitude),
-      geometry: {
-        type: "Point",
-        coordinates: [Number(b.longitude), Number(b.latitude)],
-      },
-      priority: b.priority ? Number(b.priority) : 2,
-      visual_strategy: "PHOTOREALISTIC_3D_CONTEXT_PLUS_SOURCE_DIMENSIONS",
-      dimension_authority: b.dimension_authority || `${user.department}`,
-      fidelity_status: "L1_SOURCE_BACKED_PENDING_ASSET_MODEL",
-      dimension_status: "USE_ONLY_SOURCE_BACKED_VALUES",
-      dimensions: b.dimensions || {},
-      built_year: b.built_year ? Number(b.built_year) : 2020,
-      material: b.material || "Reinforced Concrete",
-      condition: b.condition || "Operational",
-      health_score: b.health_score ? Number(b.health_score) : 78.0,
-      risk_score: b.risk_score ? Number(b.risk_score) : 22.0,
-      risk_level: b.risk_score && b.risk_score >= 70 ? "HIGH" : b.risk_score && b.risk_score >= 40 ? "MEDIUM" : "LOW",
-      rul_years: b.rul_years ? Number(b.rul_years) : 45.0,
-      assessment_basis: b.assessment_basis || `OFFICER_REGISTERED: Verified by ${user.name} (${user.department})`,
-      source_url: b.source_url,
-      identity_status: "VERIFIED",
-    };
-
     try {
-      const saved = db.addAsset(newAsset);
-      res.status(201).json(saved);
-    } catch (e: any) {
-      res.status(409).json({ error: e.message });
+      const asset = parseInfrastructure(req.body);
+      if (db.getAsset(asset.asset_code)) throw new RequestError('Asset identifier already exists', 409);
+      res.status(201).json(db.addAsset(asset));
+    } catch (error) {
+      res.status(error instanceof RequestError ? error.status : 500).json({ error: error instanceof RequestError ? error.message : 'Infrastructure could not be saved. Please try again.' });
     }
   });
 
@@ -761,18 +742,20 @@ async function startServer() {
       res.status(401).json({ error: "Authentication required" });
       return;
     }
-    const { prompt, question, history = [] } = req.body;
-    const userPrompt = String(prompt || question || "").trim();
-    if (!userPrompt) {
-      res.status(400).json({ error: "Prompt is required" });
+    const { prompt, question, history = [] } = req.body ?? {};
+    const suppliedPrompt = question ?? prompt;
+    if (typeof suppliedPrompt !== 'string' || !suppliedPrompt.trim() || suppliedPrompt.length > 4000 || !Array.isArray(history)) {
+      res.status(400).json({ error: "A question of 1–4000 characters and a valid conversation history are required" });
       return;
     }
+    const userPrompt = suppliedPrompt.trim();
+    if (!db.getAsset(req.params.asset_code)) { res.status(404).json({ error: 'Selected asset not found' }); return; }
 
     try {
       const result = await askAssetAssistant(req.params.asset_code, userPrompt, history);
       res.json(result);
     } catch (e: any) {
-      res.status(500).json({ error: e.message });
+      res.status(e instanceof RequestError ? e.status : 500).json({ error: e instanceof RequestError ? e.message : 'The engineering advisor is currently unavailable. Please try again shortly.' });
     }
   });
 
@@ -801,13 +784,13 @@ async function startServer() {
     const today = new Date().toISOString().split("T")[0];
     const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0];
 
-    if (!isHydraulic) {
+    if (!isHydraulic || asset.assessment_status === 'MODEL_PENDING') {
       res.json({
         asset_code: asset.asset_code,
         asset_name: asset.name,
         district: asset.district,
         status: "WITHHELD",
-        reason: "Operational reservoir forecast applies exclusively to dams, barrages, and hydrologic reservoirs.",
+        reason: asset.assessment_status === 'MODEL_PENDING' ? 'Evidence and model assessment pending.' : "Operational reservoir forecast applies exclusively to dams, barrages, and hydrologic reservoirs.",
         prediction_semantics: "NEXT_DAY_RESERVOIR_OPERATIONAL_FORECAST",
         structural_prediction: false,
       });
@@ -982,7 +965,7 @@ async function startServer() {
         health_score: a.health_score,
         priority: a.priority,
         identity_status: a.identity_status,
-        confidence_score: 0.95,
+        confidence_score: a.assessment_status === 'MODEL_PENDING' ? null : 0.95,
         retrieved_at: new Date().toISOString(),
         source_code: "AP_SDMA",
         source_name: a.dimension_authority || "Andhra Pradesh State Disaster Management Authority",
@@ -1037,7 +1020,7 @@ async function startServer() {
     const temples = all.filter((a) => a.asset_type === "temple").length;
 
     const avgHealth = Math.round(
-      all.reduce((acc, curr) => acc + (curr.health_score || 70), 0) / (all.length || 1),
+      all.filter(a => a.health_score != null).reduce((acc, curr) => acc + curr.health_score, 0) / (all.filter(a => a.health_score != null).length || 1),
     );
 
     res.json({
@@ -1067,7 +1050,7 @@ async function startServer() {
     const low = all.filter((a) => a.risk_level === "LOW").length;
 
     const avgHealth = Math.round(
-      all.reduce((acc, curr) => acc + (curr.health_score || 70), 0) / (all.length || 1),
+      all.filter(a => a.health_score != null).reduce((acc, curr) => acc + curr.health_score, 0) / (all.filter(a => a.health_score != null).length || 1),
     );
 
     const districtMap: Record<string, number> = {};
@@ -1226,12 +1209,15 @@ async function startServer() {
       district: a.district,
       latitude: a.geometry.coordinates[1],
       longitude: a.geometry.coordinates[0],
-      health_score: a.health_score || 75,
-      risk_score: a.risk_score || 25,
+      health_score: a.health_score ?? null,
+      rul_years: a.rul_years ?? null,
+      prediction_confidence: a.prediction_confidence ?? null,
+      assessment_status: a.assessment_status ?? null,
+      risk_score: a.risk_score ?? null,
       status: a.identity_status,
-      condition: a.health_score && a.health_score > 70 ? "Good" : "Fair",
-      installation_date: `${a.built_year || 1990}-01-01`,
-      expected_lifespan_years: 100,
+      condition: a.health_score == null ? "UNASSESSED" : a.health_score > 70 ? "Good" : "Fair",
+      installation_date: a.built_year ? `${a.built_year}-01-01` : null,
+      expected_lifespan_years: a.assessment_status === "MODEL_PENDING" ? null : 100,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }));
@@ -1247,7 +1233,7 @@ async function startServer() {
   app.get("/api/v1/infrastructure/summary", (_req, res) => {
     const all = db.getAssets({ limit: 1000 }).items;
     const avgHealth = Math.round(
-      all.reduce((acc, curr) => acc + (curr.health_score || 70), 0) / (all.length || 1),
+      all.filter(a => a.health_score != null).reduce((acc, curr) => acc + curr.health_score, 0) / (all.filter(a => a.health_score != null).length || 1),
     );
     res.json({
       total: all.length,
@@ -1274,12 +1260,15 @@ async function startServer() {
       district: asset.district,
       latitude: asset.geometry.coordinates[1],
       longitude: asset.geometry.coordinates[0],
-      health_score: asset.health_score || 75,
-      risk_score: asset.risk_score || 25,
+      health_score: asset.health_score ?? null,
+      rul_years: asset.rul_years ?? null,
+      prediction_confidence: asset.prediction_confidence ?? null,
+      assessment_status: asset.assessment_status ?? null,
+      risk_score: asset.risk_score ?? null,
       status: asset.identity_status,
-      condition: asset.health_score && asset.health_score > 70 ? "Good" : "Fair",
-      installation_date: `${asset.built_year || 1990}-01-01`,
-      expected_lifespan_years: 100,
+      condition: asset.health_score == null ? "UNASSESSED" : asset.health_score > 70 ? "Good" : "Fair",
+      installation_date: asset.built_year ? `${asset.built_year}-01-01` : null,
+      expected_lifespan_years: asset.assessment_status === "MODEL_PENDING" ? null : 100,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     });
@@ -1296,11 +1285,14 @@ async function startServer() {
     const items = all.map((a) => ({
       asset_id: a.asset_code,
       asset_name: a.name,
-      health_score: a.health_score || 75,
-      risk_score: a.risk_score || 25,
-      predicted_failure_risk: (a.risk_score || 25) / 100,
-      remaining_useful_life_years: Math.max(5, 100 - (2026 - (a.built_year || 1990))),
-      confidence_interval: [Math.max(0, (a.health_score || 75) - 6), Math.min(100, (a.health_score || 75) + 6)],
+      health_score: a.health_score ?? null,
+      rul_years: a.rul_years ?? null,
+      prediction_confidence: a.prediction_confidence ?? null,
+      assessment_status: a.assessment_status ?? null,
+      risk_score: a.risk_score ?? null,
+      predicted_failure_risk: a.risk_score == null ? null : a.risk_score / 100,
+      remaining_useful_life_years: a.rul_years ?? null,
+      confidence_interval: null,
       risk_factors: ["Operational stress", "Environmental degradation", "Scour potential"],
       last_prediction_date: new Date().toISOString(),
     }));
@@ -1342,11 +1334,14 @@ async function startServer() {
     res.json({
       asset_id: asset.asset_code,
       asset_name: asset.name,
-      health_score: asset.health_score || 75,
-      risk_score: asset.risk_score || 25,
-      predicted_failure_risk: (asset.risk_score || 25) / 100,
-      remaining_useful_life_years: Math.max(5, 100 - (2026 - (asset.built_year || 1990))),
-      confidence_interval: [Math.max(0, (asset.health_score || 75) - 6), Math.min(100, (asset.health_score || 75) + 6)],
+      health_score: asset.health_score ?? null,
+      rul_years: asset.rul_years ?? null,
+      prediction_confidence: asset.prediction_confidence ?? null,
+      assessment_status: asset.assessment_status ?? null,
+      risk_score: asset.risk_score ?? null,
+      predicted_failure_risk: asset.risk_score == null ? null : asset.risk_score / 100,
+      remaining_useful_life_years: asset.rul_years ?? null,
+      confidence_interval: null,
       risk_factors: ["Operational wear", "Hydrologic variance"],
       last_prediction_date: new Date().toISOString(),
     });
@@ -1360,7 +1355,7 @@ async function startServer() {
       return {
         asset_id: id,
         status: a ? "SUCCESS" : "NOT_FOUND",
-        risk_score: a?.risk_score || 0,
+        risk_score: a?.risk_score ?? null,
       };
     });
     res.json({ results });

@@ -60,7 +60,7 @@ export function OfficerAssetTable({
         }
 
         if (categoryFilter !== "ALL") {
-          const cat = (a.category || a.type || "").toUpperCase();
+          const cat = (a.asset_type || a.category || a.type || "").toUpperCase();
           if (!cat.includes(categoryFilter)) return false;
         }
 
@@ -230,8 +230,8 @@ export function OfficerAssetTable({
                 </tr>
               ) : (
                 filteredAssets.map((asset) => {
-                  const risk = asset.risk_score ?? 0;
-                  const health = asset.health_score ?? Math.max(0, 100 - risk);
+                  const risk = asset.risk_score;
+                  const health = asset.health_score;
 
                   return (
                     <tr
@@ -251,7 +251,7 @@ export function OfficerAssetTable({
                       </td>
                       <td className="px-4 py-3">
                         <span className="inline-block uppercase text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                          {asset.category || asset.type}
+                          {asset.asset_type || asset.category || asset.type}
                         </span>
                       </td>
                       <td className="px-4 py-3 font-medium text-slate-700">
@@ -259,7 +259,7 @@ export function OfficerAssetTable({
                       </td>
                       <td className="px-4 py-3 text-center">
                         <span className="font-mono font-bold text-[#1268A8]">
-                          {health.toFixed(0)}
+                          {health?.toFixed(0) ?? "Unavailable"}
                           <span className="text-[10px] text-slate-400">/100</span>
                         </span>
                       </td>
@@ -273,12 +273,12 @@ export function OfficerAssetTable({
                               : "text-emerald-600"
                           }`}
                         >
-                          {risk.toFixed(0)}
+                          {risk?.toFixed(0) ?? "Unavailable"}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-center">
                         <StatusBadge
-                          status={risk >= 60 ? "HIGH_RISK" : risk >= 30 ? "MEDIUM_RISK" : "HEALTHY"}
+                          status={risk == null ? "MODEL_PENDING" : risk >= 60 ? "HIGH_RISK" : risk >= 30 ? "MEDIUM_RISK" : "HEALTHY"}
                           size="sm"
                         />
                       </td>

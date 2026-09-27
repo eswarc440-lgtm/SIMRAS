@@ -92,7 +92,6 @@ export function OfficerHeader({
             <GovernmentEmblem className="w-9 h-9 drop-shadow" />
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <img src="/images/ap-government-emblem.png" alt="Andhra Pradesh Government Emblem" className="h-12 w-12 shrink-0 object-contain" />
 <span className="text-lg font-bold tracking-tight text-white font-sans">
                   SIMRAS
                 </span>

@@ -16,17 +16,22 @@ export function OfficerLoginPage({
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [createAccount, setCreateAccount] = useState(false);
+  const [name, setName] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
+    if (createAccount && password !== confirmPassword) { setError('Passwords do not match'); return; }
     setLoading(true);
     setError(null);
 
     try {
-      const res = await fetch("/api/v1/auth/login", {
+      const res = await fetch(createAccount ? '/api/auth/register' : '/api/auth/login', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, ...(createAccount ? { name, confirmPassword } : {}) }),
       });
 
       if (!res.ok) {
@@ -46,6 +51,7 @@ export function OfficerLoginPage({
   };
 
   const setRolePreset = (roleEmail: string, rolePass: string) => {
+    setCreateAccount(false);
     setEmail(roleEmail);
     setPassword(rolePass);
   };
@@ -83,7 +89,7 @@ export function OfficerLoginPage({
 
             <div className="mb-6">
               <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
-                Secure Access for Authorized Personnel
+                {createAccount ? 'Create Officer Account' : 'Secure Access for Authorized Personnel'}
               </h1>
               <p className="text-xs sm:text-sm text-slate-500 mt-1">
                 Enter your credentials or authorized digital signature to access operational dashboards, inspection logs, and asset workflows.
@@ -98,14 +104,23 @@ export function OfficerLoginPage({
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {createAccount && (
+                <div>
+                  <label htmlFor="officer-name" className="block text-xs font-semibold text-slate-700 mb-1">Officer name</label>
+                  <input id="officer-name" required maxLength={120} autoComplete="name" value={name} onChange={e => setName(e.target.value)} className="w-full px-3 py-2 text-sm bg-white border border-[#D8E2EA] rounded-md text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#1268A8]" />
+                </div>
+              )}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Officer ID / Email Address
+                <label htmlFor="officer-identifier" className="block text-xs font-semibold text-slate-700 mb-1">
+                  Email or username
                 </label>
                 <div className="relative">
                   <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
-                    type="email"
+                    id="officer-identifier"
+                    type="text"
+                    autoComplete="username"
+                    maxLength={254}
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -116,13 +131,16 @@ export function OfficerLoginPage({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label htmlFor="officer-password" className="block text-xs font-semibold text-slate-700 mb-1">
                   Secure Password
                 </label>
                 <div className="relative">
                   <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="password"
+                    id="officer-password"
+                    autoComplete={createAccount ? 'new-password' : 'current-password'}
+                    minLength={createAccount ? 8 : undefined}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -132,6 +150,13 @@ export function OfficerLoginPage({
                 </div>
               </div>
 
+              {createAccount && (
+                <div>
+                  <label htmlFor="officer-confirm" className="block text-xs font-semibold text-slate-700 mb-1">Confirm password</label>
+                  <input id="officer-confirm" type="password" required autoComplete="new-password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="w-full px-3 py-2 text-sm bg-white border border-[#D8E2EA] rounded-md text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#1268A8]" />
+                  <p className="text-xs text-slate-500 mt-1">Use at least 8 characters (maximum 72 UTF-8 bytes).</p>
+                </div>
+              )}
               <div className="flex items-center justify-between text-xs pt-1">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -160,16 +185,19 @@ export function OfficerLoginPage({
                 {loading ? (
                   <span className="flex items-center gap-2">
                     <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Authenticating Session...
+                    {createAccount ? 'Creating Account...' : 'Authenticating Session...'}
                   </span>
                 ) : (
                   <>
-                    <span>Sign In to Officer Portal</span>
+                    <span>{createAccount ? 'Create Account' : 'Sign In to Officer Portal'}</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
               </button>
             </form>
+            <button type="button" disabled={loading} onClick={() => { setCreateAccount(!createAccount); setError(null); setEmail(''); setPassword(''); setConfirmPassword(''); }} className="mt-4 text-sm font-semibold text-[#1268A8] hover:underline">
+              {createAccount ? 'Already have an account? Sign In' : 'Create Account'}
+            </button>
 
             {/* Quick Demo Role Selector */}
             <div className="mt-8 pt-6 border-t border-slate-200">

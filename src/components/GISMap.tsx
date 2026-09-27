@@ -152,8 +152,8 @@ export function GISMap({
       {(assets ?? []).map((asset) => {
         const location = normalizeCoordinates(asset);
         if (!location) return null;
-        const riskVal = asset.risk_score ?? (asset.risk_level === "CRITICAL" ? 85 : asset.risk_level === "HIGH" ? 65 : asset.risk_level === "MEDIUM" ? 38 : 15);
-        const healthVal = asset.health_score ?? Math.max(0, 100 - riskVal);
+        const riskVal = asset.risk_score;
+        const healthVal = asset.health_score;
 
         return (
           <Marker
@@ -182,12 +182,12 @@ export function GISMap({
                 <div className="grid grid-cols-2 gap-2 p-1.5 bg-[#F5F8FB] rounded border border-[#D9E3EC] mb-2 text-center">
                   <div>
                     <span className="text-[9px] uppercase font-bold text-slate-400 block">Health</span>
-                    <span className="text-xs font-bold text-[#0875BE]">{healthVal.toFixed(0)}/100</span>
+                    <span className="text-xs font-bold text-[#0875BE]">{healthVal?.toFixed(0) ?? "Unavailable"}/100</span>
                   </div>
                   <div>
                     <span className="text-[9px] uppercase font-bold text-slate-400 block">Risk</span>
                     <span className={`text-xs font-bold ${riskVal >= 60 ? "text-[#D94343]" : riskVal >= 30 ? "text-[#F2A623]" : "text-[#20A36A]"}`}>
-                      {riskVal.toFixed(0)}/100
+                      {riskVal?.toFixed(0) ?? "Unavailable"}/100
                     </span>
                   </div>
                 </div>

@@ -58,19 +58,16 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
   const [subtype, setSubtype] = useState("prestressed_concrete_bridge");
   const [district, setDistrict] = useState("East Godavari");
 
-  const [latitude, setLatitude] = useState("16.9890");
-  const [longitude, setLongitude] = useState("81.7820");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
 
-  const [builtYear, setBuiltYear] = useState("2015");
-  const [material, setMaterial] = useState("Reinforced Concrete & High-Strength Steel");
-  const [dimensionAuthority, setDimensionAuthority] = useState("Roads & Buildings Department / MoRTH");
-  const [lengthM, setLengthM] = useState("450");
-  const [heightM, setHeightM] = useState("18");
-  const [unitsCount, setUnitsCount] = useState("12");
+  const [builtYear, setBuiltYear] = useState("");
+  const [material, setMaterial] = useState("");
+  const [dimensionAuthority, setDimensionAuthority] = useState("");
+  const [lengthM, setLengthM] = useState("");
+  const [heightM, setHeightM] = useState("");
+  const [unitsCount, setUnitsCount] = useState("");
 
-  const [condition, setCondition] = useState("Good");
-  const [healthScore, setHealthScore] = useState("78.5");
-  const [riskScore, setRiskScore] = useState("22.0");
 
   const validateStep = (currentStep: number): boolean => {
     setError(null);
@@ -80,9 +77,9 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
         return false;
       }
     } else if (currentStep === 2) {
-      const lat = parseFloat(latitude);
-      const lng = parseFloat(longitude);
-      if (isNaN(lat) || isNaN(lng)) {
+      const lat = latitude.trim() ? Number(latitude) : NaN;
+      const lng = longitude.trim() ? Number(longitude) : NaN;
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
         setError("Latitude and longitude must be valid floating numbers");
         return false;
       }
@@ -107,7 +104,9 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateStep(step)) return;
+    if (loading) return;
+    if (step < 4) { handleNext(); return; }
+    if (!validateStep(1) || !validateStep(2)) return;
 
     setLoading(true);
     setError(null);
@@ -116,32 +115,18 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
 
     const payload = {
       asset_code: assetCode.trim() || undefined,
-      name: name.trim(),
-      type: assetType,
-      subtype,
-      category: assetType.toUpperCase(),
-      district,
-      state: "Andhra Pradesh",
-      coordinates: {
-        latitude: parseFloat(latitude),
-        longitude: parseFloat(longitude),
+      name: name.trim(), asset_type: assetType, subtype, district,
+      latitude: Number(latitude), longitude: Number(longitude),
+      built_year: builtYear.trim() ? Number(builtYear) : undefined,
+      material: material.trim(),
+      dimensions: {
+        ...(lengthM.trim() ? { length_m: Number(lengthM) } : {}),
+        ...(heightM.trim() ? { height_m: Number(heightM) } : {}),
       },
-      specifications: {
-        built_year: parseInt(builtYear) || 2010,
-        material,
-        dimension_authority: dimensionAuthority,
-        length_m: parseFloat(lengthM) || undefined,
-        height_m: parseFloat(heightM) || undefined,
-        element_count: parseInt(unitsCount) || undefined,
-      },
-      condition,
-      health_score: parseFloat(healthScore) || 75.0,
-      risk_score: parseFloat(riskScore) || 25.0,
-      priority: 2,
     };
 
     try {
-      const res = await fetch("/api/v1/assets", {
+      const res = await fetch("/api/v1/infrastructure", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -372,6 +357,7 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
           <div className="space-y-4">
             <div className="p-4 bg-slate-50 border border-[#D8E2EA] rounded-md space-y-2 text-xs">
               <h4 className="font-bold text-slate-900 border-b border-slate-200 pb-2">Review Summary</h4>
+              <p className="text-slate-600">Health, Risk and RUL will remain unavailable until evidence is verified and an assessment is produced.</p>
               <div className="flex justify-between"><span className="text-slate-500">Asset Name:</span> <span className="font-bold text-slate-900">{name}</span></div>
               <div className="flex justify-between"><span className="text-slate-500">Category:</span> <span className="font-semibold capitalize text-slate-800">{assetType}</span></div>
               <div className="flex justify-between"><span className="text-slate-500">District:</span> <span className="font-semibold text-slate-800">{district}</span></div>
@@ -398,6 +384,7 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
 
           {step < 4 ? (
             <button
+              key="next-step"
               type="button"
               onClick={handleNext}
               className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-[#1268A8] hover:bg-[#0D4E7A] rounded-md transition shadow-sm"
@@ -407,6 +394,7 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
             </button>
           ) : (
             <button
+              key="submit-registration"
               type="submit"
               disabled={loading}
               className="flex items-center gap-1.5 px-5 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-md transition shadow-sm disabled:opacity-50"
@@ -416,7 +404,7 @@ export function AddAssetWizard({ onSuccess, onCancel }: AddAssetWizardProps) {
               ) : (
                 <>
                   <CheckCircle className="w-4 h-4" />
-                  <span>Submit Official Registration</span>
+                  <span>Add Infrastructure</span>
                 </>
               )}
             </button>

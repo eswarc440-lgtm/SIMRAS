@@ -18,21 +18,7 @@ interface PublicHeaderProps {
 
 export function GovernmentEmblem({ className = "w-8 h-8" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      <circle cx="24" cy="24" r="23" fill="#0D4E7A" stroke="#18A8D8" strokeWidth="2" />
-      <circle cx="24" cy="24" r="18" fill="#0B3B63" stroke="#F4F7FA" strokeWidth="1" strokeDasharray="2 2" />
-      {/* Ashoka chakra / sun motif */}
-      <circle cx="24" cy="24" r="7" stroke="#FEF08A" strokeWidth="1.5" />
-      <line x1="24" y1="17" x2="24" y2="31" stroke="#FEF08A" strokeWidth="1" />
-      <line x1="17" y1="24" x2="31" y2="24" stroke="#FEF08A" strokeWidth="1" />
-      <line x1="19" y1="19" x2="29" y2="29" stroke="#FEF08A" strokeWidth="1" />
-      <line x1="19" y1="29" x2="29" y2="19" stroke="#FEF08A" strokeWidth="1" />
-      {/* Wheat sprigs */}
-      <path d="M12 28C14 34 20 37 24 37C28 37 34 34 36 28" stroke="#38BDF8" strokeWidth="1.5" strokeLinecap="round" />
-      {/* Pillar top capital */}
-      <path d="M21 13H27V16H21V13Z" fill="#F8FAFC" />
-      <path d="M19 16H29V17H19V16Z" fill="#FEF08A" />
-    </svg>
+    <img src="/images/ap-government-emblem.png" alt="Andhra Pradesh Government Emblem" className={`${className} shrink-0 object-contain`} />
   );
 }
 

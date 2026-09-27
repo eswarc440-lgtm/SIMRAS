@@ -112,6 +112,27 @@ export function generateAssetReportJson(
   if (!asset) {
     throw new Error(`Asset ${assetCode} not found`);
   }
+  if (asset.assessment_status === 'MODEL_PENDING') {
+    return {
+      metadata: { generated_at: new Date().toISOString(), system: 'SIMRAS', status: 'MODEL_PENDING' },
+      asset_profile: { ...asset, current_condition: 'UNASSESSED' },
+      assessment: { health_score: null, risk_score: null, risk_level: null, rul_years: null, assessment_basis: asset.assessment_basis, status: 'MODEL_PENDING' },
+      engineering_dimensions: { authority: asset.dimension_authority, dimension_status: asset.dimension_status, metrics: asset.dimensions },
+      environmental_conditions: {
+        current: { rainfall_mm_hr: null, wind_speed_kmh: null, humidity_pct: null, traffic_load_pcu: null, temperature_c: null },
+        cumulative_24h_rainfall_mm: null, peak_wind_gust_kmh: null,
+      },
+      multi_variable_prediction: {
+        predicted_health_score: null, predicted_failure_risk_pct: null, risk_tier: 'UNAVAILABLE', predicted_rul_years: null,
+        dynamic_deflection_mm: null, fatigue_acceleration_ratio: null, advisory: 'Evidence and model assessment pending.',
+      },
+      environmental_time_series: [], seven_day_forecast: [],
+      infra_health_care_assist: { clinical_grade: 'UNASSESSED', failure_probability: 'UNAVAILABLE', structural_triage_score: null, primary_distress_factors: [], ai_prescriptions: [], sensor_integrity_grid: [] },
+      inspection_history: db.getRecordedInspections(assetCode), maintenance_history: db.getRecordedMaintenance(assetCode),
+      provenance: { dimension_authority: asset.dimension_authority, source_reference: asset.source_url, telemetry_source: 'UNAVAILABLE', digital_twin_fidelity: asset.fidelity_status, visual_strategy: asset.visual_strategy },
+      limitations: ['New officer submission. Health, Risk and RUL remain unavailable until the evidence/ML pipeline produces an assessment.'],
+    };
+  }
 
   const inspections = db.getInspections(assetCode);
   const maintenance = db.getMaintenance(assetCode);

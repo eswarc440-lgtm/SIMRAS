@@ -45,7 +45,7 @@ export function PublicHome({
   const categories = Array.from(new Set(assets.map((a) => (a.category || a.type || "").toUpperCase()))).filter(Boolean);
   const districts = Array.from(new Set(assets.map((a) => a.district))).filter(Boolean);
   const highRiskCount = assets.filter((a) => (a.risk_score ?? 0) >= 40).length;
-  const healthyCount = assets.filter((a) => (a.risk_score ?? 0) < 20).length;
+  const healthyCount = assets.filter((a) => a.risk_score != null && a.risk_score < 20).length;
 
   const spotlightAssets = assets.slice(0, 6);
 
@@ -295,8 +295,8 @@ export function PublicHome({
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {spotlightAssets.map((asset) => {
-            const riskVal = asset.risk_score ?? 0;
-            const healthVal = asset.health_score ?? (100 - riskVal);
+            const riskVal = asset.risk_score;
+            const healthVal = asset.health_score;
             return (
               <div
                 key={asset.asset_code}
@@ -313,8 +313,7 @@ export function PublicHome({
                       {asset.asset_code}
                     </span>
                     <StatusBadge
-                      status={
-                        riskVal >= 50
+                      status={riskVal == null ? "MODEL_PENDING" : riskVal >= 50
                           ? "HIGH_RISK"
                           : riskVal >= 30
                           ? "MEDIUM_RISK"
@@ -336,7 +335,7 @@ export function PublicHome({
                         Health Score
                       </span>
                       <span className="text-lg font-bold text-slate-800">
-                        {healthVal.toFixed(0)}
+                        {healthVal?.toFixed(0) ?? "Unavailable"}
                         <span className="text-xs font-normal text-slate-400">/100</span>
                       </span>
                     </div>
@@ -353,7 +352,7 @@ export function PublicHome({
                             : "text-emerald-600"
                         }`}
                       >
-                        {riskVal >= 50 ? "High" : riskVal >= 30 ? "Medium" : "Low"}
+                        {riskVal == null ? "Unavailable" : riskVal >= 50 ? "High" : riskVal >= 30 ? "Medium" : "Low"}
                       </span>
                     </div>
                   </div>

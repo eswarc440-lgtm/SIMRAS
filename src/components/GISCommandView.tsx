@@ -61,7 +61,8 @@ export function GISCommandView({
 
       // Risk filter
       if (selectedRisk !== "ALL") {
-        const risk = asset.risk_score ?? 0;
+        const risk = asset.risk_score;
+        if (risk == null) return false;
         if (selectedRisk === "HEALTHY" && risk >= 30) return false;
         if (selectedRisk === "MODERATE" && (risk < 30 || risk >= 60)) return false;
         if (selectedRisk === "HIGH" && risk < 60) return false;
@@ -252,7 +253,7 @@ export function GISCommandView({
             ) : (
               filteredAssets.map((asset) => {
                 const isSelected = selectedAsset?.asset_code === asset.asset_code;
-                const riskVal = asset.risk_score ?? 0;
+                const riskVal = asset.risk_score;
                 return (
                   <div
                     key={asset.asset_code}
@@ -284,7 +285,7 @@ export function GISCommandView({
                     <div className="flex flex-col items-end shrink-0 gap-1.5">
                       <StatusBadge
                         status={
-                          riskVal >= 60 ? "HIGH_RISK" : riskVal >= 30 ? "MEDIUM_RISK" : "HEALTHY"
+                          riskVal == null ? "MODEL_PENDING" : riskVal >= 60 ? "HIGH_RISK" : riskVal >= 30 ? "MEDIUM_RISK" : "HEALTHY"
                         }
                         size="sm"
                       />
@@ -326,7 +327,7 @@ export function GISCommandView({
                 </span>
                 <StatusBadge
                   status={
-                    (selectedAsset.risk_score ?? 0) >= 60
+                    selectedAsset.risk_score == null ? 'MODEL_PENDING' : selectedAsset.risk_score >= 60
                       ? "HIGH_RISK"
                       : (selectedAsset.risk_score ?? 0) >= 30
                       ? "MEDIUM_RISK"
@@ -352,7 +353,7 @@ export function GISCommandView({
                     Health Score
                   </span>
                   <span className="text-base font-bold text-slate-800">
-                    {(selectedAsset.health_score ?? (100 - (selectedAsset.risk_score ?? 0))).toFixed(0)}
+                    {selectedAsset.health_score?.toFixed(0) ?? "Unavailable"}
                     <span className="text-[10px] text-slate-400">/100</span>
                   </span>
                 </div>
@@ -369,7 +370,7 @@ export function GISCommandView({
                         : "text-emerald-600"
                     }`}
                   >
-                    {(selectedAsset.risk_score ?? 0).toFixed(0)}
+                    {selectedAsset.risk_score?.toFixed(0) ?? "Unavailable"}
                   </span>
                 </div>
               </div>

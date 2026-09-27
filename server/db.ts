@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { RuntimeStore } from './runtimeStore';
 
 export interface AssetRecord {
   asset_code: string;
@@ -19,13 +20,16 @@ export interface AssetRecord {
   fidelity_status: string;
   dimension_status: string;
   dimensions: Record<string, any>;
-  built_year: number;
+  built_year: number | null;
   material: string;
   condition: string;
-  health_score: number;
-  risk_score: number;
-  risk_level: "LOW" | "MEDIUM" | "HIGH";
-  rul_years: number;
+  health_score: number | null;
+  risk_score: number | null;
+  risk_level: "LOW" | "MEDIUM" | "HIGH" | null;
+  rul_years: number | null;
+  prediction_confidence?: number | null;
+  assessment_status?: string;
+  created_at?: string;
   assessment_basis: string;
   source_url?: string;
   identity_status: "VERIFIED" | "PENDING_VERIFICATION";
@@ -162,7 +166,7 @@ export interface SearchResultRecord {
 }
 
 // In-Memory durable store with local file fallback
-class SimrasDatabase {
+export class SimrasDatabase {
   private assets: Map<string, AssetRecord> = new Map();
   private users: Map<string, UserRecord> = new Map();
   private inspections: Map<string, InspectionRecord> = new Map();
@@ -171,12 +175,19 @@ class SimrasDatabase {
   private telemetry: Map<string, TelemetryFeedRecord> = new Map();
   private observations: Map<string, CitizenHazardObservationRecord> = new Map();
   private preferences: Map<string, Record<string, any>> = new Map();
+  private seededInspectionIds = new Set<string>();
+  private seededMaintenanceIds = new Set<string>();
 
-  constructor() {
+  constructor(public readonly runtime = new RuntimeStore()) {
     this.initAssets();
+    for (const asset of runtime.registrations()) {
+      if (!this.assets.has(asset.asset_code)) this.assets.set(asset.asset_code, asset);
+    }
     this.initUsers();
     this.initInspections();
     this.initMaintenance();
+    this.seededInspectionIds = new Set(this.inspections.keys());
+    this.seededMaintenanceIds = new Set(this.maintenance.keys());
     this.initNotifications();
     this.initTelemetry();
     this.initObservations();
@@ -387,6 +398,9 @@ class SimrasDatabase {
   }
 
   // Assets
+  public getRecordedInspections(code: string) { return this.getInspections(code).filter(record => !this.seededInspectionIds.has(record.id)); }
+  public getRecordedMaintenance(code: string) { return this.getMaintenance(code).filter(record => !this.seededMaintenanceIds.has(record.id)); }
+
   public getAssets(options: {
     asset_type?: string;
     district?: string;
@@ -448,13 +462,14 @@ class SimrasDatabase {
     if (this.assets.has(asset.asset_code)) {
       throw new Error(`Asset code ${asset.asset_code} already exists.`);
     }
+    this.runtime.addAsset(asset);
     this.assets.set(asset.asset_code, asset);
     return asset;
   }
 
   // Users
   public getUser(email: string): UserRecord | undefined {
-    return this.users.get(email.toLowerCase());
+    return this.runtime.account(email.trim().toLowerCase())?.user ?? this.users.get(email.trim().toLowerCase());
   }
 
   public updateUser(email: string, patch: Partial<Pick<UserRecord, "name" | "phone" | "district">>): UserRecord {
@@ -462,6 +477,7 @@ class SimrasDatabase {
     if (!user) throw new Error("User not found");
     const next = { ...user, name: patch.name ?? user.name, phone: patch.phone ?? user.phone, district: patch.district ?? user.district };
     this.users.set(email.toLowerCase(), next);
+    this.runtime.updateProfile(next);
     return next;
   }
 
@@ -469,6 +485,7 @@ class SimrasDatabase {
     const user = this.getUser(email);
     if (!user) throw new Error("User not found");
     user.photo_url = photoUrl;
+    this.runtime.updateProfile(user);
     return user;
   }
 

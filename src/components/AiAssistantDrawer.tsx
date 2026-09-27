@@ -22,6 +22,7 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const requestGeneration = useRef(0);
 
   // Auto-scroll to bottom of messages
   const scrollToBottom = () => {
@@ -36,6 +37,8 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
 
   // Set initial greeting when asset changes or opens
   useEffect(() => {
+    requestGeneration.current++;
+    setLoading(false);
     if (currentAsset) {
       setMessages([
         {
@@ -59,7 +62,8 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
 
   const handleSend = async (queryText?: string) => {
     const text = queryText || input.trim();
-    if (!text) return;
+    if (!text || loading || !currentAsset?.asset_code) return;
+    const generation = requestGeneration.current;
 
     const userMsg: Message = {
       role: "user",
@@ -78,31 +82,30 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
       const res = await fetch(`/api/v1/ai/assets/${encodeURIComponent(assetCode)}/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({ prompt: text, selected_asset_code: assetCode, history: [...messages, userMsg].map(({ role, content }) => ({ role, content })) }),
+        body: JSON.stringify({ question: text, selected_asset_code: assetCode, history: messages.slice(1).map(({ role, content }) => ({ role, content })) }),
       });
 
-      if (!res.ok) {
-        throw new Error("AI service error");
-      }
-
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || (res.status === 401 ? 'Please sign in again to use the advisor.' : 'The engineering advisor is currently unavailable.'));
+      if (generation !== requestGeneration.current) return;
       const aiMsg: Message = {
         role: "assistant",
-        content: data.answer || "Analysis completed according to standard engineering criteria.",
+        content: data.answer || "No answer was returned. Please try again.",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, aiMsg]);
     } catch (err: any) {
+      if (generation !== requestGeneration.current) return;
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: "The engineering advisor is currently unavailable. No assessment or maintenance recommendation was generated.",
+          content: err instanceof TypeError ? 'Could not connect to the engineering advisor. Please check your connection and retry.' : err.message,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
     } finally {
-      setLoading(false);
+      if (generation === requestGeneration.current) setLoading(false);
     }
   };
 
@@ -193,7 +196,7 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
               <button
                 key={q}
                 onClick={() => handleSend(q)}
-                disabled={loading}
+                disabled={loading || !currentAsset}
                 className="text-[11px] py-1 px-3 rounded-full bg-[#122538] hover:bg-cyan-950 border border-cyan-500/30 hover:border-cyan-400 text-cyan-200 transition whitespace-nowrap disabled:opacity-40 font-medium active:scale-95"
               >
                 {q}
@@ -260,12 +263,12 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
                   ? `Ask engineering question about ${asset.name}...`
                   : "Ask engineering assessment question..."
               }
-              disabled={loading}
+              disabled={loading || !currentAsset}
               className="flex-1 bg-[#0f2134] border border-gray-700 focus:border-cyan-400 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none transition"
             />
             <button
               type="submit"
-              disabled={!input.trim() || loading}
+              disabled={!input.trim() || loading || !currentAsset}
               className="px-3.5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-black font-bold transition disabled:opacity-40 flex items-center justify-center gap-1.5 text-xs"
             >
               <span>Send</span>
