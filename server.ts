@@ -4,10 +4,12 @@ import path from "node:path";
 import fs from "node:fs";
 import { createServer as createViteServer } from "vite";
 import { db, type AssetRecord } from "./server/db";
-import { authenticateUser, verifyToken } from "./server/auth";
-import { AdvisorUnavailableError, askAssetAssistant, getAiHealth } from "./server/ai";
+import { authenticateUser, registerUser, verifyToken } from "./server/auth";
+import { accountStore } from "./server/accountStore";
+import { getEmailHealth, sendPasswordResetCode } from "./server/email";
+import { AdvisorUnavailableError, askAssetAssistant, askGlobalAssistant, getAiHealth } from "./server/ai";
 import { generateAssetReportJson, generateAssetReportCsv } from "./server/reports";
-import { AmbiguousAssetError, buildApplicationAiContext } from "./server/aiContext";
+import { AmbiguousAssetError, buildApplicationAiContext, buildApplicationGlobalAiContext } from "./server/aiContext";
 import { normalizeAssetRegistrationPayload } from "./server/assetRegistration";
 import { backendReads } from './server/backendReads';
 
@@ -80,6 +82,231 @@ async function startServer() {
   // ==========================================
   // AUTHENTICATION ROUTES
   // ==========================================
+  app.get("/api/v1/auth/email-health", (_req, res) => {
+    res.json(getEmailHealth());
+  });
+
+  app.post("/api/v1/auth/register", (req, res) => {
+    const {
+      full_name,
+      officer_id,
+      email,
+      password,
+      confirm_password,
+    } = req.body ?? {};
+
+    if (
+      !full_name ||
+      !officer_id ||
+      !email ||
+      !password ||
+      !confirm_password
+    ) {
+      res.status(400).json({
+        error: "All account fields are required.",
+      });
+      return;
+    }
+
+    if (password !== confirm_password) {
+      res.status(400).json({
+        error: "Password confirmation does not match.",
+      });
+      return;
+    }
+
+    try {
+      const result = registerUser({
+        full_name: String(full_name),
+        officer_id: String(officer_id),
+        email: String(email),
+        password: String(password),
+      });
+
+      res.status(201).json(result);
+    } catch (error: any) {
+      const message =
+        error?.message ||
+        "Unable to create account.";
+
+      res.status(
+        /already exists/i.test(message) ? 409 : 400,
+      ).json({ error: message });
+    }
+  });
+
+  app.post(
+    "/api/v1/auth/forgot-password/request",
+    async (req, res) => {
+      const email = String(req.body?.email ?? "")
+        .trim()
+        .toLowerCase();
+
+      if (!email) {
+        res.status(400).json({
+          error: "Email address is required.",
+        });
+        return;
+      }
+
+      try {
+        const reset =
+          accountStore.createPasswordReset(email);
+
+        // Do not reveal whether an unknown email is registered.
+        if (!reset) {
+          res.json({
+            success: true,
+            message:
+              "If this email is registered, a verification code will be sent.",
+          });
+          return;
+        }
+
+        await sendPasswordResetCode(
+          reset.email,
+          reset.code,
+          reset.expiresAt,
+        );
+
+        res.json({
+          success: true,
+          message:
+            "A password reset code has been sent to your registered email.",
+          expires_in_minutes: 10,
+        });
+      } catch (error: any) {
+        const message = String(
+          error?.message || "Email delivery failed.",
+        );
+
+        if (/Too many password reset requests/i.test(message)) {
+          res.status(429).json({ error: message });
+          return;
+        }
+
+        if (/SMTP_NOT_CONFIGURED/i.test(message)) {
+          console.error(
+            "SIMRAS email service is not configured.",
+          );
+
+          res.status(503).json({
+            error:
+              "Password reset email service is not configured on the server.",
+          });
+          return;
+        }
+
+        console.error("SIMRAS password reset email failed", {
+          type: error?.name ?? "EMAIL_ERROR",
+        });
+
+        res.status(502).json({
+          error:
+            "Unable to send password reset email. Check the server email configuration.",
+        });
+      }
+    },
+  );
+
+  app.post(
+    "/api/v1/auth/forgot-password/verify",
+    (req, res) => {
+      const email = String(req.body?.email ?? "")
+        .trim()
+        .toLowerCase();
+
+      const code = String(req.body?.code ?? "").trim();
+
+      if (!email || !/^\d{6}$/.test(code)) {
+        res.status(400).json({
+          error:
+            "Enter the email address and valid 6-digit verification code.",
+        });
+        return;
+      }
+
+      const token =
+        accountStore.verifyResetCode(email, code);
+
+      if (!token) {
+        res.status(400).json({
+          error:
+            "The verification code is invalid, expired, or has already been used.",
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        reset_token: token,
+      });
+    },
+  );
+
+  app.post(
+    "/api/v1/auth/forgot-password/reset",
+    (req, res) => {
+      const email = String(req.body?.email ?? "")
+        .trim()
+        .toLowerCase();
+
+      const resetToken = String(
+        req.body?.reset_token ?? "",
+      );
+
+      const password = String(
+        req.body?.password ?? "",
+      );
+
+      const confirmPassword = String(
+        req.body?.confirm_password ?? "",
+      );
+
+      if (!email || !resetToken || !password) {
+        res.status(400).json({
+          error: "Reset information is incomplete.",
+        });
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        res.status(400).json({
+          error:
+            "Password confirmation does not match.",
+        });
+        return;
+      }
+
+      try {
+        const changed = accountStore.resetPassword(
+          email,
+          resetToken,
+          password,
+        );
+
+        if (!changed) {
+          res.status(400).json({
+            error:
+              "Password reset authorization is invalid or expired.",
+          });
+          return;
+        }
+
+        res.json({
+          success: true,
+          message:
+            "Password updated successfully. You can now sign in.",
+        });
+      } catch (error: any) {
+        res.status(400).json({
+          error:
+            error?.message ||
+            "Unable to update password.",
+        });
+      }
+    },
+  );
   app.post("/api/v1/auth/login", (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -234,7 +461,7 @@ async function startServer() {
           return;
         }
         const items = Array.isArray(body?.items) ? body.items : [];
-        res.json({ groups: { assets: items.map((asset: any) => ({ type: "asset", id: asset.asset_code, title: asset.name, subtitle: `${asset.asset_code} · ${asset.district ?? "Location not available"}`, asset_code: asset.asset_code, action_url: `/digital-twin?asset=${encodeURIComponent(asset.asset_code)}` })), inspections: [], maintenance: [], reports: [] } });
+        res.json({ groups: { assets: items.map((asset: any) => ({ type: "asset", id: asset.asset_code, title: asset.name, subtitle: `${asset.asset_code} Ã‚Â· ${asset.district ?? "Location not available"}`, asset_code: asset.asset_code, action_url: `/digital-twin?asset=${encodeURIComponent(asset.asset_code)}` })), inspections: [], maintenance: [], reports: [] } });
       } catch (error: any) {
         res.status(502).json({ error: `Database backend unavailable: ${error.message || "connection failed"}` });
       }
@@ -896,6 +1123,126 @@ async function startServer() {
     res.json({ success: true });
   });
 
+
+  // ---------------------------------------------------------------------------
+  // GLOBAL SIMRAS AI ENGINEERING ADVISOR
+  //
+  // Works without a selected asset. When the question clearly names one asset,
+  // it automatically upgrades to the existing deep asset evidence retrieval.
+  // ---------------------------------------------------------------------------
+  app.post("/api/v1/ai/ask", async (req, res) => {
+    const user = extractUser(req);
+
+    if (!user) {
+      res.status(401).json({ error: "Authentication required" });
+      return;
+    }
+
+    const { prompt, question, history = [] } = req.body ?? {};
+    const userPrompt = String(prompt || question || "").trim();
+
+    if (!userPrompt || userPrompt.length > 4000) {
+      res.status(400).json({ error: "Prompt is required" });
+      return;
+    }
+
+    try {
+      const context: any = buildApplicationGlobalAiContext(userPrompt);
+
+      // A named asset was detected. Use the same database-backed deep context
+      // as the normal selected-asset AI route.
+      if (context.focus_asset?.asset_code) {
+        const code = context.focus_asset.asset_code;
+
+        const retrieve = async (assetCode: string, query: string) => {
+          const base = process.env.SIMRAS_BACKEND_URL?.replace(/\/$/, "");
+
+          if (!base) {
+            return buildApplicationAiContext(assetCode, query);
+          }
+
+          const endpoint =
+            (base.endsWith("/api/v1") ? base : base + "/api/v1") +
+            "/ai/assets/" +
+            encodeURIComponent(assetCode) +
+            "/context";
+
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Admin-API-Key": process.env.SIMRAS_BACKEND_ADMIN_API_KEY ?? "",
+            },
+            body: JSON.stringify({ prompt: query }),
+            signal: AbortSignal.timeout(30000),
+          });
+
+          const body = await response.json();
+
+          if (response.status === 409 && body.detail?.choices) {
+            throw new AmbiguousAssetError(body.detail.choices);
+          }
+
+          if (!response.ok) {
+            throw Object.assign(new Error("Evidence retrieval failed"), {
+              status: response.status,
+            });
+          }
+
+          return body;
+        };
+
+        const result = await askAssetAssistant(
+          code,
+          userPrompt,
+          history,
+          undefined,
+          retrieve,
+          user,
+        );
+
+        res.json({
+          ...result,
+          scope: "ASSET_RESOLVED_FROM_GLOBAL",
+        });
+        return;
+      }
+
+      // No asset is required for general SIMRAS questions.
+      const result = await askGlobalAssistant(
+        userPrompt,
+        history,
+        undefined,
+        async () => context,
+        user,
+      );
+
+      res.json(result);
+    } catch (e: any) {
+      if (e instanceof AmbiguousAssetError) {
+        res.status(409).json({
+          error: e.message,
+          choices: e.choices,
+        });
+        return;
+      }
+
+      if (e instanceof Error && e.message.includes("not found")) {
+        res.status(404).json({ error: e.message });
+        return;
+      }
+
+      console.error("SIMRAS global advisor failed", {
+        status: e?.status ?? null,
+        type: e?.name ?? "UNKNOWN",
+      });
+
+      res.status(502).json({
+        error:
+          "SIMRAS AI could not retrieve application evidence. Check server configuration and logs.",
+      });
+    }
+  });
   // AI Assistant (Phase 21: One backend Gemini route)
   app.post("/api/v1/ai/assets/:asset_code/ask", async (req, res) => {
     const user = extractUser(req);
@@ -921,7 +1268,7 @@ async function startServer() {
         if (!response.ok) throw Object.assign(new Error('Evidence retrieval failed'),{status:response.status});
         return body;
       };
-      const result = await askAssetAssistant(req.params.asset_code, userPrompt, history, undefined, retrieve);
+      const result = await askAssetAssistant(req.params.asset_code, userPrompt, history, undefined, retrieve, user);
       res.json(result);
     } catch (e: any) {
       if (e instanceof AmbiguousAssetError) {

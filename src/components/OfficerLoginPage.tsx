@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Shield, Lock, User, CheckCircle2, ArrowRight, AlertCircle, ArrowLeft } from "lucide-react";
+import { AuthAccountModal } from "./AuthAccountModal";
 
 
 interface OfficerLoginPageProps {
@@ -16,6 +17,7 @@ export function OfficerLoginPage({
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [authMode, setAuthMode] = useState<"create" | "forgot" | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,7 +69,9 @@ export function OfficerLoginPage({
           <div className="max-w-md mx-auto">
             {/* Government Emblem & Title */}
             <div className="flex items-center gap-3 mb-6">
-              <img src="/images/ap-government-emblem.png" alt="Andhra Pradesh Government emblem" className="w-12 h-12 object-contain" />
+              <div className="w-14 h-14 rounded-full bg-white border-2 border-slate-200 flex items-center justify-center shadow-sm p-2">
+                <img src="/images/ap-government-emblem.png" alt="Andhra Pradesh Government emblem" className="w-full h-full object-contain" />
+              </div>
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-2xl font-bold tracking-tight text-slate-900">SIMRAS</span>
@@ -76,7 +80,13 @@ export function OfficerLoginPage({
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Government of Andhra Pradesh ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ Infrastructure Operations
+                  Government of Andhra Pradesh
+                </p>
+                <p className="text-xs text-slate-500">
+                  Water Resources Department (APWRD) / Roads & Buildings
+                </p>
+                <p className="text-xs text-slate-500">
+                  Infrastructure Operations
                 </p>
               </div>
             </div>
@@ -126,7 +136,7 @@ export function OfficerLoginPage({
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢"
+                    placeholder="Enter your secure password"
                     className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-[#D8E2EA] rounded-md text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#1268A8] focus:border-[#1268A8]"
                   />
                 </div>
@@ -143,13 +153,22 @@ export function OfficerLoginPage({
                   <span className="text-slate-600">Remember credentials on this device</span>
                 </label>
 
-                <button
-                  type="button"
-                  onClick={() => alert("Password reset instructions have been dispatched to your registered department email.")}
-                  className="font-semibold text-[#1268A8] hover:underline"
-                >
-                  Forgot Password?
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setAuthMode("create")}
+                    className="font-semibold text-[#1268A8] hover:underline"
+                  >
+                    Create Account
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAuthMode("forgot")}
+                    className="font-semibold text-[#1268A8] hover:underline"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
               </div>
 
               <button
@@ -242,6 +261,17 @@ export function OfficerLoginPage({
           </div>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <AuthAccountModal
+        mode={authMode}
+        onClose={() => setAuthMode(null)}
+        onRegistered={(user, token) => {
+          localStorage.setItem("simras_token", token);
+          localStorage.setItem("simras_user", JSON.stringify(user));
+          onLoginSuccess(user, token);
+        }}
+      />
     </div>
   );
 }

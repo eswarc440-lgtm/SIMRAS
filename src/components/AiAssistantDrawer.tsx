@@ -52,7 +52,7 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
       setMessages([
         {
           role: "assistant",
-          content: `Welcome to the **SIMRAS AI Engineering Advisor**. Please select an infrastructure asset from the registry to begin engineering diagnosis, failure mode analysis, or CWC compliance verification.`,
+          content: `Welcome to the **SIMRAS AI Engineering Advisor**. Ask about any SIMRAS infrastructure asset, inspection, defect, maintenance record, Health/Risk/RUL assessment, engineering specification, GIS record, Digital Twin, report, evidence source, or application workflow. When information is missing, I will identify the gap instead of inventing it.`,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
@@ -152,7 +152,7 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
                 </span>
               </div>
               <p className="text-[11px] text-cyan-300/80 font-mono mt-0.5 truncate max-w-[280px]">
-                Target: {currentAsset ? `${currentAsset.name} (${currentAsset.asset_code})` : "No asset selected"}
+                Target: {currentAsset ? `${currentAsset.name} (${currentAsset.asset_code})` : "Application-wide SIMRAS"}
               </p>
             </div>
           </div>
@@ -264,7 +264,7 @@ export function AiAssistantDrawer({ asset, selectedAsset, isOpen, onClose }: AiA
               placeholder={
                 asset
                   ? `Ask engineering question about ${asset.name}...`
-                  : "Ask engineering assessment question..."
+                  : "Ask about any SIMRAS asset, inspection, maintenance, report or engineering record..."
               }
               disabled={loading}
               className="flex-1 bg-[#0f2134] border border-gray-700 focus:border-cyan-400 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none transition"

@@ -41,3 +41,7 @@ frontend_failed_merge_backup_*/
 *_backup_*/
 .vercel
 .env*
+.env.*.local
+.simras-backups/
+external_repos/
+data/runtime/

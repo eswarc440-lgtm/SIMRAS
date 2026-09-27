@@ -479,6 +479,11 @@ class SimrasDatabase {
     return this.users.get(email.toLowerCase());
   }
 
+  public upsertUser(user: UserRecord): UserRecord {
+    this.users.set(user.email.toLowerCase(), user);
+    return user;
+  }
+
   public updateUser(email: string, patch: Partial<Pick<UserRecord, "name" | "phone" | "district">>): UserRecord {
     const user = this.getUser(email);
     if (!user) throw new Error("User not found");
@@ -506,9 +511,9 @@ class SimrasDatabase {
   public search(query: string): Record<"assets" | "inspections" | "maintenance" | "reports", SearchResultRecord[]> {
     const needle = query.trim().toLowerCase();
     const matches = (...values: unknown[]) => values.some((value) => String(value ?? "").toLowerCase().includes(needle));
-    const assets = Array.from(this.assets.values()).filter((asset) => asset.identity_status === "VERIFIED" && matches(asset.name, asset.asset_code, asset.district, asset.asset_type)).slice(0, 8).map((asset) => ({ type: "asset" as const, id: asset.asset_code, title: asset.name, subtitle: `${asset.asset_code} · ${asset.district}`, asset_code: asset.asset_code, action_url: `/digital-twin?asset=${encodeURIComponent(asset.asset_code)}` }));
-    const inspections = Array.from(this.inspections.values()).filter((record) => matches(record.id, record.asset_name, record.inspection_type)).slice(0, 8).map((record) => ({ type: "inspection" as const, id: record.id, title: record.id, subtitle: `${record.asset_name} · ${record.inspection_type}`, asset_code: record.asset_code, action_url: `/inspections?asset=${encodeURIComponent(record.asset_code)}` }));
-    const maintenance = Array.from(this.maintenance.values()).filter((record) => matches(record.id, record.title, record.asset_name, record.category)).slice(0, 8).map((record) => ({ type: "maintenance" as const, id: record.id, title: record.id, subtitle: `${record.title} · ${record.asset_name}`, asset_code: record.asset_code, action_url: `/maintenance?asset=${encodeURIComponent(record.asset_code)}` }));
+    const assets = Array.from(this.assets.values()).filter((asset) => asset.identity_status === "VERIFIED" && matches(asset.name, asset.asset_code, asset.district, asset.asset_type)).slice(0, 8).map((asset) => ({ type: "asset" as const, id: asset.asset_code, title: asset.name, subtitle: `${asset.asset_code} Â· ${asset.district}`, asset_code: asset.asset_code, action_url: `/digital-twin?asset=${encodeURIComponent(asset.asset_code)}` }));
+    const inspections = Array.from(this.inspections.values()).filter((record) => matches(record.id, record.asset_name, record.inspection_type)).slice(0, 8).map((record) => ({ type: "inspection" as const, id: record.id, title: record.id, subtitle: `${record.asset_name} Â· ${record.inspection_type}`, asset_code: record.asset_code, action_url: `/inspections?asset=${encodeURIComponent(record.asset_code)}` }));
+    const maintenance = Array.from(this.maintenance.values()).filter((record) => matches(record.id, record.title, record.asset_name, record.category)).slice(0, 8).map((record) => ({ type: "maintenance" as const, id: record.id, title: record.id, subtitle: `${record.title} Â· ${record.asset_name}`, asset_code: record.asset_code, action_url: `/maintenance?asset=${encodeURIComponent(record.asset_code)}` }));
     return { assets, inspections, maintenance, reports: [] };
   }
 
@@ -717,7 +722,7 @@ class SimrasDatabase {
         sensors.push(
           { id: "INC-01", name: "ECRF Diaphragm Wall Inclinometer", type: "INCLINOMETER", value: 0.14, unit: "deg", threshold: 0.25, status: "NORMAL", position: [-22, 5.0, 2] },
           { id: "PPC-04", name: "Pore Pressure Cell Upstream Face", type: "PIEZOMETER", value: 310, unit: "kPa", threshold: 350, status: "NORMAL", position: [-15, 2.0, -8] },
-          { id: "SG-02", name: "Spillway Pier Concrete Strain", type: "STRAIN_GAUGE", value: 48, unit: "µε", threshold: 85, status: "NORMAL", position: [25, 3.5, 12] },
+          { id: "SG-02", name: "Spillway Pier Concrete Strain", type: "STRAIN_GAUGE", value: 48, unit: "ÂµÎµ", threshold: 85, status: "NORMAL", position: [25, 3.5, 12] },
         );
       } else if (code === "AP_DAM_NWDP_AP01VH0059") {
         // Srisailam Project
@@ -739,7 +744,7 @@ class SimrasDatabase {
         weatherCond = "OVERCAST";
         precip = 1.2;
         sensors.push(
-          { id: "FRIC-01", name: "Continuous Surface Friction Mu", type: "SURFACE_FRICTION", value: 0.64, unit: "µ", threshold: 0.50, status: "NORMAL", position: [0, 0.2, 0] },
+          { id: "FRIC-01", name: "Continuous Surface Friction Mu", type: "SURFACE_FRICTION", value: 0.64, unit: "Âµ", threshold: 0.50, status: "NORMAL", position: [0, 0.2, 0] },
           { id: "VIS-01", name: "Runway Visual Range RVR Transmissometer", type: "NORMAL" as any, value: 2400, unit: "m", threshold: 800, status: "NORMAL", position: [-40, 0.5, 6] },
         );
       } else if (isDamOrBarrage) {
@@ -748,12 +753,12 @@ class SimrasDatabase {
         gateClearance = 1.5;
         sensors.push(
           { id: "PZ-01", name: "Foundation Piezometer", type: "PIEZOMETER", value: 120, unit: "kPa", threshold: 160, status: "NORMAL", position: [0, 1.0, 2] },
-          { id: "SG-01", name: "Concrete Pier Strain Sensor", type: "STRAIN_GAUGE", value: 35, unit: "µε", threshold: 80, status: "NORMAL", position: [8, 3.0, 4] },
+          { id: "SG-01", name: "Concrete Pier Strain Sensor", type: "STRAIN_GAUGE", value: 35, unit: "ÂµÎµ", threshold: 80, status: "NORMAL", position: [8, 3.0, 4] },
         );
       } else {
         // Bridge / Heritage Temple
         sensors.push(
-          { id: "SG-01", name: "Deck Dynamic Strain Gauge", type: "STRAIN_GAUGE", value: 42, unit: "µε", threshold: 90, status: "NORMAL", position: [0, 6.0, 0] },
+          { id: "SG-01", name: "Deck Dynamic Strain Gauge", type: "STRAIN_GAUGE", value: 42, unit: "ÂµÎµ", threshold: 90, status: "NORMAL", position: [0, 6.0, 0] },
           { id: "ACC-01", name: "Ambient Vibration Accelerometer", type: "VIBRATION", value: 0.028, unit: "g", threshold: 0.06, status: "NORMAL", position: [-15, 6.0, 0] },
         );
       }
